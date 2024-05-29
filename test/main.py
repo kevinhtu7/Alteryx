@@ -54,9 +54,14 @@ class ChatBot():
   from langchain.schema.runnable import RunnablePassthrough
   from langchain.schema.output_parser import StrOutputParser
 
+  class AnswerOnlyOutputParser(StrOutputParser):
+        def parse(self, response):
+            # Extract the answer from the response
+            return response.strip()
+
   rag_chain = (
-    {"context": docsearch.as_retriever(),  "question": RunnablePassthrough()} 
-    | prompt 
-    | llm
-    | StrOutputParser() 
-  )
+        {"context": docsearch.as_retriever(), "question": RunnablePassthrough()} 
+        | prompt 
+        | llm
+        | AnswerOnlyOutputParser()
+    )
