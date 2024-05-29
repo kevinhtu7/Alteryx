@@ -33,5 +33,5 @@ if st.session_state.messages[-1]["role"] != "assistant":
         with st.spinner("Getting your answer from mystery stuff.."):
             response = generate_response(input) 
             st.write(response) 
-    message = {"role": "assistant", "content": response}
+    message = {"content": response}
     st.session_state.messages.append(message)
