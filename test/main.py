@@ -9,9 +9,7 @@ import os
 
 class ChatBot():
   load_dotenv()
-  current_directory = os.path.dirname(os.path.abspath(__file__))
-  file_path = os.path.join(current_directory, 'horoscope.txt')
-  loader = TextLoader(file_path)
+  loader = TextLoader('./horoscope.txt')
   documents = loader.load()
   text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=4)
   docs = text_splitter.split_documents(documents)
@@ -43,7 +41,8 @@ class ChatBot():
   If you don't know the answer, just say you don't know. 
   You answer with short and concise answer, no longer than2 sentences.
 
-
+  Context: {context}
+  Question: {question}
   Answer: 
 
   """
