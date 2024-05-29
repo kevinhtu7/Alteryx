@@ -1,3 +1,5 @@
+pip install -U langchain-community sentence-transformers
+
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.document_loaders import TextLoader
 from langchain.embeddings import HuggingFaceEmbeddings
