@@ -43,8 +43,7 @@ class ChatBot():
   If you don't know the answer, just say you don't know. 
   You answer with short and concise answer, no longer than2 sentences.
 
-  Context: {context}
-  Question: {question}
+
   Answer: 
 
   """
