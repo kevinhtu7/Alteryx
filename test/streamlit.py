@@ -35,3 +35,6 @@ if st.session_state.messages[-1]["role"] != "assistant":
             st.write(response) 
     message = {"role": "assistant", "content": response}
     st.session_state.messages.append(message)
+
+    # Remove the user's input from session state to prevent it from being displayed
+    st.session_state.messages = [msg for msg in st.session_state.messages if msg["role"] != "user"]
