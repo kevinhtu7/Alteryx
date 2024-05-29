@@ -9,7 +9,8 @@ import os
 
 class ChatBot():
   load_dotenv()
-  loader = TextLoader('horoscope.txt')
+  file_path = os.path.join(current_directory, 'horoscope.txt')
+  loader = TextLoader(file_path)
   documents = loader.load()
   text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=4)
   docs = text_splitter.split_documents(documents)
