@@ -5,7 +5,7 @@ bot = ChatBot()
     
 st.set_page_config(page_title="Meeting Information Bot")
 with st.sidebar:
-    st.title('Random Fortune Telling Bot')
+    st.title('Meeting Information Bot')
 
 # Function for generating LLM response
 def generate_response(input):
