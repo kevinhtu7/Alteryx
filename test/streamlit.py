@@ -3,7 +3,7 @@ import streamlit as st
 
 bot = ChatBot()
     
-st.set_page_config(page_title="Random Fortune Telling Bot")
+st.set_page_config(page_title="Meeting Information Bot")
 with st.sidebar:
     st.title('Random Fortune Telling Bot')
 
@@ -14,7 +14,7 @@ def generate_response(input):
 
 # Store LLM generated responses
 if "messages" not in st.session_state.keys():
-    st.session_state.messages = [{"role": "assistant", "content": "Welcome, let's unveil your future"}]
+    st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
 
 # Display chat messages
 for message in st.session_state.messages:
@@ -30,7 +30,7 @@ if input := st.chat_input():
 # Generate a new response if last message is not from assistant
 if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
-        with st.spinner("Getting your answer from mystery stuff.."):
+        with st.spinner("Grabbing your answer from database..."):
             response = generate_response(input) 
             st.write(response) 
     message = {"role": "assistant", "content": response}
