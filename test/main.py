@@ -11,7 +11,7 @@ class ChatBot():
   def __init__(self):
       load_dotenv()
       current_directory = os.path.dirname(os.path.abspath(__file__))
-      file_path = os.path.join(current_directory, 'horoscope.txt')
+      file_path = os.path.join(current_directory, 'testMeetingNotes.txt')
       self.loader = TextLoader(file_path)
       self.documents = self.loader.load()
       self.text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=4)
@@ -40,7 +40,7 @@ class ChatBot():
       from langchain import PromptTemplate
 
       template = """
-        You are a seer. These Humans will ask you questions about their life. Use the following piece of context to answer the question. 
+        You are a informational chatbot. These employees will ask you questions about comapny data and meeting information. Use the following piece of context to answer the question. 
         If you don't know the answer, just say you don't know. 
         You answer with short and concise answers, no longer than 2 sentences.
 
