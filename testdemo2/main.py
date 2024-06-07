@@ -38,8 +38,8 @@ class ChatBot():
     load_dotenv()
     loader = TextLoader('Alteryx US Business Insights Q2 2022 Release Docs.pdf')
     # loader = DocumentLoader()
-    # documents = loader.load()
-    documents = loader.load_documents()
+    documents = loader.load()
+    # documents = loader.load_documents()
     text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=4)
     docs = text_splitter.split_documents(documents)
 
