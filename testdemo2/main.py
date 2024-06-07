@@ -32,6 +32,7 @@ import streamlit as st
 from pptx import Presentation
 import pytesseract
 from PIL import Image
+from docloader import DocumentLoader
 
 class ChatBot():
     load_dotenv()
