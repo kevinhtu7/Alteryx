@@ -1,0 +1,315 @@
+ACCOUNT_SALES_SEGMENT,ACCOUNT_SALES_THEATER,ACCOUNT_SALES_REGION,ACCOUNT_SALES_DISTRICT,Renewal_Month,NAMED_COMPANY,CountDistinct_OPPORTUNITY_ID
+Strategic,EMEA,South Europe,South Europe Strategic,March,BNP PARIBAS,1
+Strategic,EMEA,South Europe,South Europe Strategic,April,BNP PARIBAS / BANK OF WEST,4
+Strategic,EMEA,South Europe,South Europe Strategic,December,BNP PARIBAS / BANK OF WEST,1
+Strategic,EMEA,South Europe,South Europe Strategic,February,BNP PARIBAS / BANK OF WEST,2
+Strategic,EMEA,South Europe,South Europe Strategic,July,BNP PARIBAS / BANK OF WEST,3
+Strategic,EMEA,South Europe,South Europe Strategic,June,BNP PARIBAS / BANK OF WEST,3
+Strategic,EMEA,South Europe,South Europe Strategic,March,BNP PARIBAS / BANK OF WEST,10
+Strategic,EMEA,South Europe,South Europe Strategic,May,BNP PARIBAS / BANK OF WEST,2
+Strategic,EMEA,South Europe,South Europe Strategic,November,BNP PARIBAS / BANK OF WEST,2
+Strategic,EMEA,South Europe,South Europe Strategic,October,BNP PARIBAS / BANK OF WEST,1
+Strategic,EMEA,South Europe,South Europe Strategic,September,BNP PARIBAS / BANK OF WEST,1
+Strategic,EMEA,South Europe,South Europe Strategic,December,CREDIT AGRICOLE,3
+Strategic,EMEA,South Europe,South Europe Strategic,February,CREDIT AGRICOLE,1
+Strategic,EMEA,South Europe,South Europe Strategic,May,CREDIT AGRICOLE,1
+Strategic,EMEA,South Europe,South Europe Strategic,September,CREDIT AGRICOLE,1
+Strategic,EMEA,South Europe,South Europe Strategic,March,CREDIT MUTUEL / COFIDIS,1
+Strategic,Americas,South,Strategic South 1,January,ASHTEAD GROUP,1
+Strategic,Americas,South,Strategic South 1,November,ASHTEAD GROUP,1
+Strategic,Americas,South,Strategic South 1,July,BRIGHTHOUSE FINANCIAL,1
+Strategic,Americas,South,Strategic South 1,October,BRIGHTHOUSE FINANCIAL,1
+Strategic,Americas,South,Strategic South 1,December,FIRST CITIZENS BANK,1
+Strategic,Americas,South,Strategic South 1,February,FIRST CITIZENS BANK,1
+Strategic,Americas,South,Strategic South 1,March,FIRST CITIZENS BANK,1
+Strategic,Americas,South,Strategic South 1,October,FIRST CITIZENS BANK,1
+Strategic,Americas,South,Strategic South 1,September,FIRST CITIZENS BANK,2
+Strategic,Americas,South,Strategic South 1,January,MICHELIN,3
+Strategic,Americas,South,Strategic South 1,July,NESTLE,1
+Strategic,Americas,South,Strategic South 1,May,NESTLE,1
+Strategic,Americas,South,Strategic South 1,September,NESTLE,1
+Strategic,Americas,South,Strategic South 1,June,ONSOLVE,1
+Strategic,Americas,South,Strategic South 1,September,SENTARA HEALTHCARE,1
+Strategic,Americas,West,Strategic West 2,December,CHEVRON CORPORATION,3
+Strategic,Americas,West,Strategic West 2,June,CHEVRON CORPORATION,1
+Strategic,Americas,West,Strategic West 2,April,DAIMLER / MERCEDES BENZ,2
+Strategic,Americas,West,Strategic West 2,December,DAIMLER / MERCEDES BENZ,1
+Strategic,Americas,West,Strategic West 2,February,DAIMLER / MERCEDES BENZ,1
+Strategic,Americas,West,Strategic West 2,January,DAIMLER / MERCEDES BENZ,1
+Strategic,Americas,West,Strategic West 2,June,DAIMLER / MERCEDES BENZ,3
+Strategic,Americas,West,Strategic West 2,May,DAIMLER / MERCEDES BENZ,1
+Strategic,Americas,West,Strategic West 2,October,DAIMLER / MERCEDES BENZ,2
+Strategic,Americas,West,Strategic West 2,September,DAIMLER / MERCEDES BENZ,1
+Strategic,Americas,West,Strategic West 2,June,GAP INC,1
+Strategic,Americas,West,Strategic West 2,November,GAP INC,3
+Strategic,Americas,West,Strategic West 2,December,SANMINA,1
+Strategic,Americas,West,Strategic West 2,December,SQUARE,1
+Strategic,Americas,West,Strategic West 2,December,TD SYNNEX,2
+Strategic,Americas,West,Strategic West 2,February,TD SYNNEX,1
+Strategic,Americas,West,Strategic West 2,March,TD SYNNEX,2
+Strategic,Americas,West,Strategic West 2,November,TD SYNNEX,1
+Strategic,Americas,West,Strategic West 2,September,TD SYNNEX,1
+Strategic,Americas,West,Strategic West 2,December,UBER,3
+Strategic,Americas,South,Strategic South 1,January,ATRIUM HEALTH,1
+Strategic,Americas,South,Strategic South 1,June,ATRIUM HEALTH,1
+Strategic,Americas,South,Strategic South 1,March,ATRIUM HEALTH,1
+Strategic,Americas,South,Strategic South 1,May,ATRIUM HEALTH,1
+Strategic,Americas,South,Strategic South 1,December,CAPITAL ONE,1
+Strategic,Americas,South,Strategic South 1,December,COMMSCOPE HOLDING COMPANY,1
+Strategic,Americas,South,Strategic South 1,January,CORNERSTONE BUILDING BRANDS,1
+Strategic,Americas,South,Strategic South 1,November,ICON,1
+Strategic,Americas,South,Strategic South 1,August,MARRIOTT,2
+Strategic,Americas,South,Strategic South 1,January,MARRIOTT,1
+Strategic,Americas,South,Strategic South 1,July,MARRIOTT,1
+Strategic,Americas,South,Strategic South 1,March,MARRIOTT,2
+Strategic,Americas,South,Strategic South 1,September,MARRIOTT,1
+Strategic,Americas,South,Strategic South 1,December,WILLIS TOWERS WATSON,1
+Strategic,Americas,South,Strategic South 1,December,XPO LOGISTICS,1
+Strategic,Americas,South,Strategic South 1,February,XPO LOGISTICS,2
+Strategic,Americas,South,Strategic South 1,May,XPO LOGISTICS,1
+Strategic,Americas,South,Strategic South 1,September,XPO LOGISTICS,1
+Strategic,Americas,North,Strategic North 4,May,ALTICOR GLOBAL / AMWAY,1
+Strategic,Americas,North,Strategic North 4,December,GALLAGHER,2
+Strategic,Americas,North,Strategic North 4,September,GALLAGHER,1
+Strategic,Americas,North,Strategic North 4,December,GRANT THORNTON,1
+Strategic,Americas,North,Strategic North 4,January,GRANT THORNTON,1
+Strategic,Americas,North,Strategic North 4,December,JOHN DEERE,14
+Strategic,Americas,North,Strategic North 4,September,JOHN DEERE,1
+Strategic,Americas,North,Strategic North 4,April,MAYO CLINIC,1
+Strategic,Americas,North,Strategic North 4,December,MAYO CLINIC,2
+Strategic,Americas,North,Strategic North 4,March,MAYO CLINIC,1
+Strategic,Americas,North,Strategic North 4,November,ONEMAIN FINANCIAL,1
+Strategic,Americas,West,Strategic West 1,December,AMGEN,5
+Strategic,Americas,West,Strategic West 1,January,AMGEN,1
+Strategic,Americas,West,Strategic West 1,March,EBAY,1
+Strategic,Americas,West,Strategic West 1,April,FRANKLIN RESOURCES / LEGG MASON,1
+Strategic,Americas,West,Strategic West 1,December,FRANKLIN RESOURCES / LEGG MASON,1
+Strategic,Americas,West,Strategic West 1,February,FRANKLIN RESOURCES / LEGG MASON,1
+Strategic,Americas,West,Strategic West 1,January,FRANKLIN RESOURCES / LEGG MASON,2
+Strategic,Americas,West,Strategic West 1,July,FRANKLIN RESOURCES / LEGG MASON,1
+Strategic,Americas,West,Strategic West 1,June,HORIZON THERAPEUTICS,1
+Strategic,Americas,West,Strategic West 1,February,LPL FINANCIAL,1
+Strategic,Americas,West,Strategic West 1,October,LPL FINANCIAL,1
+Strategic,Americas,West,Strategic West 1,December,VMWARE,2
+Strategic,Americas,West,Strategic West 1,February,VMWARE,1
+Strategic,Americas,West,Strategic West 1,January,VMWARE,1
+Strategic,EMEA,North Europe,Benelux,July,AKZO NOBEL,1
+Strategic,EMEA,North Europe,Benelux,December,ASML HOLDING NV,1
+Strategic,EMEA,North Europe,Benelux,January,ASML HOLDING NV,1
+Strategic,EMEA,North Europe,Benelux,April,ING GROEP NV,1
+Strategic,EMEA,North Europe,Benelux,February,ING GROEP NV,1
+Strategic,EMEA,North Europe,Benelux,June,ING GROEP NV,1
+Strategic,EMEA,North Europe,Benelux,March,ING GROEP NV,2
+Strategic,EMEA,North Europe,Benelux,November,ING GROEP NV,1
+Strategic,EMEA,North Europe,Benelux,September,ING GROEP NV,2
+Strategic,EMEA,North Europe,Benelux,December,PHILIPS NV,2
+Strategic,Americas,South,Strategic South 3,November,AMERICAN FINANCIAL GROUP,2
+Strategic,Americas,South,Strategic South 3,August,CINTAS CORPORATION / LINDSTROM,1
+Strategic,Americas,South,Strategic South 3,March,CINTAS CORPORATION / LINDSTROM,1
+Strategic,Americas,South,Strategic South 3,November,CINTAS CORPORATION / LINDSTROM,1
+Strategic,Americas,South,Strategic South 3,October,EMERSON ELECTRIC,1
+Strategic,Americas,South,Strategic South 3,July,FIRSTGROUP,1
+Strategic,Americas,South,Strategic South 3,October,FIRSTGROUP,1
+Strategic,Americas,South,Strategic South 3,November,HALLMARK CARDS,2
+Strategic,Americas,South,Strategic South 3,December,HARLEY-DAVIDSON,2
+Strategic,Americas,South,Strategic South 3,September,PROGRESSIVE CORPORATION,1
+Strategic,APAC,Japan,Japan 2,March,AISIN / DENSO,1
+Strategic,APAC,Japan,Japan 2,January,NGK GROUP,1
+Strategic,APAC,Japan,Japan 2,February,NISSAN,2
+Strategic,APAC,Japan,Japan 2,July,NISSAN,1
+Strategic,APAC,Japan,Japan 2,March,NISSAN,1
+Strategic,APAC,Japan,Japan 2,October,NISSAN,1
+Strategic,APAC,Japan,Japan 2,August,NTN CORPORATION,1
+Strategic,APAC,Japan,Japan 2,August,UNIPRES CORPORATION,1
+Strategic,APAC,Japan,Japan 2,December,YAMAHA MOTOR,1
+Strategic,APAC,Japan,Japan 2,July,YAMAHA MOTOR,1
+Strategic,Americas,North,Strategic North 3,May,BLACKROCK,1
+Strategic,Americas,North,Strategic North 3,April,CHUBB LIMITED,1
+Strategic,Americas,North,Strategic North 3,June,CHUBB LIMITED,1
+Strategic,Americas,North,Strategic North 3,March,CHUBB LIMITED,1
+Strategic,Americas,North,Strategic North 3,December,COLGATE PALMOLIVE,1
+Strategic,Americas,North,Strategic North 3,July,COLGATE PALMOLIVE,2
+Strategic,Americas,North,Strategic North 3,December,NORTHERN TRUST,2
+Strategic,Americas,North,Strategic North 3,December,PEARSON,2
+Strategic,Americas,North,Strategic North 3,June,PEARSON,3
+Strategic,Americas,North,Strategic North 3,September,PEARSON,1
+Strategic,Americas,North,Strategic North 3,June,S&P GLOBAL,1
+Strategic,Americas,South,Strategic South 3,October,ALLIANCE DATA,1
+Strategic,Americas,South,Strategic South 3,December,AMERICAN ELECTRIC,2
+Strategic,Americas,South,Strategic South 3,November,AMERICAN ELECTRIC,1
+Strategic,Americas,South,Strategic South 3,June,CARDINAL HEALTH,1
+Strategic,Americas,South,Strategic South 3,December,HIGHMARK,1
+Strategic,Americas,South,Strategic South 3,July,HUNTINGTON BANK,2
+Strategic,Americas,South,Strategic South 3,May,HUNTINGTON BANK,2
+Strategic,Americas,South,Strategic South 3,October,HUNTINGTON BANK,1
+Strategic,Americas,South,Strategic South 3,September,HUNTINGTON BANK,1
+Strategic,Americas,South,Strategic South 3,November,MYLAN / UPJOHN / VIATRIS,1
+Strategic,Americas,South,Strategic South 3,November,TE CONNECTIVITY,3
+Strategic,Americas,South,Strategic South 3,September,TE CONNECTIVITY,1
+Strategic,Americas,South,Strategic South 3,May,WESCO INTERNATIONAL,1
+Strategic,Americas,North,Strategic North 1,December,CDW CORPORATION,1
+Strategic,Americas,North,Strategic North 1,December,CH ROBINSON,1
+Strategic,Americas,North,Strategic North 1,February,FORD MOTOR COMPANY,1
+Strategic,Americas,North,Strategic North 1,February,KELLOGG COMPANY,1
+Strategic,Americas,North,Strategic North 1,January,KELLOGG COMPANY,1
+Strategic,Americas,North,Strategic North 1,September,LOEWS CORPORATION,2
+Strategic,Americas,North,Strategic North 1,February,MARMON,1
+Strategic,Americas,North,Strategic North 1,November,MARMON,1
+Strategic,Americas,North,Strategic North 1,July,CITIZENS FINANCIAL GROUP,3
+Strategic,Americas,North,Strategic North 1,June,CITIZENS FINANCIAL GROUP,3
+Strategic,Americas,North,Strategic North 1,March,CITIZENS FINANCIAL GROUP,1
+Strategic,Americas,North,Strategic North 1,December,FRONTIER COMMUNICATIONS,1
+Strategic,Americas,North,Strategic North 1,February,NATIONAL GRID,1
+Strategic,Americas,North,Strategic North 1,October,NATIONAL GRID,1
+Strategic,Americas,North,Strategic North 1,November,NATIONWIDE,2
+Strategic,Americas,North,Strategic North 1,September,UNITED NATURAL FOODS,1
+Strategic,Americas,South,Strategic South 2,December,COMMUNITY HEALTH SYSTEMS,1
+Strategic,Americas,South,Strategic South 2,February,COMMUNITY HEALTH SYSTEMS,1
+Strategic,Americas,South,Strategic South 2,January,COMMUNITY HEALTH SYSTEMS,1
+Strategic,Americas,South,Strategic South 2,November,COMMUNITY HEALTH SYSTEMS,2
+Strategic,Americas,South,Strategic South 2,September,COMMUNITY HEALTH SYSTEMS,2
+Strategic,Americas,South,Strategic South 2,September,EQUINIX,1
+Strategic,Americas,South,Strategic South 2,May,HERTZ,1
+Strategic,Americas,South,Strategic South 2,December,MOHAWK INDUSTRIES,1
+Strategic,Americas,South,Strategic South 2,December,NORFOLK SOUTHERN CORPORATION,1
+Strategic,Americas,South,Strategic South 2,December,SOUTHEASTERN GROCER,2
+Strategic,Americas,North,Strategic North 2,April,ESSILORLUXOTTICA,1
+Strategic,Americas,North,Strategic North 2,December,ESSILORLUXOTTICA,2
+Strategic,Americas,North,Strategic North 2,June,ESSILORLUXOTTICA,1
+Strategic,Americas,North,Strategic North 2,May,ESSILORLUXOTTICA,6
+Strategic,Americas,North,Strategic North 2,November,ESSILORLUXOTTICA,1
+Strategic,Americas,North,Strategic North 2,October,ESSILORLUXOTTICA,2
+Strategic,Americas,North,Strategic North 2,September,ESSILORLUXOTTICA,1
+Strategic,Americas,North,Strategic North 2,December,NASDAQ,1
+Strategic,Americas,North,Strategic North 2,July,STANLEY BLACK & DECKER,1
+Strategic,Americas,North,Strategic North 2,December,ZOETIS,1
+Strategic,Americas,North,Strategic North 2,January,ZOETIS,1
+Strategic,Americas,North,Strategic North 2,June,ZOETIS,1
+Strategic,Americas,North,Strategic North 2,December,BLOOMBERG,1
+Strategic,Americas,North,Strategic North 2,February,BLOOMBERG,1
+Strategic,Americas,North,Strategic North 2,September,BLOOMBERG,1
+Strategic,Americas,North,Strategic North 2,April,ESTEE LAUDER,3
+Strategic,Americas,North,Strategic North 2,August,ESTEE LAUDER,5
+Strategic,Americas,North,Strategic North 2,December,ESTEE LAUDER,4
+Strategic,Americas,North,Strategic North 2,February,ESTEE LAUDER,2
+Strategic,Americas,North,Strategic North 2,July,ESTEE LAUDER,1
+Strategic,Americas,North,Strategic North 2,June,ESTEE LAUDER,4
+Strategic,Americas,North,Strategic North 2,May,ESTEE LAUDER,2
+Strategic,Americas,North,Strategic North 2,November,ESTEE LAUDER,2
+Strategic,Americas,North,Strategic North 2,October,ESTEE LAUDER,3
+Strategic,Americas,North,Strategic North 2,September,ESTEE LAUDER,1
+Strategic,Americas,North,Strategic North 2,October,FORTUNE BRANDS HOME & SECURITY,1
+Strategic,Americas,North,Strategic North 2,June,MARSH & MCLENNAN,1
+Strategic,Americas,North,Strategic North 2,March,MARSH & MCLENNAN,1
+Strategic,Americas,North,Strategic North 2,August,MOODYS CORPORATION,1
+Strategic,Americas,North,Strategic North 2,December,MOODYS CORPORATION,1
+Strategic,Americas,North,Strategic North 2,February,MOODYS CORPORATION,2
+Strategic,Americas,North,Strategic North 2,March,MOODYS CORPORATION,1
+Strategic,Americas,North,Strategic North 2,November,MOODYS CORPORATION,2
+Strategic,Americas,North,Strategic North 2,October,MOODYS CORPORATION,1
+Strategic,Americas,North,Strategic North 2,September,MOODYS CORPORATION,1
+Strategic,Americas,North,Strategic North 4,December,3M COMPANY,1
+Strategic,Americas,North,Strategic North 4,March,3M COMPANY,1
+Strategic,Americas,North,Strategic North 4,June,CARGILL,1
+Strategic,Americas,North,Strategic North 4,November,CORTEVA,1
+Strategic,Americas,North,Strategic North 4,October,CORTEVA,1
+Strategic,Americas,North,Strategic North 4,September,CORTEVA,1
+Strategic,Americas,North,Strategic North 4,March,ELLIOTT MANAGEMENT,1
+Strategic,Americas,North,Strategic North 4,August,KEYCORP,1
+Strategic,Americas,North,Strategic North 4,December,LOREAL,1
+Strategic,Americas,North,Strategic North 4,December,XCEL ENERGY,1
+Strategic,EMEA,North Europe,UKI Strategic 1,September,APOLLO GLOBAL,2
+Strategic,EMEA,North Europe,UKI Strategic 1,July,CK HUTCHISON,1
+Strategic,EMEA,North Europe,UKI Strategic 1,March,CK HUTCHISON,2
+Strategic,EMEA,North Europe,UKI Strategic 1,April,DIXONS CARPHONE,1
+Strategic,EMEA,North Europe,UKI Strategic 1,January,DIXONS CARPHONE,1
+Strategic,EMEA,North Europe,UKI Strategic 1,March,DIXONS CARPHONE,2
+Strategic,EMEA,North Europe,UKI Strategic 1,September,DIXONS CARPHONE,1
+Strategic,EMEA,North Europe,UKI Strategic 1,March,J SAINSBURY,1
+Strategic,EMEA,North Europe,UKI Strategic 1,May,J SAINSBURY,1
+Strategic,EMEA,North Europe,UKI Strategic 1,July,UK POWER NETWORKS HOLDINGS LIMITED,2
+Strategic,EMEA,North Europe,UKI Strategic 1,February,VODAFONE,2
+Strategic,EMEA,North Europe,UKI Strategic 1,January,VODAFONE,1
+Strategic,EMEA,North Europe,UKI Strategic 1,September,VODAFONE,1
+Strategic,APAC,ANZ,ANZ 2,November,ACCENT GROUP LIMITED,1
+Strategic,APAC,ANZ,ANZ 2,December,ASSOCIATED BRITISH FOODS,1
+Strategic,APAC,ANZ,ANZ 2,August,COLES GROUP LIMITED,2
+Strategic,APAC,ANZ,ANZ 2,December,COLES GROUP LIMITED,1
+Strategic,APAC,ANZ,ANZ 2,June,COLES GROUP LIMITED,2
+Strategic,APAC,ANZ,ANZ 2,March,COLES GROUP LIMITED,1
+Strategic,APAC,ANZ,ANZ 2,September,COLES GROUP LIMITED,2
+Strategic,APAC,ANZ,ANZ 2,April,COMPETITIVE FOODS AUSTRALIA PTY LTD,1
+Strategic,APAC,ANZ,ANZ 2,April,ENDEAVOUR GROUP LIMITED,1
+Strategic,APAC,ANZ,ANZ 2,July,JB HI-FI LIMITED,1
+Strategic,APAC,ANZ,ANZ 2,January,KIMBERLY-CLARK,1
+Strategic,APAC,ANZ,ANZ 2,March,METCASH LIMITED,1
+Strategic,APAC,ANZ,ANZ 2,December,PFD FOOD SERVICES PTY LTD,1
+Strategic,APAC,ANZ,ANZ 2,December,TREASURY WINE ESTATES,1
+Strategic,APAC,ANZ,ANZ 2,July,WESFARMERS,1
+Strategic,APAC,ANZ,ANZ 2,March,WESFARMERS,1
+Strategic,APAC,ANZ,ANZ 2,August,WOOLWORTHS GROUP LIMITED,4
+Strategic,APAC,ANZ,ANZ 2,June,WOOLWORTHS GROUP LIMITED,2
+Strategic,APAC,ANZ,ANZ 2,September,WOOLWORTHS GROUP LIMITED,1
+Strategic,EMEA,MEA,MEA 1,November,AL RAJHI BANK,1
+Strategic,EMEA,MEA,MEA 1,February,BANQUE SAUDI FRANSI,1
+Strategic,EMEA,MEA,MEA 1,October,DIGITAL GOVERNMENT AUTHORITY,1
+Strategic,EMEA,MEA,MEA 1,February,GOVERNMENT OF SAUDI ARABIA GRP 1,1
+Strategic,EMEA,MEA,MEA 1,May,GOVERNMENT OF SAUDI ARABIA GRP 1,1
+Strategic,EMEA,MEA,MEA 1,October,GOVERNMENT OF SAUDI ARABIA GRP 1,2
+Strategic,EMEA,MEA,MEA 1,September,GOVERNMENT OF SAUDI ARABIA GRP 1,2
+Strategic,EMEA,MEA,MEA 1,February,NATIONAL CENTER FOR GOVERNMENT RESOURCE SYSTEMS,1
+Strategic,EMEA,MEA,MEA 1,November,RIYAD BANK,1
+Strategic,EMEA,MEA,MEA 1,April,SABIC / SAUDI ARAMCO,1
+Strategic,EMEA,MEA,MEA 1,December,SABIC / SAUDI ARAMCO,1
+Strategic,EMEA,MEA,MEA 1,July,SABIC / SAUDI ARAMCO,1
+Strategic,EMEA,MEA,MEA 1,June,SABIC / SAUDI ARAMCO,1
+Strategic,EMEA,MEA,MEA 1,October,SABIC / SAUDI ARAMCO,2
+Strategic,EMEA,MEA,MEA 1,June,SAUDI AIRLINES CO LTD,1
+Strategic,EMEA,South Europe,South Europe Strategic 2,November,EDF / ELECTRICITE DE FRANCE,1
+Strategic,EMEA,South Europe,South Europe Strategic 2,January,ENGIE / INEO,1
+Strategic,EMEA,South Europe,South Europe Strategic 2,September,MAZARS,1
+Strategic,EMEA,South Europe,South Europe Strategic 2,June,RENAULT,1
+Strategic,EMEA,South Europe,South Europe Strategic 2,November,RENAULT,1
+Strategic,EMEA,South Europe,South Europe Strategic 2,December,TOTAL SE,3
+Strategic,EMEA,South Europe,South Europe Strategic 2,May,TOTAL SE,1
+Strategic,EMEA,South Europe,South Europe Strategic,October,ACANTHE,1
+Strategic,EMEA,South Europe,South Europe Strategic,April,AMUNDI,1
+Strategic,EMEA,South Europe,South Europe Strategic,May,B&D HOLDING SPA,1
+Strategic,EMEA,South Europe,South Europe Strategic,December,BAKER HUGHES,1
+Strategic,EMEA,South Europe,South Europe Strategic,May,BAKER HUGHES,1
+Strategic,EMEA,South Europe,South Europe Strategic,April,BANCA MPS,1
+Strategic,EMEA,South Europe,South Europe Strategic,August,BANCA MPS,1
+Strategic,EMEA,South Europe,South Europe Strategic,July,BANCA MPS,1
+Strategic,EMEA,South Europe,South Europe Strategic,March,BANCA MPS,1
+Strategic,EMEA,South Europe,South Europe Strategic,December,BANCA POPOLARE DI SONDRIO,1
+Strategic,EMEA,South Europe,South Europe Strategic,December,BNP PARIBAS / BANK OF WEST,1
+Strategic,EMEA,South Europe,South Europe Strategic,June,BNP PARIBAS / BANK OF WEST,1
+Strategic,EMEA,South Europe,South Europe Strategic,November,BROADVIEW / HAL TRUST,1
+Strategic,EMEA,South Europe,South Europe Strategic,April,CNH INDUSTRIAL,1
+Strategic,EMEA,South Europe,South Europe Strategic,December,CNH INDUSTRIAL,1
+Strategic,EMEA,South Europe,South Europe Strategic,March,CNH INDUSTRIAL,1
+Strategic,EMEA,South Europe,South Europe Strategic,May,CONAD DEL TIRRENO SOCIETA COOPERATIVA,1
+Strategic,EMEA,South Europe,South Europe Strategic,December,COOP ADRIATICA SCARL,1
+Strategic,EMEA,South Europe,South Europe Strategic,May,EDIZIONE SRL,1
+Strategic,EMEA,South Europe,South Europe Strategic,April,ELI LILLY,1
+Strategic,EMEA,South Europe,South Europe Strategic,April,GENERALI GROUP,1
+Strategic,EMEA,South Europe,South Europe Strategic,December,GENERALI GROUP,1
+Strategic,EMEA,South Europe,South Europe Strategic,November,GRANT THORNTON,1
+Strategic,EMEA,South Europe,South Europe Strategic,March,INTESA SANPAOLO,1
+Strategic,EMEA,South Europe,South Europe Strategic,January,INTRUM AB,1
+Strategic,EMEA,South Europe,South Europe Strategic,September,JUST EAT / TAKEAWAY,1
+Strategic,EMEA,South Europe,South Europe Strategic,February,KIA MOTORS,1
+Strategic,EMEA,South Europe,South Europe Strategic,June,LVMH MOET HENNESSY LOUIS VUITTON,1
+Strategic,EMEA,South Europe,South Europe Strategic,November,LVMH MOET HENNESSY LOUIS VUITTON,1
+Strategic,EMEA,South Europe,South Europe Strategic,December,MCKESSON EUROPE,1
+Strategic,EMEA,South Europe,South Europe Strategic,December,MEDIASET SPA,1
+Strategic,EMEA,South Europe,South Europe Strategic,March,MERLONI HOLDING SPA,1
+Strategic,EMEA,South Europe,South Europe Strategic,April,MIC EQUITYCO SCA,1
+Strategic,EMEA,South Europe,South Europe Strategic,September,MYLAN / UPJOHN / VIATRIS,1
+Strategic,EMEA,South Europe,South Europe Strategic,May,PIERRE FABRE,1
+Strategic,EMEA,South Europe,South Europe Strategic,April,PUBLIC POWER CORPORATION SA,1
+Strategic,EMEA,South Europe,South Europe Strategic,September,PUBLIC POWER CORPORATION SA,1
+Strategic,EMEA,South Europe,South Europe Strategic,June,SIT TECHNOLOGIES SPA,1
+Strategic,EMEA,South Europe,South Europe Strategic,April,SWISSCOM,1
+Strategic,EMEA,South Europe,South Europe Strategic,March,SWISSCOM,1
+Strategic,EMEA,South Europe,South Europe Strategic,December,TELECOM ITALIA,1
