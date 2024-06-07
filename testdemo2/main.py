@@ -49,7 +49,7 @@ class ChatBot():
         environment='gcp-starter'
     )
 
-    index_name = "langchain-demo"
+    index_name = "langchain-demo2"
 
     if index_name not in pinecone.list_indexes():
         pinecone.create_index(name=index_name, metric="cosine", dimension=768)
