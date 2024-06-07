@@ -6,3 +6,7 @@ langchain-community
 sentence-transformers
 textract
 PyMuPDF
+python-docx
+python-pptx
+pytesseract
+Pillow
