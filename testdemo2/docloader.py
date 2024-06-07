@@ -1,3 +1,12 @@
+import os
+import textract
+import fitz
+import docx
+import pandas as pd
+from pptx import Presentation
+from PIL import Image
+import pytesseract
+
 class DocumentLoader:
     def load_documents(self):
         # Load documents from CompanyData folder
