@@ -7,6 +7,14 @@ st.set_page_config(page_title="Meeting Information Bot")
 with st.sidebar:
     st.title('Meeting Information Bot')
 
+
+
+role = st.radio(
+    "What's your role",
+    ["Admin", "General"],
+    captions = ["All access", "Restricted Access"])
+
+
 # Function for generating LLM response
 def generate_response(input):
     result = bot.rag_chain.invoke(input)
