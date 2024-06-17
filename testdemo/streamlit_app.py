@@ -46,4 +46,5 @@ if role == "Admin":
             message = {"role": "assistant", "content": response}
             st.session_state.messages.append(message)
             
-else st.write("You are not an admin")
+else:
+    st.write("You are not an admin")
