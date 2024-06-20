@@ -6,12 +6,12 @@ from dotenv import load_dotenv
 import chromadb as db
 from chromadb import Client
 from chromadb.config import Settings
-from chromadb.client import ChromaClient
 from langchain.llms import HuggingFaceHub
 from langchain import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
+import sqlite3
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -28,7 +28,7 @@ class ChatBot():
     def initialize_chromadb(self):
         try:
             # Initialize Local Persistent ChromaDB instance from working directory
-            client = db.ChromaClient(path="./chroma")
+            client = db.PersistentClient(path="./chroma")
             collection = client.get_collection(name="Company_Documents")
         except ValueError as e:
             client = Client()
