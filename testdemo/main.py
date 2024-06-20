@@ -42,7 +42,7 @@ class ChatBot():
     def get_context_from_collection(self):
         # Extract context from the collection
         documents = self.collection.get()
-        context = documents["documents"][0]["content"]
+        context = documents["documents"][0]
         #context = " ".join([doc["content"] for doc in documents["documents"]])
         return context
 
