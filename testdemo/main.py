@@ -28,10 +28,10 @@ class ChatBot():
         try:
             # Initialize Local Persistent ChromaDB instance from working directory
             client = db.PersistentClient()
-            collection = client.get_collection(name="Company_Documents")
+            collection = client.get_or_create_collection(name="Company_Documents")
         except ValueError as e:
             client = Client()
-            collection = client.get_collection(name="Company_Documents")
+            collection = client.get_or_create_collection(name="Company_Documents")
         return client, collection
 
     def setup_language_model(self):
@@ -46,7 +46,6 @@ class ChatBot():
         # Extract context from the collection
         documents = self.collection.get()
         context = " ".join([doc["content"] for doc in documents["documents"]])
-        # logging.debug(f"Extracted context: {context}")
         return context
 
     def setup_langchain(self):
