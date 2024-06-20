@@ -46,7 +46,7 @@ class ChatBot():
         # Extract context from the collection
         documents = self.collection.get()
         context = " ".join([doc["content"] for doc in documents["documents"]])
-        logging.debug(f"Extracted context: {context}")
+        # logging.debug(f"Extracted context: {context}")
         return context
 
     def setup_langchain(self):
