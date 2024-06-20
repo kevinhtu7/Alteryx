@@ -26,13 +26,9 @@ class ChatBot():
         self.setup_langchain()
 
     def initialize_chromadb(self):
-        try:
-            # Initialize ChromaDB client using environment variable for path
-            client = db.PersistentClient(path="chroma.db")
-            collection = client.get_collection(name="Company_Documents")
-        except ValueError as e:
-            client = Client()
-            collection = client.get_collection(name="Company_Documents")
+        # Initialize ChromaDB client using environment variable for path
+        client = db.PersistentClient(path="chroma.db")
+        collection = client.get_collection(name="Company_Documents")
         return client, collection
 
     def setup_language_model(self):
