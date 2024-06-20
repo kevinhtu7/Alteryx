@@ -1,5 +1,6 @@
 import os
 from dotenv import load_dotenv
+import chromadb as db
 from chromadb import Client
 from chromadb.config import Settings
 from langchain.llms import HuggingFaceHub
@@ -17,11 +18,8 @@ class ChatBot():
 
   def initialize_chromadb(self):
     try:
-        # Assuming ChromaDB can utilize SQLite directly, which is typically not standard
-        client = Client(Settings(
-            chroma_db_impl="sqlite",
-            db_path="./chroma.sqlite3"  # Path to your SQLite file
-        ))
+        # Initialize Local Persistent ChromaDB instance from working directory
+        client = db.PersistentClient()
         collection = client.get_or_create_collection(name="Company_Documents")
         print("Initialized ChromaDB instance with SQLite.")
     except ValueError as e:
