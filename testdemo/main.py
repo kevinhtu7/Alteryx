@@ -39,10 +39,10 @@ class ChatBot():
             huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
         )
 
-    def get_context_from_collection(self, input):
+    def get_context_from_collection(self):
         # Extract context from the collection
         documents = self.collection.get()
-        context = documents.query(query_texts=[input], n_results=1)["documents"][0]["content"]
+        context = documents["documents"][0]["content"]
         #context = " ".join([doc["content"] for doc in documents["documents"]])
         return context
 
