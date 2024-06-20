@@ -28,9 +28,7 @@ class ChatBot():
     def initialize_chromadb(self):
         try:
             # Initialize ChromaDB client using environment variable for path
-            chroma_path = os.getenv('CHROMA_DB_PATH')
-            current_directory = os.path.dirname(os.path.abspath(__file__))
-            chroma_db_path = os.path.join(current_directory, chroma_path)
+            chroma_db_path = os.getenv('CHROMA_DB_PATH')
             if chroma_db_path:
                 client = db.PersistentClient(path=chroma_db_path)
             else:
