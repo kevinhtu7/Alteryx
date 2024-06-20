@@ -60,7 +60,7 @@ class ChatBot():
         Answer:
         """
 
-        context = self.get_context_from_collection()
+        # context = self.get_context_from_collection()
         self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
         self.rag_chain = (
             {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using the extracted context
