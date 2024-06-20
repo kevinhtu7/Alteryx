@@ -27,8 +27,12 @@ class ChatBot():
 
     def initialize_chromadb(self):
         try:
-            # Initialize Local Persistent ChromaDB instance from working directory
-            client = db.PersistentClient(path="/chroma.db")
+            # Initialize ChromaDB client using environment variable for path
+            chroma_db_path = os.getenv('CHROMA_DB_PATH')
+            if chroma_db_path:
+                client = db.PersistentClient(path=chroma_db_path)
+            else:
+                client = Client()  # Fallback if CHROMA_DB_PATH is not set
             collection = client.get_collection(name="Company_Documents")
         except ValueError as e:
             client = Client()
