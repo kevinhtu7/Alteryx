@@ -9,6 +9,9 @@ import os
 
 class ChatBot():
   def __init__(self):
+
+##################################
+    
       load_dotenv()
       current_directory = os.path.dirname(os.path.abspath(__file__))
       file_path = os.path.join(current_directory, 'testMeetingNotes.txt')
@@ -24,6 +27,11 @@ class ChatBot():
           environment='gcp-starter'
       )
 
+
+
+######################
+
+    
       self.index_name = "langchain-demo"
 
       if self.index_name not in pinecone.list_indexes():
