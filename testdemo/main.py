@@ -12,7 +12,6 @@ from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
 
-
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
         # Extract the answer from the response
@@ -46,9 +45,6 @@ class ChatBot():
     def get_context_from_collection(self):
         # Extract context from the collection
         documents = self.collection.get()
-        if not documents or "documents" not in documents:
-            logging.debug("No documents found in the collection")
-            return ""
         context = " ".join([doc["content"] for doc in documents["documents"]])
         logging.debug(f"Extracted context: {context}")
         return context
