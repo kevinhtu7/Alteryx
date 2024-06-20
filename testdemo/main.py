@@ -64,7 +64,7 @@ class ChatBot():
             | AnswerOnlyOutputParser()
         )
 
-class AnswerOnlyOutputParser(StrOutputParser):
-    def parse(self, response):
-        # Extract the answer from the response
-        return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
+        class AnswerOnlyOutputParser(StrOutputParser):
+            def parse(self, response):
+                # Extract the answer from the response
+                return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
