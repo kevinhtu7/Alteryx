@@ -2,7 +2,6 @@ __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import os
-import logging
 from dotenv import load_dotenv
 import chromadb as db
 from chromadb import Client
@@ -12,8 +11,6 @@ from langchain import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 
-# Set up logging
-logging.basicConfig(level=logging.INFO)
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -32,9 +29,7 @@ class ChatBot():
             # Initialize Local Persistent ChromaDB instance from working directory
             client = db.PersistentClient()
             collection = client.get_or_create_collection(name="Company_Documents")
-            logging.info("Initialized ChromaDB instance with SQLite.")
         except ValueError as e:
-            logging.info(f"Using existing ChromaDB instance: {e}")
             client = Client()
             collection = client.get_or_create_collection(name="Company_Documents")
         return client, collection
@@ -51,7 +46,6 @@ class ChatBot():
         # Extract context from the collection
         documents = self.collection.get()
         context = " ".join([doc["content"] for doc in documents["documents"]])
-        logging.info(f"Context from collection: {context[:500]}")  # Log first 500 characters for brevity
         return context
 
     def setup_langchain(self):
