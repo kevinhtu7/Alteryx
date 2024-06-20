@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-print(sqlite3 --version)
+sqlite3 --version
 import chromadb as db
 from chromadb import Client
 from chromadb.config import Settings
