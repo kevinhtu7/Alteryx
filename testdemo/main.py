@@ -26,23 +26,12 @@ class ChatBot():
 
     def initialize_chromadb(self):
         try:
-            # Initialize Local Persistent ChromaDB instance from specified working directory
-            working_directory = '/mount/src/alteryx/testdemo'  # Directory containing the chroma.sqlite3 file
-            client = db.PersistentClient(settings=Settings(chroma_dir=working_directory))
-            try:
-                collection = client.get_collection(name="Company_Documents")
-                logging.debug("Retrieved existing collection 'Company_Documents'")
-            except ValueError:
-                collection = client.create_collection(name="Company_Documents")
-                logging.debug("Created new collection 'Company_Documents'")
+            # Initialize Local Persistent ChromaDB instance from working directory
+            client = db.PersistentClient()
+            collection = client.get_or_create_collection(name="Company_Documents")
         except ValueError as e:
             client = Client()
-            try:
-                collection = client.get_collection(name="Company_Documents")
-                logging.debug("Retrieved existing collection 'Company_Documents'")
-            except ValueError:
-                collection = client.create_collection(name="Company_Documents")
-                logging.debug("Created new collection 'Company_Documents'")
+            collection = client.get_or_create_collection(name="Company_Documents")
         return client, collection
 
     def setup_language_model(self):
@@ -77,4 +66,3 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
-
