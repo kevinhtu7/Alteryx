@@ -2,6 +2,7 @@ __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 import os
+import logging
 from dotenv import load_dotenv
 import chromadb as db
 from chromadb import Client
@@ -10,6 +11,9 @@ from langchain.llms import HuggingFaceHub
 from langchain import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
+
+# Set up logging
+logging.basicConfig(level=logging.INFO)
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -28,9 +32,9 @@ class ChatBot():
             # Initialize Local Persistent ChromaDB instance from working directory
             client = db.PersistentClient()
             collection = client.get_or_create_collection(name="Company_Documents")
-            print("Initialized ChromaDB instance with SQLite.")
+            logging.info("Initialized ChromaDB instance with SQLite.")
         except ValueError as e:
-            print("Using existing ChromaDB instance:", e)
+            logging.info(f"Using existing ChromaDB instance: {e}")
             client = Client()
             collection = client.get_or_create_collection(name="Company_Documents")
         return client, collection
@@ -47,6 +51,7 @@ class ChatBot():
         # Extract context from the collection
         documents = self.collection.get()
         context = " ".join([doc["content"] for doc in documents["documents"]])
+        logging.info(f"Context from collection: {context[:500]}")  # Log first 500 characters for brevity
         return context
 
     def setup_langchain(self):
@@ -60,10 +65,9 @@ class ChatBot():
         Answer:
         """
 
-        # context = self.get_context_from_collection()
         self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
         self.rag_chain = (
-            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using the extracted context
+            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context and question
             | self.prompt
             | self.llm
             | AnswerOnlyOutputParser()
