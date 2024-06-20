@@ -27,7 +27,7 @@ class ChatBot():
     def initialize_chromadb(self):
         try:
             # Initialize Local Persistent ChromaDB instance from specified working directory
-            working_directory = os.path.join(os.getcwd(), 'testdemo', 'chroma')
+            working_directory = '/mount/src/alteryx/testdemo'  # Directory containing the chroma.sqlite3 file
             client = db.PersistentClient(settings=Settings(chroma_dir=working_directory))
             try:
                 collection = client.get_collection(name="Company_Documents")
@@ -77,3 +77,4 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
+
