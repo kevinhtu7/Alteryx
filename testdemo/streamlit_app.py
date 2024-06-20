@@ -2,24 +2,21 @@ from main import ChatBot
 import streamlit as st
 
 bot = ChatBot()
-    
+
 st.set_page_config(page_title="Meeting Information Bot")
 with st.sidebar:
     st.title('Meeting Information Bot')
 
-
-
 role = st.radio(
     "What's your role",
     ["Admin", "General"],
-    captions = ["All access", "Restricted Access"])
+    format_func=lambda x: "All access" if x == "Admin" else "Restricted Access"
+)
 
 if role == "Admin":
-    
-
     # Function for generating LLM response
-    def generate_response(input):
-        result = bot.rag_chain.invoke(input)
+    def generate_response(input_dict):
+        result = bot.rag_chain.invoke(input_dict)
         return result
 
     # Store LLM generated responses
@@ -37,14 +34,14 @@ if role == "Admin":
         with st.chat_message("user"):
             st.write(input)
 
-    # Generate a new response if the last message is not from assistant
-    if st.session_state.messages[-1]["role"] != "assistant":
+        # Generate a new response
+        context = bot.get_context_from_collection()
+        input_dict = {"context": context, "question": input}
         with st.chat_message("assistant"):
             with st.spinner("Grabbing your answer from database..."):
-                response = generate_response(input)
+                response = generate_response(input_dict)
                 st.write(response)
             message = {"role": "assistant", "content": response}
             st.session_state.messages.append(message)
-            
 else:
     st.write("You are not an admin")
