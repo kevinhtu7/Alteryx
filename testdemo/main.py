@@ -58,7 +58,7 @@ class ChatBot():
         context = self.get_context_from_collection()
         self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
         self.rag_chain = (
-            {"context": context, "question": RunnablePassthrough()}  # Using the extracted context
+            RunnablePassthrough()  # Using the extracted context
             | self.prompt
             | self.llm
             | AnswerOnlyOutputParser()
