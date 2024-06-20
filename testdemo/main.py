@@ -11,6 +11,11 @@ from langchain import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 
+class AnswerOnlyOutputParser(StrOutputParser):
+    def parse(self, response):
+        # Extract the answer from the response
+        return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
+
 class ChatBot():
     def __init__(self):
         load_dotenv()
@@ -63,8 +68,3 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
-
-        class AnswerOnlyOutputParser(StrOutputParser):
-            def parse(self, response):
-                # Extract the answer from the response
-                return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
