@@ -28,10 +28,10 @@ class ChatBot():
         try:
             # Initialize Local Persistent ChromaDB instance from working directory
             client = db.PersistentClient()
-            collection = client.get_or_create_collection(name="Company_Documents")
+            collection = client.get__collection(name="Company_Documents")
         except ValueError as e:
             client = Client()
-            collection = client.get_or_create_collection(name="Company_Documents")
+            collection = client.get__collection(name="Company_Documents")
         return client, collection
 
     def setup_language_model(self):
