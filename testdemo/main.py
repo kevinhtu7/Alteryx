@@ -49,7 +49,9 @@ class ChatBot():
         documents = self.collection.query(query_texts=[input],
                                           n_results=2
                                             )
-        context = " ".join([documents in documents["documents"]])
+        for document in documents["documents"]:
+            context = document
+        #context = " ".join([documents in documents["documents"]])
         #documents = self.collection.get()
         #context = documents["documents"][17] # Get the first document, This Line allows the bot to only use the first document in the collection
         #BELOW IS THE OLD SEARCH METHOD. DOES NOT WORK BECAUSE IT LOADS EVERYTHING. WAS FINE WITH 1 DOC BUT NOT WITH MULTIPLE.
