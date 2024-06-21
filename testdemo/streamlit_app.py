@@ -35,7 +35,7 @@ if role == "Executive Access":
             st.write(input)
 
         # Generate a new response
-        context = bot.get_context_from_collection(input, access_role={})
+        context = bot.get_context_from_collection(input, access_role=role)
         input_dict = {"context": context, "question": input}
         with st.chat_message("assistant"):
             with st.spinner("Grabbing your answer from database..."):
