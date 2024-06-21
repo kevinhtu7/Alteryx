@@ -47,7 +47,7 @@ class ChatBot():
     def get_context_from_collection(self, input):
         # Extract context from the collection
         documents = self.collection.query(query_texts=[input],
-                                          n_results=2
+                                          n_results=3
                                             )
         for document in documents["documents"]:
             context = document
