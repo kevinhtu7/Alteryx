@@ -41,10 +41,15 @@ class ChatBot():
 
     def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
-        documents = self.collection.query(query_texts=[input],
-                                          n_results=3,
-                                          where={"access_role": access_role}
-                                            )
+        if access_role == "General Access":
+            documents = self.collection.query(query_texts=[input],
+                                              n_results=3,
+                                              where={"access_role": access_role}
+                                                )
+        elif access_role == "Executive Access"
+            documents = self.collection.query(query_texts=[input],
+                                              n_results=3
+                                                )
         for document in documents["documents"]:
             context = document
         return context
