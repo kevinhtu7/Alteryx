@@ -44,10 +44,14 @@ class ChatBot():
 # Please look to change the function below to get the context from the collection
 # We need to be able to get the context from the initial Question, then Match it to the collection and return the context
 
-    def get_context_from_collection(self):
+    def get_context_from_collection(self, input):
         # Extract context from the collection
-        documents = self.collection.get()
-        context = documents["documents"][17] # Get the first document, This Line allows the bot to only use the first document in the collection
+        documents = self.collection.query(query_texts=[input],
+                                          n_results=2
+                                            )
+        context = " ".join([doc for doc in documents["documents"]])
+        #documents = self.collection.get()
+        #context = documents["documents"][17] # Get the first document, This Line allows the bot to only use the first document in the collection
         #BELOW IS THE OLD SEARCH METHOD. DOES NOT WORK BECAUSE IT LOADS EVERYTHING. WAS FINE WITH 1 DOC BUT NOT WITH MULTIPLE.
         #context = " ".join([doc["content"] for doc in documents["documents"]])
         return context
