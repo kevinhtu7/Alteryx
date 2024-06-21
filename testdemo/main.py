@@ -39,11 +39,6 @@ class ChatBot():
             huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
         )
 
-###########################################################################################################################
-
-# Please look to change the function below to get the context from the collection
-# We need to be able to get the context from the initial Question, then Match it to the collection and return the context
-
     def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
         documents = self.collection.query(query_texts=[input],
@@ -52,11 +47,7 @@ class ChatBot():
                                             )
         for document in documents["documents"]:
             context = document
-        #documents = self.collection.get()
-        #context = documents["documents"][17] # Get the first document, This Line allows the bot to only use the first document in the collection
         return context
-
-##########################################################################################################################
 
     def setup_langchain(self):
         template = """
