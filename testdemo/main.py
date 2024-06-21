@@ -44,10 +44,11 @@ class ChatBot():
 # Please look to change the function below to get the context from the collection
 # We need to be able to get the context from the initial Question, then Match it to the collection and return the context
 
-    def get_context_from_collection(self, input):
+    def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
         documents = self.collection.query(query_texts=[input],
-                                          n_results=3
+                                          n_results=3,
+                                          where={"access_role": access_role}
                                             )
         for document in documents["documents"]:
             context = document
