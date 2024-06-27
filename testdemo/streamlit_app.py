@@ -9,7 +9,7 @@ with st.sidebar:
 
 role = st.radio(
     "What's your role",
-    ["Executive Access", "General Access"],
+    ["General Access", "Executive Access"],
     format_func=lambda x: "All access" if x == "Executive Access" else "General Access"
 )
 
