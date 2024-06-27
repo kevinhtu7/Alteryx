@@ -41,12 +41,7 @@ if role == "Executive Access":
 
         # Retrieve context from the database
         context = bot.get_context_from_collection(input, access_role=role) #
-        # st.session_state.context_history.append(context)  # Store the context for potential future references
-        if context:  # Check if context is not empty or None
-            st.session_state.context_history.append(context)
-            st.info(f"New context retrieved and stored: {context}")  # Debugging output
-        else:
-            st.error("Failed to retrieve context. Please check your database connection or query.")
+        st.session_state.context_history.append(context)  # Store the context for potential future references
 
         # Generate a new response
         # context = bot.get_context_from_collection(input, access_role=role)
