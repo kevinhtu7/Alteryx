@@ -13,6 +13,8 @@ from langchain.schema.output_parser import StrOutputParser
 import logging
 import sqlite3
 from textblob import TextBlob
+from transformers import pipeline
+from transformers import GPT2LMHeadModel, GPT2Tokenizer
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -25,6 +27,7 @@ class ChatBot():
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.setup_language_model()
         self.setup_langchain()
+        self.setup_niceness_pipeline()
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
@@ -74,12 +77,22 @@ class ChatBot():
             | AnswerOnlyOutputParser()
         )
 
+    def spellcheck(self, text): 
+        corrected_text = str(TextBlob(text).correct())
+        return corrected_text
+
+    def setup_niceness_pipeline(self): 
+        self.tokenizer = GPT2Tokenizer.from_pretrained("gpt2") 
+        self.model = GPT2LMHeadModel.from_pretrained("gpt2") 
+
     def niceness_layer(self, text): 
-        politephrases = ["We are working hard to find your answer!", "I appreciate your patience"]
-        return f"{polite_phrases[0]}, {text}. {polite_phrases[1]}." 
+        prompt = f"Please rephrase the following politely: {text}" 
+        inputs = self.tokenizer.encode(prompt, return_tensors = 'pt') 
+        outputs = self.model.generate(inputs, max_length=150, num_return_sequences=1)
+        polite_text = self.tokenizer.decode(outputs[0], skip_special_tokens=True) 
+        return polite_text 
 
     def generate_response(self, input_dict): 
-        response = self.rag_cahin.invoke(input_dict)
-        response = self.niceness_layer(response) 
-        return response
-        
+        response = self.rag_chain.invoke(input_dict) 
+        response = self.niceness_layer(response): 
+        return response 
