@@ -21,7 +21,7 @@ if role == "Executive Access":
         
     # Function for generating LLM response
     def generate_response(input_dict):
-        result = bot.generate response(input_dict)
+        result = bot.generate_response(input_dict)
         return result
 
     # Store LLM generated responses
