@@ -12,6 +12,7 @@ from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
 import sqlite3
+from textblob import TextBlob
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -72,3 +73,13 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
+
+    def niceness_layer(self, text): 
+        politephrases = ["We are working hard to find your answer!", "I appreciate your patience"]
+        return f"{polite_phrases[0]}, {text}. {polite_phrases[1]}." 
+
+    def generate_response(self, input_dict): 
+        response = self.rag_cahin.invoke(input_dict)
+        response = self.niceness_layer(response) 
+        return response
+        
