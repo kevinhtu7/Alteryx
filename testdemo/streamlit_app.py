@@ -21,7 +21,7 @@ if role == "Executive Access":
         
     # Function for generating LLM response
     def generate_response(input_dict):
-        result = bot.rag_chain.invoke(input_dict)
+        result = bot.generate response(input_dict)
         return result
 
     # Store LLM generated responses
@@ -35,6 +35,8 @@ if role == "Executive Access":
 
     # User-provided prompt
     if input := st.chat_input():
+        #spellcheck 
+        corrected_input = bot.spellcheck(input)
         st.session_state.messages.append({"role": "user", "content": input})
         with st.chat_message("user"):
             st.write(input)
@@ -74,6 +76,8 @@ else:
 
     # User-provided prompt
     if input := st.chat_input():
+        #spellcheck layer 
+        corrected_input = bot.spellcheck(input)
         st.session_state.messages.append({"role": "user", "content": input})
         with st.chat_message("user"):
             st.write(input)
