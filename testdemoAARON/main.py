@@ -1,4 +1,4 @@
-print("HELLO")
+
 # Import the new libraries
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
@@ -89,31 +89,22 @@ class ChatBot():
         )
         print("LangChain setup complete.")
 
-    def analyze_text(self, text):
-        results = self.analyzer.analyze(text=text, language='en')
-        return results
-        print("analyze_text.")
-
-    def anonymize_text(self, text, analyzer_results):
-        anonymized_text = self.anonymizer.anonymize(text=text, analyzer_results=analyzer_results)
+    def analyze_and_anonymize(self):
+    # Analyze the text
+        results = analyzer.analyze(text=text, entities=["PERSON"], language="en")
+    # Anonymize the detected entities
+        anonymized_text = anonymizer.anonymize(text=text, analyzer_results=results)
         return anonymized_text
-        print("anonymize text.")
 
-    def check_spelling(self, text):
-        misspelled_words = self.spell_checker.unknown(text.split())
-        corrected_text = ' '.join([self.spell_checker.correction(word) if word in misspelled_words else word for word in text.split()])
+    def check_spelling(text):
+    # Check the spelling of the text
+        misspelled = spellchecker.unknown(text.split())
+        corrections = {word: spellchecker.correction(word) for word in misspelled}
+        corrected_text = " ".join([corrections.get(word, word) for word in text.split()])
         return corrected_text
-        print("check spelling")
+        
+    # def analyze_sentiment(self, text):
+    #     blob = TextBlob(text)
+    #     return blob.sentiment
+    #     print("sentiment")
 
-    def analyze_sentiment(self, text):
-        blob = TextBlob(text)
-        return blob.sentiment
-        print("sentiment")
-
-# Example usage:
-# bot = ChatBot()
-# text = "Some sensitive information"
-# analyzer_results = bot.analyze_text(text)
-# anonymized_text = bot.anonymize_text(text, analyzer_results)
-# corrected_text = bot.check_spelling(text)
-# sentiment = bot.analyze_sentiment(text)
