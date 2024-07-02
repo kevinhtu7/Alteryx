@@ -9,4 +9,4 @@ presidio-anonymizer
 pyspellchecker
 textblob
 spacy
-python -m spacy download en_core_web_lg
+en_core_web_lg
