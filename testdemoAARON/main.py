@@ -1,11 +1,3 @@
-
-# Import the new libraries
-from presidio_analyzer import AnalyzerEngine
-from presidio_anonymizer import AnonymizerEngine
-from spellchecker import SpellChecker
-from textblob import TextBlob
-
-# Existing imports
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
@@ -14,8 +6,8 @@ from dotenv import load_dotenv
 import chromadb as db
 from chromadb import Client
 from chromadb.config import Settings
-from langchain_community.llms import HuggingFaceHub
-from langchain.prompts import PromptTemplate
+from langchain.llms import HuggingFaceHub
+from langchain import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
@@ -32,17 +24,12 @@ class ChatBot():
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.setup_language_model()
         self.setup_langchain()
-        self.analyzer = AnalyzerEngine()
-        self.anonymizer = AnonymizerEngine()
-        self.spell_checker = SpellChecker()
-        print("Initializing ChatBot...")
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
-        client = db.PersistentClient(path="testdemoAARON/chroma.db")
+        client = db.PersistentClient(path="testdemo/chroma.db")
         collection = client.get_collection(name="Company_Documents")
         return client, collection
-        print("ChromaDB initialized.")
 
     def setup_language_model(self):
         self.repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
@@ -51,7 +38,6 @@ class ChatBot():
             model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
             huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
         )
-        print("Language model setup complete.")
 
     def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
@@ -67,7 +53,6 @@ class ChatBot():
         for document in documents["documents"]:
             context = document
         return context
-        print("get context from collection")
 
     def setup_langchain(self):
         template = """
@@ -87,24 +72,3 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
-        print("LangChain setup complete.")
-
-    def analyze_and_anonymize(self):
-    # Analyze the text
-        results = analyzer.analyze(text=text, entities=["PERSON"], language="en")
-    # Anonymize the detected entities
-        anonymized_text = anonymizer.anonymize(text=text, analyzer_results=results)
-        return anonymized_text
-
-    def check_spelling(text):
-    # Check the spelling of the text
-        misspelled = spellchecker.unknown(text.split())
-        corrections = {word: spellchecker.correction(word) for word in misspelled}
-        corrected_text = " ".join([corrections.get(word, word) for word in text.split()])
-        return corrected_text
-        
-    # def analyze_sentiment(self, text):
-    #     blob = TextBlob(text)
-    #     return blob.sentiment
-    #     print("sentiment")
-
