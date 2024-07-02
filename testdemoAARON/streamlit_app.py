@@ -1,6 +1,8 @@
 from main import ChatBot
 import streamlit as st
 
+print("hello2")
+
 # Initialize the ChatBot
 st.write("Initializing ChatBot...")
 bot = ChatBot()
