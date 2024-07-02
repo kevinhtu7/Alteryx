@@ -14,7 +14,7 @@ import chromadb as db
 from chromadb import Client
 from chromadb.config import Settings
 from langchain.llms import HuggingFaceHub
-from langchain import PromptTemplate
+from langchain.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
