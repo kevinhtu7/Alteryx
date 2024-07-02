@@ -8,3 +8,4 @@ presidio-analyzer
 presidio-anonymizer
 pyspellchecker
 textblob
+spacy
