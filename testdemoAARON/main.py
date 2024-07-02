@@ -51,62 +51,44 @@ class ChatBot():
     def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
         if access_role == "General Access":
-            documents = self.collection.query(query_texts=[input],
-                                              n_results=3,
-                                              where={"access_role": access_role}
-                                                )
-        elif access_role == "Executive Access":
-            documents = self.collection.query(query_texts=[input],
-                                              n_results=3
-                                                )
-        for document in documents["documents"]:
-            context = document
+            documents = self.collection.query(
+                query_texts=[input],
+                n_results=5
+            )['documents']
+        else:
+            documents = self.collection.query(
+                query_texts=[input],
+                n_results=10
+            )['documents']
+        context = " ".join([doc['content'] for doc in documents])
         return context
 
-    def setup_langchain(self):
-        template = """
-        You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        If you don't know the answer, just say you don't know. Please provide the file used for context.
-        You answer with short and concise answers, no longer than 2 sentences.
-
-        Context: {context}
-        Question: {question}
-        Answer:
-        """
-
-        self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
-        self.rag_chain = (
-            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context and question
-            | self.prompt
-            | self.llm
-            | AnswerOnlyOutputParser()
-        )
+    def generate_response(self, input_dict):
+        input_dict["question"] = self.preprocess_input(input_dict["question"])
+        template = PromptTemplate(input_variables=["context", "question"], template="{context}\nQuestion: {question}\nAnswer:")
+        prompt = template.format(**input_dict)
+        response = self.llm(prompt)
+        return response
 
     def initialize_tools(self):
-        # Initialize Presidio engines
+        # Initialize tools for anonymization, spellchecking, and ensuring niceness
         self.analyzer = AnalyzerEngine()
         self.anonymizer = AnonymizerEngine()
+        self.spellchecker = SpellChecker()
 
-        # Initialize SpellChecker
-        self.spell = SpellChecker()
-
-    # Function to anonymize text
     def anonymize_text(self, text):
-        results = self.analyzer.analyze(text=text, entities=["PERSON"], language="en")
-        anonymized_text = self.anonymizer.anonymize(text=text, analyzer_results=results).text
+        analyzer_results = self.analyzer.analyze(text=text, language="en")
+        anonymized_text = self.anonymizer.anonymize(text=text, analyzer_results=analyzer_results).text
         return anonymized_text
 
-    # Function to spellcheck and correct text
     def spellcheck_text(self, text):
-        corrected_text = " ".join([self.spell.correction(word) for word in text.split()])
+        corrected_text = self.spellchecker.correction(text)
         return corrected_text
 
-    # Function to ensure "niceness"
     def ensure_niceness(self, text):
         blob = TextBlob(text)
-        if blob.sentiment.polarity < 0:
-            return "Please rephrase your input in a more polite manner."
-        return text
+        nice_text = " ".join(blob.words)
+        return nice_text
 
     def preprocess_input(self, input):
         # Anonymize, spellcheck, and ensure niceness
@@ -114,8 +96,3 @@ class ChatBot():
         spellchecked = self.spellcheck_text(anonymized)
         nice_input = self.ensure_niceness(spellchecked)
         return nice_input
-
-    # Modify the generate_response method to include preprocessing
-    def generate_response(self, input_dict):
-        input_dict["question"] = self.preprocess_input(input_dict["question"])
-        result = se
