@@ -2,7 +2,9 @@ from main import ChatBot
 import streamlit as st
 
 # Initialize the ChatBot
+st.write("Initializing ChatBot...")
 bot = ChatBot()
+st.write("ChatBot initialized.")
 
 # Set the page title
 st.set_page_config(page_title="Meeting Information Bot")
