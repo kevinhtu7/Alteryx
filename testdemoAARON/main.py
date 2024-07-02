@@ -31,12 +31,11 @@ class ChatBot():
         load_dotenv()
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.setup_language_model()
-        self.setup_langchain()
         self.initialize_tools()
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
-        client = db.PersistentClient(path="testdemoAARON/chroma.db")
+        client = db.PersistentClient(path="testdemo/chroma.db")
         collection = client.get_collection(name="Company_Documents")
         return client, collection
 
