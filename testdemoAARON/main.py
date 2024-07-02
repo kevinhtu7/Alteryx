@@ -1,5 +1,10 @@
-# main.py
+# Import the new libraries
+from presidio_analyzer import AnalyzerEngine
+from presidio_anonymizer import AnonymizerEngine
+from spellchecker import SpellChecker
+from textblob import TextBlob
 
+# Existing imports
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
@@ -8,18 +13,12 @@ from dotenv import load_dotenv
 import chromadb as db
 from chromadb import Client
 from chromadb.config import Settings
-from langchain_community.llms import HuggingFaceHub
-from langchain_core.prompts import PromptTemplate
+from langchain.llms import HuggingFaceHub
+from langchain import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
 import sqlite3
-
-# Import necessary libraries for anonymization, spellchecking, and niceness
-from presidio_analyzer import AnalyzerEngine
-from presidio_anonymizer import AnonymizerEngine
-from spellchecker import SpellChecker
-from textblob import TextBlob
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -32,7 +31,9 @@ class ChatBot():
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.setup_language_model()
         self.setup_langchain()
-        self.initialize_tools()
+        self.analyzer = AnalyzerEngine()
+        self.anonymizer = AnonymizerEngine()
+        self.spell_checker = SpellChecker()
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
@@ -51,48 +52,58 @@ class ChatBot():
     def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
         if access_role == "General Access":
-            documents = self.collection.query(
-                query_texts=[input],
-                n_results=5
-            )['documents']
-        else:
-            documents = self.collection.query(
-                query_texts=[input],
-                n_results=10
-            )['documents']
-        context = " ".join([doc['content'] for doc in documents])
+            documents = self.collection.query(query_texts=[input],
+                                              n_results=3,
+                                              where={"access_role": access_role}
+                                                )
+        elif access_role == "Executive Access":
+            documents = self.collection.query(query_texts=[input],
+                                              n_results=3
+                                                )
+        for document in documents["documents"]:
+            context = document
         return context
 
-    def generate_response(self, input_dict):
-        input_dict["question"] = self.preprocess_input(input_dict["question"])
-        template = PromptTemplate(input_variables=["context", "question"], template="{context}\nQuestion: {question}\nAnswer:")
-        prompt = template.format(**input_dict)
-        response = self.llm(prompt)
-        return response
+    def setup_langchain(self):
+        template = """
+        You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
+        If you don't know the answer, just say you don't know. Please provide the file used for context.
+        # You answer with short and concise answers, no longer than 2 sentences.
 
-    def initialize_tools(self):
-        # Initialize tools for anonymization, spellchecking, and ensuring niceness
-        self.analyzer = AnalyzerEngine()
-        self.anonymizer = AnonymizerEngine()
-        self.spellchecker = SpellChecker()
+        Context: {context}
+        Question: {question}
+        Answer:
+        """
 
-    def anonymize_text(self, text):
-        analyzer_results = self.analyzer.analyze(text=text, language="en")
-        anonymized_text = self.anonymizer.anonymize(text=text, analyzer_results=analyzer_results).text
+        self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
+        self.rag_chain = (
+            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context and question
+            | self.prompt
+            | self.llm
+            | AnswerOnlyOutputParser()
+        )
+
+    def analyze_text(self, text):
+        results = self.analyzer.analyze(text=text, language='en')
+        return results
+
+    def anonymize_text(self, text, analyzer_results):
+        anonymized_text = self.anonymizer.anonymize(text=text, analyzer_results=analyzer_results)
         return anonymized_text
 
-    def spellcheck_text(self, text):
-        corrected_text = self.spellchecker.correction(text)
+    def check_spelling(self, text):
+        misspelled_words = self.spell_checker.unknown(text.split())
+        corrected_text = ' '.join([self.spell_checker.correction(word) if word in misspelled_words else word for word in text.split()])
         return corrected_text
 
-    def ensure_niceness(self, text):
+    def analyze_sentiment(self, text):
         blob = TextBlob(text)
-        nice_text = " ".join(blob.words)
-        return nice_text
+        return blob.sentiment
 
-    def preprocess_input(self, input):
-        # Anonymize, spellcheck, and ensure niceness
-        anonymized = self.anonymize_text(input)
-        spellchecked = self.spellcheck_text(anonymized)
-        nice_input = self.ensure_niceness(spellchecked)
-        return nice_input
+# Example usage:
+# bot = ChatBot()
+# text = "Some sensitive information"
+# analyzer_results = bot.analyze_text(text)
+# anonymized_text = bot.anonymize_text(text, analyzer_results)
+# corrected_text = bot.check_spelling(text)
+# sentiment = bot.analyze_sentiment(text)
