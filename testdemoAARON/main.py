@@ -1,3 +1,4 @@
+print("HELLO")
 # Import the new libraries
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
