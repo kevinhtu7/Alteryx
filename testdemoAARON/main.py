@@ -1,3 +1,10 @@
+# Import the new libraries
+from presidio_analyzer import AnalyzerEngine
+from presidio_anonymizer import AnonymizerEngine
+from spellchecker import SpellChecker
+from textblob import TextBlob
+
+# Existing imports
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
@@ -24,6 +31,9 @@ class ChatBot():
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.setup_language_model()
         self.setup_langchain()
+        self.analyzer = AnalyzerEngine()
+        self.anonymizer = AnonymizerEngine()
+        self.spell_checker = SpellChecker()
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
@@ -72,3 +82,28 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
+
+    def analyze_text(self, text):
+        results = self.analyzer.analyze(text=text, language='en')
+        return results
+
+    def anonymize_text(self, text, analyzer_results):
+        anonymized_text = self.anonymizer.anonymize(text=text, analyzer_results=analyzer_results)
+        return anonymized_text
+
+    def check_spelling(self, text):
+        misspelled_words = self.spell_checker.unknown(text.split())
+        corrected_text = ' '.join([self.spell_checker.correction(word) if word in misspelled_words else word for word in text.split()])
+        return corrected_text
+
+    def analyze_sentiment(self, text):
+        blob = TextBlob(text)
+        return blob.sentiment
+
+# Example usage:
+# bot = ChatBot()
+# text = "Some sensitive information"
+# analyzer_results = bot.analyze_text(text)
+# anonymized_text = bot.anonymize_text(text, analyzer_results)
+# corrected_text = bot.check_spelling(text)
+# sentiment = bot.analyze_sentiment(text)
