@@ -35,12 +35,14 @@ for message in st.session_state.messages:
 input = st.chat_input("Type your message here...")
 
 if input:
+    st.write("User Input:", input)
     st.session_state.messages.append({"role": "user", "content": input})
     with st.chat_message("user"):
         st.write(input)
 
     # Retrieve context from the database
     context = bot.get_context_from_collection(input, access_role=role)
+    st.write("Context:", context)
     st.session_state.context_history.append(context)
 
     # Analyze, anonymize, and correct the input text
@@ -48,9 +50,7 @@ if input:
     anonymized_input = bot.anonymize_text(input, analyzer_results)
     corrected_input = bot.check_spelling(anonymized_input)
     sentiment = bot.analyze_sentiment(corrected_input)
-
-    # Display sentiment analysis result
-    st.write(f"Sentiment Analysis: {sentiment}")
+    st.write("Sentiment Analysis:", sentiment)
 
     # Generate a new response
     input_dict = {"context": context, "question": corrected_input}
@@ -59,4 +59,5 @@ if input:
             response = generate_response(input_dict)
             st.write(response)
         message = {"role": "assistant", "content": response}
+        st.write("Generated Response:", response)
         st.session_state.messages.append(message)
