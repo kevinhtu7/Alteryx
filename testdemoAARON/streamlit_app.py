@@ -14,34 +14,38 @@ role = st.radio(
 )
 
 if role == "Executive Access":
-    if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
-        st.session_state.context_history = []
-
+    # Initialize or maintain the list of past interactions and contexts
+    if "messages" not in st.session_state: #
+        st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}] #
+        st.session_state.context_history = [] #
+        
+    # Function for generating LLM response
     def generate_response(input_dict):
         result = bot.rag_chain.invoke(input_dict)
         return result
 
+    # Store LLM generated responses
+    # if "messages" not in st.session_state.keys():
+        # st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
+
+    # Display chat messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
 
+    # User-provided prompt
     if input := st.chat_input():
         st.session_state.messages.append({"role": "user", "content": input})
         with st.chat_message("user"):
             st.write(input)
 
-        context = bot.get_context_from_collection(input, access_role=role)
-        st.session_state.context_history.append(context)
+        # Retrieve context from the database
+        context = bot.get_context_from_collection(input, access_role=role) #
+        st.session_state.context_history.append(context)  # Store the context for potential future references
 
-        analyzer_results = bot.analyze_text(input)
-        anonymized_input = bot.anonymize_text(input, analyzer_results)
-        corrected_input = bot.check_spelling(anonymized_input)
-        sentiment = bot.analyze_sentiment(corrected_input)
-
-        st.write(f"Sentiment Analysis: {sentiment}")
-
-        input_dict = {"context": context, "question": corrected_input}
+        # Generate a new response
+        # context = bot.get_context_from_collection(input, access_role=role)
+        input_dict = {"context": context, "question": input}
         with st.chat_message("assistant"):
             with st.spinner("Grabbing your answer from database..."):
                 response = generate_response(input_dict)
@@ -49,34 +53,38 @@ if role == "Executive Access":
             message = {"role": "assistant", "content": response}
             st.session_state.messages.append(message)
 else:
-    if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
-        st.session_state.context_history = []
-
+    # Initialize or maintain the list of past interactions and contexts
+    if "messages" not in st.session_state: #
+        st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}] #
+        st.session_state.context_history = [] #
+        
+     # Function for generating LLM response
     def generate_response(input_dict):
         result = bot.rag_chain.invoke(input_dict)
         return result
 
+    # Store LLM generated responses
+    # if "messages" not in st.session_state.keys():
+        # st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
+
+    # Display chat messages
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.write(message["content"])
 
+    # User-provided prompt
     if input := st.chat_input():
         st.session_state.messages.append({"role": "user", "content": input})
         with st.chat_message("user"):
             st.write(input)
 
-        context = bot.get_context_from_collection(input, access_role=role)
-        st.session_state.context_history.append(context)
-
-        analyzer_results = bot.analyze_text(input)
-        anonymized_input = bot.anonymize_text(input, analyzer_results)
-        corrected_input = bot.check_spelling(anonymized_input)
-        sentiment = bot.analyze_sentiment(corrected_input)
-
-        st.write(f"Sentiment Analysis: {sentiment}")
-
-        input_dict = {"context": context, "question": corrected_input}
+        # Retrieve context from the database
+        context = bot.get_context_from_collection(input, access_role=role) #
+        st.session_state.context_history.append(context)  # Store the context for potential future references
+        
+        # Generate a new response
+        # context = bot.get_context_from_collection(input, access_role=role)
+        input_dict = {"context": context, "question": input}
         with st.chat_message("assistant"):
             with st.spinner("Grabbing your answer from database..."):
                 response = generate_response(input_dict)
