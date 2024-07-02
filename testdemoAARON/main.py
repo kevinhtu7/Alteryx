@@ -34,12 +34,14 @@ class ChatBot():
         self.analyzer = AnalyzerEngine()
         self.anonymizer = AnonymizerEngine()
         self.spell_checker = SpellChecker()
+        print("Initializing ChatBot...")
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
         client = db.PersistentClient(path="testdemoAARON/chroma.db")
         collection = client.get_collection(name="Company_Documents")
         return client, collection
+        print("ChromaDB initialized.")
 
     def setup_language_model(self):
         self.repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
@@ -48,6 +50,7 @@ class ChatBot():
             model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
             huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
         )
+        print("Language model setup complete.")
 
     def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
@@ -63,6 +66,7 @@ class ChatBot():
         for document in documents["documents"]:
             context = document
         return context
+        print("get context from collection")
 
     def setup_langchain(self):
         template = """
@@ -82,23 +86,28 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
+        print("LangChain setup complete.")
 
     def analyze_text(self, text):
         results = self.analyzer.analyze(text=text, language='en')
         return results
+        print("analyze_text.")
 
     def anonymize_text(self, text, analyzer_results):
         anonymized_text = self.anonymizer.anonymize(text=text, analyzer_results=analyzer_results)
         return anonymized_text
+        print("anonymize text.")
 
     def check_spelling(self, text):
         misspelled_words = self.spell_checker.unknown(text.split())
         corrected_text = ' '.join([self.spell_checker.correction(word) if word in misspelled_words else word for word in text.split()])
         return corrected_text
+        print("check spelling")
 
     def analyze_sentiment(self, text):
         blob = TextBlob(text)
         return blob.sentiment
+        print("sentiment")
 
 # Example usage:
 # bot = ChatBot()
