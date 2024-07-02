@@ -1,85 +1,62 @@
 from main import ChatBot
 import streamlit as st
 
+# Initialize the ChatBot
 bot = ChatBot()
 
+# Set the page title
 st.set_page_config(page_title="Meeting Information Bot")
+
+# Sidebar for role selection
 with st.sidebar:
     st.title('Meeting Information Bot')
+    role = st.radio(
+        "What's your role",
+        ["General Access", "Executive Access"],
+        format_func=lambda x: "Executive Access" if x == "Executive Access" else "General Access"
+    )
 
-role = st.radio(
-    "What's your role",
-    ["General Access", "Executive Access"],
-    format_func=lambda x: "Executive Access" if x == "Executive Access" else "General Access"
-)
+# Initialize or maintain the list of past interactions and contexts
+if "messages" not in st.session_state:
+    st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
+    st.session_state.context_history = []
 
-if role == "Executive Access":
-    if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
-        st.session_state.context_history = []
+# Function for generating LLM response
+def generate_response(input_dict):
+    result = bot.rag_chain.invoke(input_dict)
+    return result
 
-    def generate_response(input_dict):
-        result = bot.rag_chain.invoke(input_dict)
-        return result
+# Display chat messages
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.write(message["content"])
 
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
+# User-provided prompt
+input = st.chat_input("Type your message here...")
 
-    if input := st.chat_input():
-        st.session_state.messages.append({"role": "user", "content": input})
-        with st.chat_message("user"):
-            st.write(input)
+if input:
+    st.session_state.messages.append({"role": "user", "content": input})
+    with st.chat_message("user"):
+        st.write(input)
 
-        context = bot.get_context_from_collection(input, access_role=role)
-        st.session_state.context_history.append(context)
+    # Retrieve context from the database
+    context = bot.get_context_from_collection(input, access_role=role)
+    st.session_state.context_history.append(context)
 
-        analyzer_results = bot.analyze_text(input)
-        anonymized_input = bot.anonymize_text(input, analyzer_results)
-        corrected_input = bot.check_spelling(anonymized_input)
-        sentiment = bot.analyze_sentiment(corrected_input)
+    # Analyze, anonymize, and correct the input text
+    analyzer_results = bot.analyze_text(input)
+    anonymized_input = bot.anonymize_text(input, analyzer_results)
+    corrected_input = bot.check_spelling(anonymized_input)
+    sentiment = bot.analyze_sentiment(corrected_input)
 
-        st.write(f"Sentiment Analysis: {sentiment}")
+    # Display sentiment analysis result
+    st.write(f"Sentiment Analysis: {sentiment}")
 
-        input_dict = {"context": context, "question": corrected_input}
-        with st.chat_message("assistant"):
-            with st.spinner("Grabbing your answer from database..."):
-                response = generate_response(input_dict)
-                st.write(response)
-            message = {"role": "assistant", "content": response}
-            st.session_state.messages.append(message)
-else:
-    if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
-        st.session_state.context_history = []
-
-    def generate_response(input_dict):
-        result = bot.rag_chain.invoke(input_dict)
-        return result
-
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
-
-    if input := st.chat_input():
-        st.session_state.messages.append({"role": "user", "content": input})
-        with st.chat_message("user"):
-            st.write(input)
-
-        context = bot.get_context_from_collection(input, access_role=role)
-        st.session_state.context_history.append(context)
-
-        analyzer_results = bot.analyze_text(input)
-        anonymized_input = bot.anonymize_text(input, analyzer_results)
-        corrected_input = bot.check_spelling(anonymized_input)
-        sentiment = bot.analyze_sentiment(corrected_input)
-
-        st.write(f"Sentiment Analysis: {sentiment}")
-
-        input_dict = {"context": context, "question": corrected_input}
-        with st.chat_message("assistant"):
-            with st.spinner("Grabbing your answer from database..."):
-                response = generate_response(input_dict)
-                st.write(response)
-            message = {"role": "assistant", "content": response}
-            st.session_state.messages.append(message)
+    # Generate a new response
+    input_dict = {"context": context, "question": corrected_input}
+    with st.chat_message("assistant"):
+        with st.spinner("Grabbing your answer from database..."):
+            response = generate_response(input_dict)
+            st.write(response)
+        message = {"role": "assistant", "content": response}
+        st.session_state.messages.append(message)
