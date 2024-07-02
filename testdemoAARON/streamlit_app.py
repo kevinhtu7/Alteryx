@@ -29,8 +29,12 @@ if input := st.chat_input():
     with st.chat_message("user"):
         st.write(input)
 
+    # Debugging output
+    st.write("Input received:", input)
+
     # Retrieve context from the database
     context = bot.get_context_from_collection(input, access_role=role)
+    st.write("Context retrieved:", context)
     st.session_state.context_history.append(context)
 
     # Generate a new response
@@ -38,6 +42,6 @@ if input := st.chat_input():
     with st.chat_message("assistant"):
         with st.spinner("Grabbing your answer from database..."):
             response = bot.generate_response(input_dict)
-            st.write(response)
+            st.write("Response generated:", response)
         message = {"role": "assistant", "content": response}
         st.session_state.messages.append(message)
