@@ -18,12 +18,13 @@ if role == "Executive Access":
     if "messages" not in st.session_state: #
         st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}] #
         st.session_state.context_history = [] #
-        
+
     # Function for generating LLM response
     def generate_response(input_dict):
         #input_dict["question"] = bot.preprocess_input(input_dict["question"])
         #template = bot.PromptTemplate(input_variables=["context", "question"], template="{context}\nQuestion: {question}\nAnswer:")
         #prompt = template.format(**input_dict)
+        input_dict = bot.preprocess_input(input_dict)
         result = bot.rag_chain.invoke(input_dict)
         return result
 
