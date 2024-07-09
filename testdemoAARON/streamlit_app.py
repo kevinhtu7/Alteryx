@@ -61,7 +61,8 @@ else:
         
      # Function for generating LLM response
     def generate_response(input_dict):
-        result = bot.rag_chain.invoke(input_dict)
+        nice_input = bot.preprocess_input(input_dict)
+        result = bot.rag_chain.invoke(nice_input)
         return result
 
     # Store LLM generated responses
