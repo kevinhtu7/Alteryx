@@ -87,10 +87,17 @@ class ChatBot():
 
     def preprocess_input(self, input_dict):
         # Anonymize, spellcheck, and ensure niceness
-        anonymized = self.anonymize_text(input_dict)
+        # Extract context and question from input_dict
+        context = input_dict.get("context", "")
+        question = input_dict.get("question", "")
+        
+        # Concatenate context and question
+        combined_text = f"{context} {question}"
+        
+        # Anonymize, spellcheck, and ensure niceness
+        anonymized = self.anonymize_text(combined_text)
         spellchecked = self.spellcheck_text(anonymized)
         nice_input = self.ensure_niceness(spellchecked)
-        #nice_input = input
         return nice_input
 
     def setup_langchain(self):
