@@ -10,4 +10,3 @@ pyspellchecker
 textblob
 #spacy
 spacy==3.7.5
-en-core-web-lg==3.7.1
