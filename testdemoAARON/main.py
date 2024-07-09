@@ -31,6 +31,7 @@ class ChatBot():
         load_dotenv()
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.setup_language_model()
+        self.setup_langchain()
         #self.initialize_tools()
 
     def initialize_chromadb(self):
