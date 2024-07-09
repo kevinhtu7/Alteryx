@@ -97,3 +97,22 @@ class ChatBot():
         spellchecked = self.spellcheck_text(anonymized)
         nice_input = self.ensure_niceness(spellchecked)
         return nice_input
+
+    def setup_langchain(self):
+        template = """
+        You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
+        If you don't know the answer, just say you don't know. Please provide the file used for context.
+        # You answer with short and concise answers, no longer than 2 sentences.
+
+        Context: {context}
+        Question: {question}
+        Answer:
+        """
+
+        self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
+        self.rag_chain = (
+            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context and question
+            | self.prompt
+            | self.llm
+            | AnswerOnlyOutputParser()
+        )
