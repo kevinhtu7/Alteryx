@@ -32,7 +32,7 @@ class ChatBot():
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.setup_language_model()
         self.setup_langchain()
-        #self.initialize_tools()
+        self.initialize_tools()
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
@@ -65,32 +65,32 @@ class ChatBot():
             context = document
         return context
 
-    #def initialize_tools(self):
-        ## Initialize tools for anonymization, spellchecking, and ensuring niceness
-        #self.analyzer = AnalyzerEngine()
-        #self.anonymizer = AnonymizerEngine()
-        #self.spellchecker = SpellChecker()
+    def initialize_tools(self):
+        # Initialize tools for anonymization, spellchecking, and ensuring niceness
+        self.analyzer = AnalyzerEngine()
+        self.anonymizer = AnonymizerEngine()
+        self.spellchecker = SpellChecker()
 
-    #def anonymize_text(self, text):
-        #analyzer_results = self.analyzer.analyze(text=text, language="en")
-        #anonymized_text = self.anonymizer.anonymize(text=text, analyzer_results=analyzer_results).text
-        #return anonymized_text
+    def anonymize_text(self, text):
+        analyzer_results = self.analyzer.analyze(text=text, language="en")
+        anonymized_text = self.anonymizer.anonymize(text=text, analyzer_results=analyzer_results).text
+        return anonymized_text
 
-    #def spellcheck_text(self, text):
-        #corrected_text = self.spellchecker.correction(text)
-        #return corrected_text
+    def spellcheck_text(self, text):
+        corrected_text = self.spellchecker.correction(text)
+        return corrected_text
 
-    #def ensure_niceness(self, text):
-        #blob = TextBlob(text)
-        #nice_text = " ".join(blob.words)
-        #return nice_text
+    def ensure_niceness(self, text):
+        blob = TextBlob(text)
+        nice_text = " ".join(blob.words)
+        return nice_text
 
     def preprocess_input(self, input):
         # Anonymize, spellcheck, and ensure niceness
-        #anonymized = self.anonymize_text(input)
-        #spellchecked = self.spellcheck_text(anonymized)
-        #nice_input = self.ensure_niceness(spellchecked)
-        nice_input = input
+        anonymized = self.anonymize_text(input)
+        spellchecked = self.spellcheck_text(anonymized)
+        nice_input = self.ensure_niceness(spellchecked)
+        #nice_input = input
         return nice_input
 
     def setup_langchain(self):
