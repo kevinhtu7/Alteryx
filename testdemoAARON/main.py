@@ -85,9 +85,9 @@ class ChatBot():
         nice_text = " ".join(blob.words)
         return nice_text
 
-    def preprocess_input(self, input):
+    def preprocess_input(self, input_dict):
         # Anonymize, spellcheck, and ensure niceness
-        anonymized = self.anonymize_text(input)
+        anonymized = self.anonymize_text(input_dict)
         spellchecked = self.spellcheck_text(anonymized)
         nice_input = self.ensure_niceness(spellchecked)
         #nice_input = input
