@@ -58,7 +58,7 @@ class ChatBot():
             documents = self.collection.query(
                 query_texts=[input],
                 n_results=10
-            )['documents']
+            )
         context = " ".join([doc['content'] for doc in documents])
         return context
 
