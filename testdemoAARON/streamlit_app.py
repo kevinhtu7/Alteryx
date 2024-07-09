@@ -21,6 +21,9 @@ if role == "Executive Access":
         
     # Function for generating LLM response
     def generate_response(input_dict):
+        input_dict["question"] = self.preprocess_input(input_dict["question"])
+        template = PromptTemplate(input_variables=["context", "question"], template="{context}\nQuestion: {question}\nAnswer:")
+        prompt = template.format(**input_dict)
         result = bot.rag_chain.invoke(input_dict)
         return result
 
