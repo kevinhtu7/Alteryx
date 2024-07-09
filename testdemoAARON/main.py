@@ -8,10 +8,8 @@ from dotenv import load_dotenv
 import chromadb as db
 from chromadb import Client
 from chromadb.config import Settings
-#from langchain_community.llms import HuggingFaceHub
-#from langchain_core.prompts import PromptTemplate
-from langchain.llms import HuggingFaceHub
-from langchain import PromptTemplate
+from langchain_community.llms import HuggingFaceHub
+from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
