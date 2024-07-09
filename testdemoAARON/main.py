@@ -53,7 +53,7 @@ class ChatBot():
             documents = self.collection.query(
                 query_texts=[input],
                 n_results=5
-            )['documents']
+            )
         else:
             documents = self.collection.query(
                 query_texts=[input],
