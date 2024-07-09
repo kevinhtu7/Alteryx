@@ -59,7 +59,9 @@ class ChatBot():
                 query_texts=[input],
                 n_results=10
             )
-        context = " ".join([doc['content'] for doc in documents])
+        #context = " ".join([doc['content'] for doc in documents])
+        for document in documents["documents"]:
+            context = document
         return context
 
     def generate_response(self, input_dict):
