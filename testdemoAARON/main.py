@@ -65,13 +65,6 @@ class ChatBot():
             context = document
         return context
 
-    #def generate_response(self, input_dict):
-    #    input_dict["question"] = self.preprocess_input(input_dict["question"])
-    #    template = PromptTemplate(input_variables=["context", "question"], template="{context}\nQuestion: {question}\nAnswer:")
-    #    prompt = template.format(**input_dict)
-    #    response = self.llm(prompt)
-    #    return response
-
     #def initialize_tools(self):
         ## Initialize tools for anonymization, spellchecking, and ensuring niceness
         #self.analyzer = AnalyzerEngine()
