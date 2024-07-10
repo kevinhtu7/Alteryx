@@ -60,17 +60,13 @@ class ChatBot():
 
     def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
-        if access_role == "General Access":
-            documents = self.collection.query(
-                query_texts=[input],
-                n_results=5
-            )
-        else:
-            documents = self.collection.query(
-                query_texts=[input],
-                n_results=10
-            )
-        context = " ".join([doc for doc in documents["documents"]])
+        n_results = 5 if access_role == "General Access" else 10
+        documents = self.collection.query(
+            query_texts=[input],
+            n_results=n_results
+        )
+        
+        context = " ".join([" ".join(doc) if isinstance(doc, list) else doc for doc in documents["documents"]])
         return context
 
     def initialize_tools(self):
