@@ -44,8 +44,7 @@ if "messages" not in st.session_state:
 
 # Function for generating LLM response
 def generate_response(input_dict):
-    nice_input = st.session_state.bot.preprocess_input(input_dict)
-    result = st.session_state.bot.rag_chain.invoke(nice_input)
+    result = st.session_state.bot.generate_response(input_dict)
     return result
 
 # Display chat messages
@@ -69,5 +68,4 @@ if input := st.chat_input():
         with st.spinner("Grabbing your answer from database..."):
             response = generate_response(input_dict)
             st.write(response)
-        message = {"role": "assistant", "content": response}
-        st.session_state.messages.append(message)
+    st.session_state.messages.append({"role": "assistant", "content": response})
