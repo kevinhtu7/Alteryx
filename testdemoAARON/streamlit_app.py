@@ -69,3 +69,4 @@ if input := st.chat_input():
             response = generate_response(input_dict)
             st.write(response)
     st.session_state.messages.append({"role": "assistant", "content": response})
+
