@@ -1,3 +1,5 @@
+# main.py
+
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
@@ -10,7 +12,6 @@ from langchain_community.llms import HuggingFaceHub
 from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
-import openai
 import logging
 import sqlite3
 
@@ -19,11 +20,6 @@ from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
 from textblob import TextBlob
-import nltk
-
-# Download required NLTK data
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -31,10 +27,8 @@ class AnswerOnlyOutputParser(StrOutputParser):
         return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class ChatBot():
-    def __init__(self, llm_option="Local (PHI3)", openai_api_key=None):
+    def __init__(self):
         load_dotenv()
-        self.llm_option = llm_option
-        self.openai_api_key = openai_api_key
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.setup_language_model()
         self.setup_langchain()
@@ -47,26 +41,28 @@ class ChatBot():
         return client, collection
 
     def setup_language_model(self):
-        if self.llm_option == "External (OpenAI)" and self.openai_api_key:
-            openai.api_key = self.openai_api_key
-            self.llm = openai.ChatCompletion.create
-        else:
-            self.repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-            self.llm = HuggingFaceHub(
-                repo_id=self.repo_id,
-                model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
-                huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
-            )
+        self.repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+        self.llm = HuggingFaceHub(
+            repo_id=self.repo_id,
+            model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
+            huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
+        )
 
     def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
-        n_results = 5 if access_role == "General Access" else 10
-        documents = self.collection.query(
-            query_texts=[input],
-            n_results=n_results
-        )
-        
-        context = " ".join([" ".join(doc) if isinstance(doc, list) else doc for doc in documents["documents"]])
+        if access_role == "General Access":
+            documents = self.collection.query(
+                query_texts=[input],
+                n_results=5
+            )
+        else:
+            documents = self.collection.query(
+                query_texts=[input],
+                n_results=10
+            )
+        #context = " ".join([doc['content'] for doc in documents])
+        for document in documents["documents"]:
+            context = document
         return context
 
     def initialize_tools(self):
@@ -122,21 +118,3 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
-
-    def generate_response(self, input_dict):
-        nice_input = self.preprocess_input(input_dict)
-        if self.llm_option == "External (OpenAI)" and self.openai_api_key:
-            response = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "system", "content": self.prompt.template.format(context=nice_input['context'], question=nice_input['question'])},
-                    {"role": "user", "content": nice_input['question']}
-                ]
-            )
-            return response.choices[0].message['content']
-        else:
-            result = self.rag_chain.invoke(nice_input)
-            return result
-
-    def unload_language_model(self):
-        self.llm = None
