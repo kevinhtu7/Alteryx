@@ -13,7 +13,7 @@ from langchain.schema.output_parser import StrOutputParser
 import logging
 import sqlite3
 
-# Import necessary libraries for anonymization, spellchecking, and niceness
+# Import necessary libraries for anonymization, spellchecking, and ensuring niceness
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
@@ -75,6 +75,13 @@ class ChatBot():
                 logging.error(f"Error setting up OpenAI model: {e}")
                 raise
 
+    def unload_local_model(self):
+        if self.local_model_loaded:
+            del self.tokenizer
+            del self.model
+            self.local_model_loaded = False
+            logging.info("Unloaded local model to free up memory.")
+
     def generate_response(self, prompt):
         logging.info("Generating response")
         try:
@@ -86,6 +93,7 @@ class ChatBot():
                 return response
             elif self.llm_option == "External (OpenAI)":
                 self.setup_openai_model()
+                self.unload_local_model()  # Unload local model if OpenAI is used
                 return self.llm(prompt)
         except Exception as e:
             logging.error(f"Error generating response: {e}")
@@ -175,4 +183,3 @@ class ChatBot():
 
 if __name__ == "__main__":
     bot = ChatBot()
-
