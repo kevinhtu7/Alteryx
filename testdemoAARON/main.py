@@ -12,7 +12,7 @@ from langchain.schema.output_parser import StrOutputParser
 import logging
 import sqlite3
 
-# Import necessary libraries for anonymization, spellchecking, and niceness
+# Import necessary libraries for anonymization, spellchecking, and ensuring niceness
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
@@ -40,21 +40,25 @@ class ChatBot():
 
     def setup_language_model(self):
         model_name_or_path = "local_models/phi3_instruct"
-        if not os.path.exists(model_name_or_path):
-            from transformers import AutoModelForCausalLM, AutoTokenizer
-            
-            # Repository ID for PHI3 instruct model
-            model_repo_id = "PHI3/instruct"
-            
-            self.tokenizer = AutoTokenizer.from_pretrained(model_repo_id)
-            self.model = AutoModelForCausalLM.from_pretrained(model_repo_id)
-            
-            # Save the model and tokenizer locally
-            self.tokenizer.save_pretrained(model_name_or_path)
-            self.model.save_pretrained(model_name_or_path)
-        else:
-            self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
-            self.model = AutoModelForCausalLM.from_pretrained(model_name_or_path)
+        try:
+            if not os.path.exists(model_name_or_path):
+                from transformers import AutoModelForCausalLM, AutoTokenizer
+                
+                # Repository ID for Phi-3-mini-4k-instruct model
+                model_repo_id = "microsoft/Phi-3-mini-4k-instruct"
+                
+                self.tokenizer = AutoTokenizer.from_pretrained(model_repo_id)
+                self.model = AutoModelForCausalLM.from_pretrained(model_repo_id)
+                
+                # Save the model and tokenizer locally
+                self.tokenizer.save_pretrained(model_name_or_path)
+                self.model.save_pretrained(model_name_or_path)
+            else:
+                self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
+                self.model = AutoModelForCausalLM.from_pretrained(model_name_or_path)
+        except Exception as e:
+            logging.error(f"Error loading model: {e}")
+            raise
 
     def generate_response(self, prompt):
         inputs = self.tokenizer(prompt, return_tensors="pt")
@@ -126,3 +130,6 @@ class ChatBot():
             | self.generate_response
             | AnswerOnlyOutputParser()
         )
+
+if __name__ == "__main__":
+    bot = ChatBot()
