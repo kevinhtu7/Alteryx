@@ -141,3 +141,4 @@ class ChatBot():
 
     def unload_language_model(self):
         self.llm = None
+
