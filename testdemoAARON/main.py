@@ -67,6 +67,8 @@ class ChatBot():
             )
             self.local_model_loaded = False
             self.openai_model_initialized = True
+        else:
+            raise ValueError("Invalid LLM option or missing API key for OpenAI")
 
     def unload_language_model(self):
         self.llm = None
