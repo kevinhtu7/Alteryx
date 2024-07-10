@@ -3,6 +3,7 @@ python-dotenv==1.0.0
 langchain-community
 sentence-transformers
 chromadb
+openai
 pysqlite3-binary
 presidio-analyzer
 presidio-anonymizer
