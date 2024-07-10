@@ -43,19 +43,26 @@ class ChatBot():
 
     def setup_language_model(self):
         if self.llm_type == "External (OpenAI)" and self.api_key:
-            self.repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-            self.llm = HuggingFaceHub(
-                repo_id=self.repo_id,
-                model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
-                huggingfacehub_api_token=self.api_key
-            )
+            try:
+                self.repo_id = "openai/gpt-3.5-turbo"  # Update this to the actual repo ID for the external model
+                self.llm = HuggingFaceHub(
+                    repo_id=self.repo_id,
+                    model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
+                    huggingfacehub_api_token=self.api_key
+                )
+            except Exception as e:
+                raise ValueError(f"Failed to initialize the external LLM: {e}")
         else:
             # Setup for Local (PHI3) model
-            self.repo_id = "path/to/local/model"
-            self.llm = HuggingFaceHub(
-                repo_id=self.repo_id,
-                model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50}
-            )
+            try:
+                self.repo_id = "path/to/local/model"
+                self.llm = HuggingFaceHub(
+                    repo_id=self.repo_id,
+                    model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
+                    huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
+                )
+            except Exception as e:
+                raise ValueError(f"Failed to initialize the local LLM: {e}")
 
     def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
