@@ -87,9 +87,7 @@ class ChatBot():
                 query_texts=[input],
                 n_results=10
             )
-        #context = " ".join([doc['content'] for doc in documents])
-        for document in documents["documents"]:
-            context = document
+        context = " ".join(documents["documents"])
         return context
 
     def initialize_tools(self):
@@ -127,6 +125,12 @@ class ChatBot():
         nice_input = self.ensure_niceness(spellchecked)
         return nice_input
 
+    def truncate_input(self, text, max_tokens=4096):
+        words = text.split()
+        if len(words) > max_tokens:
+            return ' '.join(words[:max_tokens])
+        return text
+
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
@@ -145,3 +149,9 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
+
+    def generate_response(self, input_dict):
+        preprocessed_input = self.preprocess_input(input_dict)
+        truncated_input = self.truncate_input(preprocessed_input)
+        result = self.rag_chain.invoke(truncated_input)
+        return result
