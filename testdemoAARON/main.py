@@ -1,5 +1,3 @@
-# main.py
-
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
@@ -8,7 +6,6 @@ from dotenv import load_dotenv
 import chromadb as db
 from chromadb import Client
 from chromadb.config import Settings
-from langchain_community.llms import HuggingFaceHub
 from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
@@ -20,6 +17,7 @@ from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
 from textblob import TextBlob
+from transformers import AutoModelForCausalLM, AutoTokenizer
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -41,25 +39,35 @@ class ChatBot():
         return client, collection
 
     def setup_language_model(self):
-        self.repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-        self.llm = HuggingFaceHub(
-            repo_id=self.repo_id,
-            model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
-            huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
-        )
+        model_name_or_path = "local_models/phi3_instruct"
+        if not os.path.exists(model_name_or_path):
+            from transformers import AutoModelForCausalLM, AutoTokenizer
+            
+            # Repository ID for PHI3 instruct model
+            model_repo_id = "PHI3/instruct"
+            
+            self.tokenizer = AutoTokenizer.from_pretrained(model_repo_id)
+            self.model = AutoModelForCausalLM.from_pretrained(model_repo_id)
+            
+            # Save the model and tokenizer locally
+            self.tokenizer.save_pretrained(model_name_or_path)
+            self.model.save_pretrained(model_name_or_path)
+        else:
+            self.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
+            self.model = AutoModelForCausalLM.from_pretrained(model_name_or_path)
+
+    def generate_response(self, prompt):
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+        outputs = self.model.generate(**inputs)
+        response = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)[0]
+        return response
 
     def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
         if access_role == "General Access":
-            documents = self.collection.query(
-                query_texts=[input],
-                n_results=5
-            )
+            documents = self.collection.query(query_texts=[input], n_results=5)
         else:
-            documents = self.collection.query(
-                query_texts=[input],
-                n_results=10
-            )
+            documents = self.collection.query(query_texts=[input], n_results=10)
         #context = " ".join([doc['content'] for doc in documents])
         for document in documents["documents"]:
             context = document
@@ -115,6 +123,6 @@ class ChatBot():
         self.rag_chain = (
             {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context and question
             | self.prompt
-            | self.llm
+            | self.generate_response
             | AnswerOnlyOutputParser()
         )
