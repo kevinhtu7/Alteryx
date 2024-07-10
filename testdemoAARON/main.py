@@ -19,6 +19,11 @@ from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
 from textblob import TextBlob
+import nltk
+
+# Download required NLTK data
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -65,9 +70,7 @@ class ChatBot():
                 query_texts=[input],
                 n_results=10
             )
-        # context = " ".join([doc['content'] for doc in documents])
-        for document in documents["documents"]:
-            context = document
+        context = " ".join([doc for doc in documents["documents"]])
         return context
 
     def initialize_tools(self):
@@ -141,4 +144,3 @@ class ChatBot():
 
     def unload_language_model(self):
         self.llm = None
-
