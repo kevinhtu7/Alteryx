@@ -36,6 +36,7 @@ class ChatBot():
         self.openai_model_initialized = False
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.initialize_tools()
+        self.setup_langchain()
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
@@ -183,3 +184,4 @@ class ChatBot():
 
 if __name__ == "__main__":
     bot = ChatBot()
+
