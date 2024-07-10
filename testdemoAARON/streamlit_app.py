@@ -33,7 +33,11 @@ if st.session_state.llm_selection == "External (OpenAI)" and not st.session_stat
     st.warning("Please enter your OpenAI API key to proceed.")
 else:
     # Initialize ChatBot with the selected LLM
-    bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
+    try:
+        bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
+    except Exception as e:
+        st.error(f"Failed to initialize the chatbot: {e}")
+        st.stop()
 
     if role == "Executive Access":
         # Initialize or maintain the list of past interactions and contexts
@@ -105,3 +109,4 @@ else:
                     st.write(response)
                 message = {"role": "assistant", "content": response}
                 st.session_state.messages.append(message)
+
