@@ -65,25 +65,25 @@ class ChatBot():
             context = document
         return context
 
-    def initialize_tools(self):
+    #def initialize_tools(self):
         # Initialize tools for anonymization, spellchecking, and ensuring niceness
-        self.analyzer = AnalyzerEngine()
-        self.anonymizer = AnonymizerEngine()
-        self.spellchecker = SpellChecker()
+    #    self.analyzer = AnalyzerEngine()
+    #    self.anonymizer = AnonymizerEngine()
+    #    self.spellchecker = SpellChecker()
 
-    def anonymize_text(self, text):
-        analyzer_results = self.analyzer.analyze(text=text, language="en")
-        anonymized_text = self.anonymizer.anonymize(text=text, analyzer_results=analyzer_results).text
-        return anonymized_text
+    #def anonymize_text(self, text):
+    #    analyzer_results = self.analyzer.analyze(text=text, language="en")
+    #    anonymized_text = self.anonymizer.anonymize(text=text, analyzer_results=analyzer_results).text
+    #    return anonymized_text
 
-    def spellcheck_text(self, text):
-        corrected_text = self.spellchecker.correction(text)
-        return corrected_text
+    #def spellcheck_text(self, text):
+    #    corrected_text = self.spellchecker.correction(text)
+    #    return corrected_text
 
-    def ensure_niceness(self, text):
-        blob = TextBlob(text)
-        nice_text = " ".join(blob.words)
-        return nice_text
+    #def ensure_niceness(self, text):
+        #blob = TextBlob(text)
+        #nice_text = " ".join(blob.words)
+        #return nice_text
 
     def preprocess_input(self, input_dict):
         # Anonymize, spellcheck, and ensure niceness
@@ -95,10 +95,10 @@ class ChatBot():
         combined_text = f"{context} {question}"
         
         # Anonymize, spellcheck, and ensure niceness
-        anonymized = self.anonymize_text(combined_text)
-        spellchecked = self.spellcheck_text(anonymized)
-        nice_input = self.ensure_niceness(spellchecked)
-        return nice_input
+        #anonymized = self.anonymize_text(combined_text)
+        #spellchecked = self.spellcheck_text(anonymized)
+        #nice_input = self.ensure_niceness(spellchecked)
+        #return nice_input
 
     def setup_langchain(self):
         template = """
