@@ -9,6 +9,7 @@ presidio-analyzer
 presidio-anonymizer
 pyspellchecker
 textblob
+nltk
 #spacy
 spacy==3.7.5
 https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.7.1/en_core_web_lg-3.7.1-py3-none-any.whl
