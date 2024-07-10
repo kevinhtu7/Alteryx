@@ -13,7 +13,7 @@ from langchain.schema.output_parser import StrOutputParser
 import logging
 import sqlite3
 
-# Import necessary libraries for anonymization, spellchecking, and ensuring niceness
+# Import necessary libraries for anonymization, spellchecking, and niceness
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
@@ -32,9 +32,9 @@ class ChatBot():
         load_dotenv()
         self.llm_option = llm_option
         self.openai_api_key = openai_api_key
+        self.local_model_loaded = False
+        self.openai_model_initialized = False
         self.chroma_client, self.collection = self.initialize_chromadb()
-        self.setup_language_model()
-        self.setup_langchain()
         self.initialize_tools()
 
     def initialize_chromadb(self):
@@ -43,9 +43,8 @@ class ChatBot():
         collection = client.get_collection(name="Company_Documents")
         return client, collection
 
-    def setup_language_model(self):
-        logging.info(f"Setting up language model: {self.llm_option}")
-        if self.llm_option == "Local (PHI3)":
+    def setup_local_model(self):
+        if not self.local_model_loaded:
             model_name_or_path = "local_models/phi3_instruct"
             if not os.path.exists(model_name_or_path):
                 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -65,24 +64,28 @@ class ChatBot():
                 except Exception as e:
                     logging.error(f"Error loading local model: {e}")
                     raise
-        elif self.llm_option == "External (OpenAI)" and self.openai_api_key:
+            self.local_model_loaded = True
+
+    def setup_openai_model(self):
+        if not self.openai_model_initialized and self.openai_api_key:
             try:
                 self.llm = OpenAI(api_key=self.openai_api_key)
+                self.openai_model_initialized = True
             except Exception as e:
                 logging.error(f"Error setting up OpenAI model: {e}")
                 raise
-        else:
-            logging.error("Invalid LLM option or missing API key for OpenAI")
 
     def generate_response(self, prompt):
         logging.info("Generating response")
         try:
             if self.llm_option == "Local (PHI3)":
+                self.setup_local_model()
                 inputs = self.tokenizer(prompt, return_tensors="pt")
                 outputs = self.model.generate(**inputs)
                 response = self.tokenizer.batch_decode(outputs, skip_special_tokens=True)[0]
                 return response
             elif self.llm_option == "External (OpenAI)":
+                self.setup_openai_model()
                 return self.llm(prompt)
         except Exception as e:
             logging.error(f"Error generating response: {e}")
@@ -172,3 +175,4 @@ class ChatBot():
 
 if __name__ == "__main__":
     bot = ChatBot()
+
