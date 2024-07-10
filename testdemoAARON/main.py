@@ -1,3 +1,29 @@
+from dotenv import load_dotenv
+import os
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+import chromadb as db
+from chromadb import Client
+from chromadb.config import Settings
+from langchain_community.llms import HuggingFaceHub
+from langchain_core.prompts import PromptTemplate
+from langchain.schema.runnable import RunnablePassthrough
+from langchain.schema.output_parser import StrOutputParser
+import logging
+import sqlite3
+
+# Import necessary libraries for anonymization, spellchecking, and niceness
+from presidio_analyzer import AnalyzerEngine
+from presidio_anonymizer import AnonymizerEngine
+from spellchecker import SpellChecker
+from textblob import TextBlob
+
+class AnswerOnlyOutputParser(StrOutputParser):
+    def parse(self, response):
+        # Extract the answer from the response
+        return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
+
 class ChatBot():
     def __init__(self, llm_type="Local (PHI3)", api_key=""):
         load_dotenv()
