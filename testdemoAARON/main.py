@@ -20,6 +20,10 @@ from spellchecker import SpellChecker
 from textblob import TextBlob
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
+import nltk
+nltk.download('punkt')
+nltk.download('averaged_perceptron_tagger')
+
 logging.basicConfig(level=logging.INFO)
 
 class AnswerOnlyOutputParser(StrOutputParser):
@@ -184,4 +188,3 @@ class ChatBot():
 
 if __name__ == "__main__":
     bot = ChatBot()
-
