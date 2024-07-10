@@ -10,6 +10,7 @@ from langchain_community.llms import HuggingFaceHub
 from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
+import openai
 import logging
 import sqlite3
 
@@ -25,7 +26,7 @@ class AnswerOnlyOutputParser(StrOutputParser):
         return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class ChatBot():
-    def __init__(self, llm_option="Local", openai_api_key=""):
+    def __init__(self, llm_option="Local (PHI3)", openai_api_key=None):
         load_dotenv()
         self.llm_option = llm_option
         self.openai_api_key = openai_api_key
@@ -41,9 +42,9 @@ class ChatBot():
         return client, collection
 
     def setup_language_model(self):
-        if self.llm_option == "OpenAI" and self.openai_api_key:
-            from langchain_community.llms import OpenAI
-            self.llm = OpenAI(api_key=self.openai_api_key)
+        if self.llm_option == "External (OpenAI)" and self.openai_api_key:
+            openai.api_key = self.openai_api_key
+            self.llm = openai.ChatCompletion.create
         else:
             self.repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
             self.llm = HuggingFaceHub(
@@ -52,27 +53,21 @@ class ChatBot():
                 huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
             )
 
-    def get_context_from_collection(self, input_text, access_role):
+    def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
         if access_role == "General Access":
             documents = self.collection.query(
-                query_texts=[input_text],
+                query_texts=[input],
                 n_results=5
             )
         else:
             documents = self.collection.query(
-                query_texts=[input_text],
+                query_texts=[input],
                 n_results=10
             )
-
-        cleaned_documents = []
-        for doc in documents["documents"]:
-            if isinstance(doc, list):
-                doc = ' '.join(doc)
-            if 'URL' not in doc:
-                cleaned_documents.append(doc)
-
-        context = " ".join(cleaned_documents)
+        # context = " ".join([doc['content'] for doc in documents])
+        for document in documents["documents"]:
+            context = document
         return context
 
     def initialize_tools(self):
@@ -129,3 +124,20 @@ class ChatBot():
             | AnswerOnlyOutputParser()
         )
 
+    def generate_response(self, input_dict):
+        nice_input = self.preprocess_input(input_dict)
+        if self.llm_option == "External (OpenAI)" and self.openai_api_key:
+            response = openai.ChatCompletion.create(
+                model="gpt-3.5-turbo",
+                messages=[
+                    {"role": "system", "content": self.prompt.template.format(context=nice_input['context'], question=nice_input['question'])},
+                    {"role": "user", "content": nice_input['question']}
+                ]
+            )
+            return response.choices[0].message['content']
+        else:
+            result = self.rag_chain.invoke(nice_input)
+            return result
+
+    def unload_language_model(self):
+        self.llm = None
