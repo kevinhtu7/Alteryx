@@ -87,7 +87,8 @@ class ChatBot():
                 query_texts=[input],
                 n_results=10
             )
-        context = " ".join(documents["documents"])
+        # Ensure each document is a string before joining
+        context = " ".join([" ".join(doc) if isinstance(doc, list) else doc for doc in documents["documents"]])
         return context
 
     def initialize_tools(self):
@@ -155,3 +156,4 @@ class ChatBot():
         truncated_input = self.truncate_input(preprocessed_input)
         result = self.rag_chain.invoke(truncated_input)
         return result
+
