@@ -15,16 +15,6 @@ if "messages" not in st.session_state:
     st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
     st.session_state.context_history = []
 
-# Add a selection for the LLM next to the chat input
-llm_option = st.selectbox("Select LLM", ["Local (PHI3)", "External (OpenAI)"], index=0)
-
-# If external LLM is selected, ask for OpenAI API key
-openai_api_key = None
-if llm_option == "External (OpenAI)":
-    openai_api_key = st.text_input("Enter OpenAI API Key", type="password")
-
-bot = ChatBot(llm_option=llm_option, openai_api_key=openai_api_key)
-
 # Function for generating LLM response
 def generate_response(input_dict):
     nice_input = bot.preprocess_input(input_dict)
@@ -36,13 +26,21 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
-# User-provided prompt
+# Add a selection for the LLM next to the chat input
 col1, col2 = st.columns([4, 1])
 with col1:
     input = st.chat_input(placeholder="Type your question here...")
 
 with col2:
-    st.selectbox("Select LLM", ["Local (PHI3)", "External (OpenAI)"], key="llm_selection", index=0)
+    llm_option = st.selectbox("Select LLM", ["Local (PHI3)", "External (OpenAI)"], key="llm_selection", index=0)
+
+# If external LLM is selected, ask for OpenAI API key
+openai_api_key = None
+if llm_option == "External (OpenAI)":
+    openai_api_key = st.text_input("Enter OpenAI API Key", type="password")
+
+# Initialize ChatBot after getting the user inputs
+bot = ChatBot(llm_option=llm_option, openai_api_key=openai_api_key)
 
 if input:
     st.session_state.messages.append({"role": "user", "content": input})
