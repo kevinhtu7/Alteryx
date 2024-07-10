@@ -28,77 +28,80 @@ with st.sidebar:
     else:
         st.session_state.api_key = ""
 
-# Initialize ChatBot with the selected LLM
-bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
-
-if role == "Executive Access":
-    # Initialize or maintain the list of past interactions and contexts
-    if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
-        st.session_state.context_history = []
-
-    # Function for generating LLM response
-    def generate_response(input_dict):
-        nice_input = bot.preprocess_input(input_dict)
-        result = bot.rag_chain.invoke(nice_input)
-        return result
-
-    # Display chat messages
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
-
-    # User-provided prompt
-    if input := st.chat_input():
-        st.session_state.messages.append({"role": "user", "content": input})
-        with st.chat_message("user"):
-            st.write(input)
-
-        # Retrieve context from the database
-        context = bot.get_context_from_collection(input, access_role=role)
-        st.session_state.context_history.append(context)  # Store the context for potential future references
-
-        # Generate a new response
-        input_dict = {"context": context, "question": input}
-        with st.chat_message("assistant"):
-            with st.spinner("Grabbing your answer from database..."):
-                response = generate_response(input_dict)
-                st.write(response)
-            message = {"role": "assistant", "content": response}
-            st.session_state.messages.append(message)
+# Prevent the user from asking questions if OpenAI is selected and no API key is entered
+if st.session_state.llm_selection == "External (OpenAI)" and not st.session_state.api_key:
+    st.warning("Please enter your OpenAI API key to proceed.")
 else:
-    # Initialize or maintain the list of past interactions and contexts
-    if "messages" not in st.session_state:
-        st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
-        st.session_state.context_history = []
+    # Initialize ChatBot with the selected LLM
+    bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
 
-    # Function for generating LLM response
-    def generate_response(input_dict):
-        nice_input = bot.preprocess_input(input_dict)
-        result = bot.rag_chain.invoke(nice_input)
-        return result
+    if role == "Executive Access":
+        # Initialize or maintain the list of past interactions and contexts
+        if "messages" not in st.session_state:
+            st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
+            st.session_state.context_history = []
 
-    # Display chat messages
-    for message in st.session_state.messages:
-        with st.chat_message(message["role"]):
-            st.write(message["content"])
+        # Function for generating LLM response
+        def generate_response(input_dict):
+            nice_input = bot.preprocess_input(input_dict)
+            result = bot.rag_chain.invoke(nice_input)
+            return result
 
-    # User-provided prompt
-    if input := st.chat_input():
-        st.session_state.messages.append({"role": "user", "content": input})
-        with st.chat_message("user"):
-            st.write(input)
+        # Display chat messages
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
 
-        # Retrieve context from the database
-        context = bot.get_context_from_collection(input, access_role=role)
-        st.session_state.context_history.append(context)  # Store the context for potential future references
+        # User-provided prompt
+        if input := st.chat_input():
+            st.session_state.messages.append({"role": "user", "content": input})
+            with st.chat_message("user"):
+                st.write(input)
 
-        # Generate a new response
-        input_dict = {"context": context, "question": input}
-        with st.chat_message("assistant"):
-            with st.spinner("Grabbing your answer from database..."):
-                response = generate_response(input_dict)
-                st.write(response)
-            message = {"role": "assistant", "content": response}
-            st.session_state.messages.append(message)
+            # Retrieve context from the database
+            context = bot.get_context_from_collection(input, access_role=role)
+            st.session_state.context_history.append(context)  # Store the context for potential future references
 
+            # Generate a new response
+            input_dict = {"context": context, "question": input}
+            with st.chat_message("assistant"):
+                with st.spinner("Grabbing your answer from database..."):
+                    response = generate_response(input_dict)
+                    st.write(response)
+                message = {"role": "assistant", "content": response}
+                st.session_state.messages.append(message)
+    else:
+        # Initialize or maintain the list of past interactions and contexts
+        if "messages" not in st.session_state:
+            st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
+            st.session_state.context_history = []
+
+        # Function for generating LLM response
+        def generate_response(input_dict):
+            nice_input = bot.preprocess_input(input_dict)
+            result = bot.rag_chain.invoke(nice_input)
+            return result
+
+        # Display chat messages
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+
+        # User-provided prompt
+        if input := st.chat_input():
+            st.session_state.messages.append({"role": "user", "content": input})
+            with st.chat_message("user"):
+                st.write(input)
+
+            # Retrieve context from the database
+            context = bot.get_context_from_collection(input, access_role=role)
+            st.session_state.context_history.append(context)  # Store the context for potential future references
+
+            # Generate a new response
+            input_dict = {"context": context, "question": input}
+            with st.chat_message("assistant"):
+                with st.spinner("Grabbing your answer from database..."):
+                    response = generate_response(input_dict)
+                    st.write(response)
+                message = {"role": "assistant", "content": response}
+                st.session_state.messages.append(message)
