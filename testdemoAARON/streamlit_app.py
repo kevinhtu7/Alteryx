@@ -21,11 +21,6 @@ def generate_response(input_dict):
     result = bot.rag_chain.invoke(nice_input)
     return result
 
-# Display chat messages
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.write(message["content"])
-
 # Add a selection for the LLM next to the chat input
 col1, col2 = st.columns([4, 1])
 with col1:
