@@ -1,5 +1,3 @@
-# main.py
-
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
@@ -9,7 +7,6 @@ import chromadb as db
 from chromadb import Client
 from chromadb.config import Settings
 from langchain_community.llms import HuggingFaceHub
-from langchain_community.llms import OpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
@@ -21,11 +18,6 @@ from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
 from textblob import TextBlob
-import nltk
-
-# Download required NLTK data
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -33,12 +25,10 @@ class AnswerOnlyOutputParser(StrOutputParser):
         return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class ChatBot():
-    def __init__(self, llm_option="Local (PHI3)", openai_api_key=None):
+    def __init__(self, llm_option="Local", openai_api_key=""):
         load_dotenv()
         self.llm_option = llm_option
         self.openai_api_key = openai_api_key
-        self.local_model_loaded = False
-        self.openai_model_initialized = False
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.setup_language_model()
         self.setup_langchain()
@@ -51,44 +41,38 @@ class ChatBot():
         return client, collection
 
     def setup_language_model(self):
-        if self.llm_option == "Local (PHI3)":
-            self.repo_id = "microsoft/Phi-3-mini-4k-instruct"
+        if self.llm_option == "OpenAI" and self.openai_api_key:
+            from langchain_community.llms import OpenAI
+            self.llm = OpenAI(api_key=self.openai_api_key)
+        else:
+            self.repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
             self.llm = HuggingFaceHub(
                 repo_id=self.repo_id,
                 model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
                 huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
             )
-            self.local_model_loaded = True
-            self.openai_model_initialized = False
-        elif self.llm_option == "External (OpenAI)" and self.openai_api_key:
-            self.llm = OpenAI(
-                api_key=self.openai_api_key,
-                model="gpt-4"
-            )
-            self.local_model_loaded = False
-            self.openai_model_initialized = True
-        else:
-            raise ValueError("Invalid LLM option or missing API key for OpenAI")
 
-    def unload_language_model(self):
-        self.llm = None
-        self.local_model_loaded = False
-        self.openai_model_initialized = False
-
-    def get_context_from_collection(self, input, access_role):
+    def get_context_from_collection(self, input_text, access_role):
         # Extract context from the collection
         if access_role == "General Access":
             documents = self.collection.query(
-                query_texts=[input],
+                query_texts=[input_text],
                 n_results=5
             )
         else:
             documents = self.collection.query(
-                query_texts=[input],
+                query_texts=[input_text],
                 n_results=10
             )
-        # Ensure each document is a string before joining
-        context = " ".join([" ".join(doc) if isinstance(doc, list) else doc for doc in documents["documents"]])
+
+        cleaned_documents = []
+        for doc in documents["documents"]:
+            if isinstance(doc, list):
+                doc = ' '.join(doc)
+            if 'URL' not in doc:
+                cleaned_documents.append(doc)
+
+        context = " ".join(cleaned_documents)
         return context
 
     def initialize_tools(self):
@@ -126,12 +110,6 @@ class ChatBot():
         nice_input = self.ensure_niceness(spellchecked)
         return nice_input
 
-    def truncate_input(self, text, max_tokens=4096):
-        words = text.split()
-        if len(words) > max_tokens:
-            return ' '.join(words[:max_tokens])
-        return text
-
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
@@ -150,10 +128,4 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
-
-    def generate_response(self, input_dict):
-        preprocessed_input = self.preprocess_input(input_dict)
-        truncated_input = self.truncate_input(preprocessed_input)
-        result = self.rag_chain.invoke(truncated_input)
-        return result
 
