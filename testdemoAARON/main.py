@@ -55,7 +55,7 @@ class ChatBot():
         else:
             # Setup for Local (PHI3) model
             try:
-                self.repo_id = "path/to/local/model"
+                self.repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
                 self.llm = HuggingFaceHub(
                     repo_id=self.repo_id,
                     model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
