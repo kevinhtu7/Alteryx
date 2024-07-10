@@ -23,9 +23,13 @@ with st.sidebar:
         st.session_state.openai_api_key = None
 
     # Re-initialize bot if LLM option changes
-    if st.session_state.llm_option != st.session_state.bot.llm_option:
+    if st.session_state.llm_option != st.session_state.bot.llm_option or \
+       (st.session_state.llm_option == "External (OpenAI)" and not st.session_state.openai_api_key):
         st.session_state.bot.unload_language_model()
-        st.session_state.bot = ChatBot(llm_option=st.session_state.llm_option, openai_api_key=st.session_state.openai_api_key)
+        if st.session_state.llm_option == "External (OpenAI)" and not st.session_state.openai_api_key:
+            st.error("Please enter the OpenAI API key to use the External (OpenAI) model.")
+        else:
+            st.session_state.bot = ChatBot(llm_option=st.session_state.llm_option, openai_api_key=st.session_state.openai_api_key)
 
 role = st.radio(
     "What's your role",
