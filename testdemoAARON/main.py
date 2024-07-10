@@ -9,6 +9,7 @@ import chromadb as db
 from chromadb import Client
 from chromadb.config import Settings
 from langchain_community.llms import HuggingFaceHub
+from langchain_community.llms import OpenAI
 from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
@@ -50,12 +51,27 @@ class ChatBot():
         return client, collection
 
     def setup_language_model(self):
-        self.repo_id = "microsoft/Phi-3-mini-4k-instruct"
-        self.llm = HuggingFaceHub(
-            repo_id=self.repo_id,
-            model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
-            huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
-        )
+        if self.llm_option == "Local (PHI3)":
+            self.repo_id = "microsoft/Phi-3-mini-4k-instruct"
+            self.llm = HuggingFaceHub(
+                repo_id=self.repo_id,
+                model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
+                huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
+            )
+            self.local_model_loaded = True
+            self.openai_model_initialized = False
+        elif self.llm_option == "External (OpenAI)" and self.openai_api_key:
+            self.llm = OpenAI(
+                api_key=self.openai_api_key,
+                model="gpt-4"
+            )
+            self.local_model_loaded = False
+            self.openai_model_initialized = True
+
+    def unload_language_model(self):
+        self.llm = None
+        self.local_model_loaded = False
+        self.openai_model_initialized = False
 
     def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
