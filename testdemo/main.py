@@ -46,10 +46,17 @@ class ChatBot():
                                               n_results=3,
                                               where={"access_role": access_role}
                                                 )
+        # elif access_role == "Executive Access":
+        #     documents = self.collection.query(query_texts=[input],
+        #                                       n_results=3
+        #                                         )
+
         elif access_role == "Executive Access":
             documents = self.collection.query(query_texts=[input],
-                                              n_results=3
+                                              n_results=3,
+                                              where={"access_role": "General Access", "access_role": access_role}
                                                 )
+        
         for document in documents["documents"]:
             context = document
         return context
