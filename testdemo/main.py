@@ -52,12 +52,12 @@ class ChatBot():
         #                                         )
 
         elif access_role == "Executive Access":
-            access_text = "{"+ "access_role: "+ "General Access"+ "}" + "," +  "{"+"access_role: " + access_role
+            access_text = "["+"{"+ "access_role: "+ "General Access"+ "}" + "," +  "{"+"access_role: " + access_role +"]"
             documents = self.collection.query(query_texts=[input],
                                               n_results=3,
                                               where={
                                               # "$or": [{"access_role": "General Access"}, {"access_role": access_role}
-                                                "$or": [access_text]
+                                                "$or": access_text
                                               }
                                                 )
 
