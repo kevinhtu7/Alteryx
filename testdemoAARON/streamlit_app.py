@@ -61,21 +61,31 @@ def get_access_level(role):
         return None
 
 def main():
-    st.title("Meeting Information Bot Login")
+    st.title("Meeting Information Bot")
 
-    # Login Page
-    username = st.text_input("Username")
-    password = st.text_input("Password", type="password")
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False
+        st.session_state.username = ""
+        st.session_state.access_level = ""
 
-    if st.button("Login"):
-        role = get_user_role(username, password)
-        if role:
-            access_level = get_access_level(role)
-            st.success(f"Welcome {username}! Your role is {role} with {access_level} access.")
-            # Continue to the main application based on role
-            run_app(access_level)
-        else:
-            st.error("Invalid username or password")
+    if not st.session_state.logged_in:
+        # Login Page
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+
+        if st.button("Login"):
+            role = get_user_role(username, password)
+            if role:
+                access_level = get_access_level(role)
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.session_state.access_level = access_level
+                st.success(f"Welcome {username}! Your role is {role} with {access_level} access.")
+                run_app(access_level)
+            else:
+                st.error("Invalid username or password")
+    else:
+        run_app(st.session_state.access_level)
 
 def run_app(access_level):
     # Sidebar elements
