@@ -3,6 +3,7 @@ import pandas as pd
 import mysql.connector
 from mysql.connector import Error
 import os
+from main import ChatBot
 from dotenv import load_dotenv
 
 # Set page configuration at the top of the script
