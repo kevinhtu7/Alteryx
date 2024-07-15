@@ -49,7 +49,7 @@ def get_user_role(username, password):
         return None
 
 def get_access_level(role):
-    query = "SELECT access_levels FROM Role WHERE role = %s"
+    query = "SELECT access_levels FROM Roles WHERE role = %s"
     params = (role,)
     df = query_database(query, params)
     if not df.empty:
