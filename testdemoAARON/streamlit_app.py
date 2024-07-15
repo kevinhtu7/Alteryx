@@ -40,11 +40,20 @@ def query_database(query, params=None):
         connection.close()
 
 def get_user_role(username, password):
-    query = "SELECT role FROM users WHERE username = %s AND password = %s"
+    query = "SELECT role FROM users WHERE UserID = %s AND PW = %s"
     params = (username, password)
     df = query_database(query, params)
     if not df.empty:
         return df.iloc[0]['role']
+    else:
+        return None
+
+def get_access_level(role):
+    query = "SELECT access_levels FROM role WHERE role = %s"
+    params = (role,)
+    df = query_database(query, params)
+    if not df.empty:
+        return df.iloc[0]['access_levels']
     else:
         return None
 
@@ -58,13 +67,14 @@ def main():
     if st.button("Login"):
         role = get_user_role(username, password)
         if role:
-            st.success(f"Welcome {username}! Your role is {role}.")
+            access_level = get_access_level(role)
+            st.success(f"Welcome {username}! Your role is {role} with {access_level} access.")
             # Continue to the main application based on role
-            run_app(role)
+            run_app(access_level)
         else:
             st.error("Invalid username or password")
 
-def run_app(role):
+def run_app(access_level):
     # Sidebar elements
     st.set_page_config(page_title="Meeting Information Bot")
     with st.sidebar:
@@ -115,7 +125,7 @@ def run_app(role):
                 st.write(input)
 
             # Retrieve context from the database
-            context = bot.get_context_from_collection(input, access_role=role)
+            context = bot.get_context_from_collection(input, access_role=access_level)
             st.session_state.context_history.append(context)  # Store the context for potential future references
 
             # Generate a new response
