@@ -1,38 +1,39 @@
 import streamlit as st
 import pandas as pd
-import sqlite3
-from sqlite3 import Error
+import mysql.connector
+from mysql.connector import Error
 import os
 from dotenv import load_dotenv
 
 # Set page configuration at the top of the script
 st.set_page_config(page_title="Meeting Information Bot")
 
-# Load environment variables (if needed)
+# Load environment variables
 load_dotenv()
 
 def create_connection():
     connection = None
     try:
-        # Adjust the path to chroma.db based on its location in the repository
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        db_path = os.path.join(base_dir, 'testdemoAARON', 'chroma.db')
-        connection = sqlite3.connect(db_path)
+        connection = mysql.connector.connect(
+            host=os.getenv("DB_HOST"),
+            user=os.getenv("DB_USER"),
+            passwd=os.getenv("DB_PASSWORD"),
+            database=os.getenv("DB_NAME")
+        )
     except Error as e:
         st.error(f"Error: '{e}'")
     return connection
 
 def query_database(query, params=None):
     connection = create_connection()
-    cursor = connection.cursor()
+    cursor = connection.cursor(dictionary=True)
     try:
         if params:
             cursor.execute(query, params)
         else:
             cursor.execute(query)
         result = cursor.fetchall()
-        columns = [desc[0] for desc in cursor.description]
-        return pd.DataFrame(result, columns=columns)
+        return pd.DataFrame(result)
     except Error as e:
         st.error(f"Error: '{e}'")
         return None
@@ -41,7 +42,7 @@ def query_database(query, params=None):
         connection.close()
 
 def get_user_role(username, password):
-    query = "SELECT role FROM Users WHERE UserID = ? AND PW = ?"
+    query = "SELECT role FROM Users WHERE UserID = %s AND PW = %s"
     params = (username, password)
     df = query_database(query, params)
     if not df.empty:
@@ -50,7 +51,7 @@ def get_user_role(username, password):
         return None
 
 def get_access_level(role):
-    query = "SELECT access_levels FROM Roles WHERE role = ?"
+    query = "SELECT access_levels FROM Roles WHERE role = %s"
     params = (role,)
     df = query_database(query, params)
     if not df.empty:
@@ -157,3 +158,4 @@ def run_app(access_level):
 
 if __name__ == '__main__':
     main()
+
