@@ -43,7 +43,7 @@ def query_database(query, params=None):
         connection.close()
 
 def get_user_role(username, password):
-    query = "SELECT role FROM users WHERE UserID = %s AND PW = %s"
+    query = "SELECT role FROM Users WHERE UserID = %s AND PW = %s"
     params = (username, password)
     df = query_database(query, params)
     if not df.empty:
@@ -52,7 +52,7 @@ def get_user_role(username, password):
         return None
 
 def get_access_level(role):
-    query = "SELECT access_levels FROM role WHERE role = %s"
+    query = "SELECT access_levels FROM Roles WHERE role = %s"
     params = (role,)
     df = query_database(query, params)
     if not df.empty:
@@ -141,3 +141,4 @@ def run_app(access_level):
 
 if __name__ == '__main__':
     main()
+
