@@ -1,8 +1,7 @@
-from main import ChatBot
 import streamlit as st
 import pandas as pd
-import mysql.connector
-from mysql.connector import Error
+import sqlite3
+from sqlite3 import Error
 import os
 from dotenv import load_dotenv
 
@@ -15,26 +14,23 @@ load_dotenv()
 def create_connection():
     connection = None
     try:
-        connection = mysql.connector.connect(
-            host=os.getenv("DB_HOST"),
-            user=os.getenv("DB_USER"),
-            passwd=os.getenv("DB_PASSWORD"),
-            database=os.getenv("DB_NAME")
-        )
+        # Connect to the SQLite database
+        connection = sqlite3.connect('chroma.sqlite3')
     except Error as e:
         st.error(f"Error: '{e}'")
     return connection
 
 def query_database(query, params=None):
     connection = create_connection()
-    cursor = connection.cursor(dictionary=True)
+    cursor = connection.cursor()
     try:
         if params:
             cursor.execute(query, params)
         else:
             cursor.execute(query)
         result = cursor.fetchall()
-        return pd.DataFrame(result)
+        columns = [desc[0] for desc in cursor.description]
+        return pd.DataFrame(result, columns=columns)
     except Error as e:
         st.error(f"Error: '{e}'")
         return None
@@ -43,7 +39,7 @@ def query_database(query, params=None):
         connection.close()
 
 def get_user_role(username, password):
-    query = "SELECT role FROM Users WHERE UserID = %s AND PW = %s"
+    query = "SELECT role FROM Users WHERE UserID = ? AND PW = ?"
     params = (username, password)
     df = query_database(query, params)
     if not df.empty:
@@ -52,7 +48,7 @@ def get_user_role(username, password):
         return None
 
 def get_access_level(role):
-    query = "SELECT access_levels FROM Roles WHERE role = %s"
+    query = "SELECT access_levels FROM Roles WHERE role = ?"
     params = (role,)
     df = query_database(query, params)
     if not df.empty:
@@ -121,9 +117,13 @@ def run_app(access_level):
 
         # Function for generating LLM response
         def generate_response(input_dict):
-            nice_input = bot.preprocess_input(input_dict)
-            result = bot.rag_chain.invoke(nice_input)
-            return result
+            try:
+                nice_input = bot.preprocess_input(input_dict)
+                result = bot.rag_chain.invoke(nice_input)
+                return result
+            except Exception as e:
+                st.error(f"Error generating response: {e}")
+                return "An error occurred while generating the response."
 
         # Display chat messages
         for message in st.session_state.messages:
@@ -137,8 +137,12 @@ def run_app(access_level):
                 st.write(input)
 
             # Retrieve context from the database
-            context = bot.get_context_from_collection(input, access_role=access_level)
-            st.session_state.context_history.append(context)  # Store the context for potential future references
+            try:
+                context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
+                st.session_state.context_history.append(context)  # Store the context for potential future references
+            except Exception as e:
+                st.error(f"Error retrieving context: {e}")
+                context = "An error occurred while retrieving context."
 
             # Generate a new response
             input_dict = {"context": context, "question": input}
