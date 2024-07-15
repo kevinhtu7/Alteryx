@@ -8,14 +8,15 @@ from dotenv import load_dotenv
 # Set page configuration at the top of the script
 st.set_page_config(page_title="Meeting Information Bot")
 
-# Load environment variables
+# Load environment variables (if needed)
 load_dotenv()
 
 def create_connection():
     connection = None
     try:
-        # Connect to the SQLite database
-        connection = sqlite3.connect('chroma.sqlite3')
+        # Adjust the path to chroma.db based on its location in the repository
+        db_path = os.path.join(os.path.dirname(__file__), 'testdemoAARON', 'chroma.db')
+        connection = sqlite3.connect(db_path)
     except Error as e:
         st.error(f"Error: '{e}'")
     return connection
@@ -155,4 +156,3 @@ def run_app(access_level):
 
 if __name__ == '__main__':
     main()
-
