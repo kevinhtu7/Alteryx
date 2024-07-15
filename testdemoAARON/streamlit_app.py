@@ -15,7 +15,8 @@ def create_connection():
     connection = None
     try:
         # Adjust the path to chroma.db based on its location in the repository
-        db_path = os.path.join(os.path.dirname(__file__), 'testdemoAARON', 'chroma.db')
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        db_path = os.path.join(base_dir, 'testdemoAARON', 'chroma.db')
         connection = sqlite3.connect(db_path)
     except Error as e:
         st.error(f"Error: '{e}'")
