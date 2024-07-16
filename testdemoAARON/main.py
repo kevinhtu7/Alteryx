@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+import requests
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
@@ -24,9 +25,21 @@ class AnswerOnlyOutputParser(StrOutputParser):
         # Extract the answer from the response
         return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
+def download_chroma_db():
+    url = "https://github.com/asornbor/Alteryx_Testing/raw/main/testdemoAARON/chroma.db/chroma.sqlite3"
+    local_filename = "/tmp/chroma.sqlite3"  # Use a temporary path
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open(local_filename, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
+    return local_filename
+
 class ChatBot():
     def __init__(self, llm_type="Local (PHI3)", api_key=""):
         load_dotenv()
+        chroma_db_path = download_chroma_db()
+        os.environ["CHROMA_DB_PATH"] = chroma_db_path
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.llm_type = llm_type
         self.api_key = api_key
@@ -37,10 +50,10 @@ class ChatBot():
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
-        db_path = os.getenv('CHROMA_DB_PATH', 'chroma.db')
-        # Create the directory if it doesn't exist
-        os.makedirs(os.path.dirname(db_path), exist_ok=True)
-
+        db_path = os.getenv('CHROMA_DB_PATH')
+        if not db_path:
+            raise ValueError("CHROMA_DB_PATH environment variable not set or empty.")
+        
         client = db.PersistentClient(path=db_path)
         # Verify or create the collection
         try:
@@ -106,10 +119,6 @@ class ChatBot():
 
         # Concatenate context and question
         combined_text = f"{context} {question}"
-        # Anonymize, spellcheck, and ensure niceness
-        # anonymized = self.anonymize_text(combined_text)
-        # spellchecked = self.spellcheck_text(anonymized)
-        # nice_input = self.ensure_niceness(spellchecked)
         return combined_text
 
     def setup_langchain(self):
