@@ -30,7 +30,7 @@ class ChatBot():
         self.chroma_db_path = os.getenv("CHROMA_DB_PATH")
         if not self.chroma_db_path:
             raise ValueError("CHROMA_DB_PATH environment variable not set or empty.")
-        os.environ["CHROMA_DB_PATH"] = self.chroma_db_path
+        #os.environ["CHROMA_DB_PATH"] = self.chroma_db_path
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.llm_type = llm_type
         self.api_key = api_key
