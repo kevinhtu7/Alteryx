@@ -142,7 +142,7 @@ def run_app(access_level):
 
             # Retrieve context from the database
             try:
-                context = bot.get_context_from_collection(input, access_role)
+                context = bot.get_context_from_collection(input, access_role=df.iloc[0]['access_levels'])
                 #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
                 st.session_state.context_history.append(context)  # Store the context for potential future references
             except Exception as e:
