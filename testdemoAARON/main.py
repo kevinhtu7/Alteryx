@@ -28,11 +28,12 @@ class AnswerOnlyOutputParser(StrOutputParser):
 def download_chroma_db():
     url = "https://github.com/asornbor/Alteryx_Testing/raw/main/testdemoAARON/chroma.db/chroma.sqlite3"
     local_filename = "/tmp/chroma.sqlite3"  # Use a temporary path
-    with requests.get(url, stream=True) as r:
-        r.raise_for_status()
-        with open(local_filename, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                f.write(chunk)
+    if not os.path.exists(local_filename):
+        with requests.get(url, stream=True) as r:
+            r.raise_for_status()
+            with open(local_filename, 'wb') as f:
+                for chunk in r.iter_content(chunk_size=8192):
+                    f.write(chunk)
     return local_filename
 
 class ChatBot():
@@ -139,3 +140,4 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
+
