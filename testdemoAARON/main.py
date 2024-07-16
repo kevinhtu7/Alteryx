@@ -44,13 +44,14 @@ class ChatBot():
         # Initialize ChromaDB client using environment variable for path
         db_path = "testdemoAARON/chroma.db"
         client = db.PersistentClient(path=db_path)
+        collection = client.get_collection(name="Company_Documents")
         # Verify or create the collection
-        try:
-            collection = client.get_collection(name="Company_Documents")
-        except Exception as e:
-            print(f"Error fetching collection: {e}. Creating a new collection.")
-            client.create_collection(name="Company_Documents", metadata={"description": "Company related documents"})
-            collection = client.get_collection(name="Company_Documents")
+        #try:
+        #    collection = client.get_collection(name="Company_Documents")
+        #except Exception as e:
+        #    print(f"Error fetching collection: {e}. Creating a new collection.")
+        #    client.create_collection(name="Company_Documents", metadata={"description": "Company related documents"})
+        #    collection = client.get_collection(name="Company_Documents")
 
         return client, collection
 
