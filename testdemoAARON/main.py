@@ -37,8 +37,19 @@ class ChatBot():
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
-        client = db.PersistentClient(path="testdemoAARON/chroma.db")
-        collection = client.get_collection(name="Company_Documents")
+        db_path = os.getenv('CHROMA_DB_PATH', 'chroma.db')
+        # Create the directory if it doesn't exist
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
+
+        client = db.PersistentClient(path=db_path)
+        # Verify or create the collection
+        try:
+            collection = client.get_collection(name="Company_Documents")
+        except Exception as e:
+            print(f"Error fetching collection: {e}. Creating a new collection.")
+            client.create_collection(name="Company_Documents", metadata={"description": "Company related documents"})
+            collection = client.get_collection(name="Company_Documents")
+
         return client, collection
 
     def setup_language_model(self):
@@ -76,7 +87,6 @@ class ChatBot():
                 query_texts=[input],
                 n_results=10
             )
-        # context = " ".join([doc['content'] for doc in documents])
         for document in documents["documents"]:
             context = document
         return context
@@ -96,13 +106,11 @@ class ChatBot():
 
         # Concatenate context and question
         combined_text = f"{context} {question}"
-        #nice_input = combined_text
-        #return nice_input
         # Anonymize, spellcheck, and ensure niceness
         # anonymized = self.anonymize_text(combined_text)
         # spellchecked = self.spellcheck_text(anonymized)
         # nice_input = self.ensure_niceness(spellchecked)
-        # return nice_input
+        return combined_text
 
     def setup_langchain(self):
         template = """
