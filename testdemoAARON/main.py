@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 import os
-import requests
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
@@ -28,7 +27,10 @@ class AnswerOnlyOutputParser(StrOutputParser):
 class ChatBot():
     def __init__(self, llm_type="Local (PHI3)", api_key=""):
         load_dotenv()
-        os.environ["CHROMA_DB_PATH"] = chroma_db_path
+        self.chroma_db_path = os.getenv("CHROMA_DB_PATH")
+        if not self.chroma_db_path:
+            raise ValueError("CHROMA_DB_PATH environment variable not set or empty.")
+        os.environ["CHROMA_DB_PATH"] = self.chroma_db_path
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.llm_type = llm_type
         self.api_key = api_key
@@ -40,9 +42,6 @@ class ChatBot():
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
         db_path = os.getenv('CHROMA_DB_PATH')
-        if not db_path:
-            raise ValueError("CHROMA_DB_PATH environment variable not set or empty.")
-        
         client = db.PersistentClient(path=db_path)
         # Verify or create the collection
         try:
