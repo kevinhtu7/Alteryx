@@ -25,18 +25,6 @@ class AnswerOnlyOutputParser(StrOutputParser):
         # Extract the answer from the response
         return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
-def download_chroma_db():
-    url = "https://github.com/asornbor/Alteryx_Testing/raw/main/testdemoAARON/chroma.db/chroma.sqlite3"
-    local_filename = "testdemoAARON/chroma.sqlite3"  # Use a temporary path
-    # Skip downloading if the file already exists
-    if not os.path.exists(local_filename):
-        with requests.get(url, stream=True) as r:
-            r.raise_for_status()
-            with open(local_filename, 'wb') as f:
-                for chunk in r.iter_content(chunk_size=8192):
-                    f.write(chunk)
-    return local_filename
-
 class ChatBot():
     def __init__(self, llm_type="Local (PHI3)", api_key=""):
         load_dotenv()
