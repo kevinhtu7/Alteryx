@@ -28,7 +28,6 @@ class AnswerOnlyOutputParser(StrOutputParser):
 class ChatBot():
     def __init__(self, llm_type="Local (PHI3)", api_key=""):
         load_dotenv()
-        chroma_db_path = download_chroma_db()
         os.environ["CHROMA_DB_PATH"] = chroma_db_path
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.llm_type = llm_type
