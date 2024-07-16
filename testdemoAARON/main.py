@@ -27,7 +27,7 @@ class AnswerOnlyOutputParser(StrOutputParser):
 
 def download_chroma_db():
     url = "https://github.com/asornbor/Alteryx_Testing/raw/main/testdemoAARON/chroma.db/chroma.sqlite3"
-    local_filename = "/chroma.sqlite3"  # Use a temporary path
+    local_filename = "/testdemoAARON/chroma.sqlite3"  # Use a temporary path
     # Skip downloading if the file already exists
     if not os.path.exists(local_filename):
         with requests.get(url, stream=True) as r:
