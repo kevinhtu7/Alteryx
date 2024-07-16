@@ -96,8 +96,8 @@ class ChatBot():
 
         # Concatenate context and question
         combined_text = f"{context} {question}"
-        nice_input = combined_text
-        return nice_input
+        #nice_input = combined_text
+        #return nice_input
         # Anonymize, spellcheck, and ensure niceness
         # anonymized = self.anonymize_text(combined_text)
         # spellchecked = self.spellcheck_text(anonymized)
