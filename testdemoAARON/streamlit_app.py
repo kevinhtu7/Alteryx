@@ -142,7 +142,8 @@ def run_app(access_level):
 
             # Retrieve context from the database
             try:
-                context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
+                context = bot.get_context_from_collection(input, access_role)
+                #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
                 st.session_state.context_history.append(context)  # Store the context for potential future references
             except Exception as e:
                 st.error(f"Error retrieving context: {e}")
