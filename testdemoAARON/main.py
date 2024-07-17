@@ -92,8 +92,6 @@ class ChatBot():
                                           n_results=3,
                                           where={"$or": access_text}
                                           )
-        
-    
         for document in documents["documents"]:
             context = document
         return context
