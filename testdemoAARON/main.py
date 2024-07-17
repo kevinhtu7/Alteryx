@@ -78,21 +78,44 @@ class ChatBot():
             except Exception as e:
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
-    def get_context_from_collection(self, input, access_role):
+
+        def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
         if access_role == "General Access":
-            documents = self.collection.query(
-                query_texts=[input],
-                n_results=5
-            )
-        else:
-            documents = self.collection.query(
-                query_texts=[input],
-                n_results=10
-            )
+            documents = self.collection.query(query_texts=[input],
+                                          n_results=3,
+                                          where={"access_role": access_role}
+                                          )
+        elif access_role == "Executive Access":
+            access_text = [{"access_role": "General Access"}, {"access_role": access_role}]
+            documents = self.collection.query(query_texts=[input],
+                                          n_results=3,
+                                          where={"$or": access_text}
+                                          )
+        
+        
         for document in documents["documents"]:
             context = document
         return context
+    
+
+    # def get_context_from_collection(self, input, access_role):
+    #     # Extract context from the collection
+    #     if access_role == "General Access":
+    #         documents = self.collection.query(
+    #             query_texts=[input],
+    #             n_results=5
+    #         )
+    #     else:
+    #         documents = self.collection.query(
+    #             query_texts=[input],
+    #             n_results=10
+    #         )
+    #     for document in documents["documents"]:
+    #         context = document
+    #     return context
+
+    
 
     # Uncomment this method if it's necessary
     # def initialize_tools(self):
