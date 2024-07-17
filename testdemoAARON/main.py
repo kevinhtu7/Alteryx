@@ -79,7 +79,7 @@ class ChatBot():
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
 
-        def get_context_from_collection(self, input, access_role):
+    def get_context_from_collection(self, input, access_role):
         # Extract context from the collection
         if access_role == "General Access":
             documents = self.collection.query(
