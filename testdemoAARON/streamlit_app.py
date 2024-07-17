@@ -60,6 +60,23 @@ def get_access_level(role):
     else:
         return None
 
+def query_documents(access_level):
+    query = """
+    SELECT * FROM Documents 
+    WHERE AccessLevel IN ('general', %s)
+    """
+    params = (access_level,)
+    return query_database(query, params)
+
+def search_documents(query, access_level):
+    query = """
+    SELECT * FROM Documents 
+    WHERE (Title LIKE %s OR Content LIKE %s) 
+    AND AccessLevel IN ('general', %s)
+    """
+    params = (f"%{query}%", f"%{query}%", access_level)
+    return query_database(query, params)
+
 def main():
     st.title("Meeting Information Bot")
 
@@ -114,6 +131,23 @@ def run_app(access_level):
             st.error(f"Failed to initialize the chatbot: {e}")
             st.stop()
 
+        # Display documents based on access level
+        if st.button("View Documents"):
+            documents = query_documents(access_level)
+            if not documents.empty:
+                st.write(documents)
+            else:
+                st.write("No documents found for your access level.")
+
+        # Implement search functionality
+        search_query = st.text_input("Search Documents")
+        if st.button("Search") and search_query:
+            results = search_documents(search_query, access_level)
+            if not results.empty:
+                st.write(results)
+            else:
+                st.write("Sorry, you don't have access to the requested documents or no documents match your search.")
+
         # Initialize or maintain the list of past interactions and contexts
         if "messages" not in st.session_state:
             st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
@@ -143,7 +177,6 @@ def run_app(access_level):
             # Retrieve context from the database
             try:
                 context = bot.get_context_from_collection(input, access_role=access_level)
-                #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
                 st.session_state.context_history.append(context)  # Store the context for potential future references
             except Exception as e:
                 st.error(f"Error retrieving context: {e}")
