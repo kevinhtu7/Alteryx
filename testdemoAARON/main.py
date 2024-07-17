@@ -83,8 +83,8 @@ class ChatBot():
         # Extract context from the collection
         if access_role == "General":
              documents = self.collection.query(query_texts=[input],
-                                          n_results=5
-                                          # where={"access_role": access_role}
+                                          n_results=5,
+                                          where={"access_role": access_role}
                                           )
         elif access_role == "Executive":
             # access_text = [{"access_role": "General"}, {"access_role": access_role}]
