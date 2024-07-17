@@ -84,6 +84,11 @@ def main():
                 run_app(access_level)
             else:
                 st.error("Invalid username or password")
+
+        else:
+            if st.button("Logout"):
+                st.session_state.logged_in = False
+                st.experimental_rerun()
     else:
         run_app(st.session_state.access_level)
 
