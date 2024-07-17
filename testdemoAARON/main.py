@@ -92,6 +92,8 @@ class ChatBot():
                                           n_results=10
                                           # where={"$or": access_text}
                                           )
+        else:
+            print("Both conditions failed")
         for document in documents["documents"]:
             context = document
         return context 
