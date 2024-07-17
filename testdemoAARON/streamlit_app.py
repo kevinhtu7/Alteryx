@@ -147,6 +147,7 @@ def run_app(access_level):
             # Retrieve context from the database
             try:
                 context = bot.get_context_from_collection(input, access_role=access_level)
+                print(context)
 
                 if context['access_level'] == 'Executive' and access_level != 'Executive':
                     response = 'Sorry, you do not have that access level.'
