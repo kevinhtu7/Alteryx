@@ -86,15 +86,15 @@ class ChatBot():
                                           n_results=3,
                                           where={"access_role": access_role}
                                           )
-         elif access_role == "Executive":
+        elif access_role == "Executive":
             access_text = [{"access_role": "General"}, {"access_role": access_role}]
             documents = self.collection.query(query_texts=[input],
                                           n_results=3,
                                           where={"$or": access_text}
                                           )
-         for document in documents["documents"]:
+        for document in documents["documents"]:
             context = document
-         return context 
+        return context 
 
     # def get_context_from_collection(self, input, access_role):
     #     # Extract context from the collection
