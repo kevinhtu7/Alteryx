@@ -84,11 +84,6 @@ def main():
                 run_app(access_level)
             else:
                 st.error("Invalid username or password")
-
-        else:
-            if st.button("Logout"):
-                st.session_state.logged_in = False
-                st.experimental_rerun()
     else:
         run_app(st.session_state.access_level)
 
@@ -107,6 +102,10 @@ def run_app(access_level):
             st.session_state.api_key = st.text_input("Enter OpenAI API Key", type="password")
         else:
             st.session_state.api_key = ""
+            
+    if st.button("Logout"):
+        st.session_state.logged_in = False
+        st.experimental_rerun()
 
     # Prevent the user from asking questions if OpenAI is selected and no API key is entered
     if st.session_state.llm_selection == "External (OpenAI)" and not st.session_state.api_key:
