@@ -10,8 +10,6 @@ from langchain_community.llms import HuggingFaceHub
 from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
-from transformers import T5ForConditionalGeneration, T5Tokenizer
-import torch
 import logging
 import sqlite3
 
@@ -20,6 +18,11 @@ from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
 from textblob import TextBlob
+
+#class AnswerOnlyOutputParser(StrOutputParser):
+#    def parse(self, response):
+        # Extract the answer from the response
+ #       return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -30,18 +33,32 @@ class AnswerOnlyOutputParser(StrOutputParser):
 class ChatBot():
     def __init__(self, llm_type="Local (PHI3)", api_key=""):
         load_dotenv()
+        #self.chroma_db_path = os.getenv("CHROMA_DB_PATH")
+        #if not self.chroma_db_path:
+        #    raise ValueError("CHROMA_DB_PATH environment variable not set or empty.")
+        #os.environ["CHROMA_DB_PATH"] = self.chroma_db_path
+        
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.llm_type = llm_type
         self.api_key = api_key
         self.setup_language_model()
         self.setup_langchain()
-        self.initialize_t5_model()
+        # Uncomment this line if `initialize_tools` is necessary
+        # self.initialize_tools()
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
         db_path = "testdemoAARON/chroma.db"
         client = db.PersistentClient(path=db_path)
         collection = client.get_collection(name="Company_Documents")
+        # Verify or create the collection
+        #try:
+        #    collection = client.get_collection(name="Company_Documents")
+        #except Exception as e:
+        #    print(f"Error fetching collection: {e}. Creating a new collection.")
+        #    client.create_collection(name="Company_Documents", metadata={"description": "Company related documents"})
+        #    collection = client.get_collection(name="Company_Documents")
+
         return client, collection
 
     def setup_language_model(self):
@@ -67,32 +84,55 @@ class ChatBot():
             except Exception as e:
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
     
-    def initialize_t5_model(self):
-        self.t5_model = T5ForConditionalGeneration.from_pretrained("t5-base")
-        self.t5_tokenizer = T5Tokenizer.from_pretrained("t5-base")
-
-    def rerank_documents(self, query, documents):
-        t5_input = "query: " + query + " documents: " + " ||| ".join(documents)
-        inputs = self.t5_tokenizer.encode(t5_input, return_tensors="pt", max_length=512, truncation=True)
-        outputs = self.t5_model.generate(inputs, max_length=512)
-        reranked_output = self.t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
-        return reranked_output.split(" ||| ")
-
     def get_context_from_collection(self, input, access_levels):
         # Extract context from the collection
         if len(access_levels) == 1:
             documents = self.collection.query(query_texts=[input],
-                                              n_results=10,
-                                              where=access_levels[0])
+                                          n_results=10,
+                                          #where={"access_role": "General Access"}
+                                          where=access_levels[0]
+                                          )
+        # if access_role == "General":
+       #      documents = self.collection.query(query_texts=[input],
+       #                                   n_results=5,
+       #                                   where={"access_role": access_role+" Access"}
+       #                                   )
+       # elif access_role == "Executive":
+       #     access_text = [{"access_role": "General Access"}, {"access_role": "Executive Access"}]
+       #     documents = self.collection.query(query_texts=[input],
+       #                                   n_results=10,
+       #                                   where={"$or": access_text}
+       #                                   )
         else:
             documents = self.collection.query(query_texts=[input],
                                               n_results=10,
-                                              where={"$or": access_levels})
-        
-        # Access the 'document' key in the documents correctly
-        document_texts = [doc['document'] for doc in documents['documents']]
-        reranked_documents = self.rerank_documents(input, document_texts)
-        return reranked_documents[0]  # Assuming the top-ranked document is used for context
+                                              where={"$or": access_levels}
+                                              )
+        for document in documents["documents"]:
+            context = document
+        return context 
+
+    # def get_context_from_collection(self, input, access_role):
+    #     # Extract context from the collection
+    #     if access_role == "General Access":
+    #         documents = self.collection.query(
+    #             query_texts=[input],
+    #             n_results=5
+    #         )
+    #     else:
+    #         documents = self.collection.query(
+    #             query_texts=[input],
+    #             n_results=10
+    #         )
+    #     for document in documents["documents"]:
+    #         context = document
+    #     return context
+
+
+
+    
+
+    
 
     # Uncomment this method if it's necessary
     # def initialize_tools(self):
@@ -121,6 +161,7 @@ class ChatBot():
         Question: {question}
         Answer:
         """
+
         self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
         self.rag_chain = (
             {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context and question
@@ -128,3 +169,4 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
+
