@@ -55,10 +55,9 @@ class ChatBot():
         scores = self.reranker_tokenizer.batch_decode(outputs, skip_special_tokens=True)
         # Assign scores to documents and sort
         for i, doc in enumerate(documents):
-            doc['score'] = float(scores[i].replace(" ", "").replace("\n", ""))
+            #doc['score'] = float(scores[i].replace(" ", "").replace("\n", ""))
+            doc['score'] = float(scores[i])
         return sorted(documents, key=lambda x: x['score'], reverse=True)
-            #doc['score'] = float(scores[i])
-        #return sorted(documents, key=lambda x: x['score'], reverse=True)
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
