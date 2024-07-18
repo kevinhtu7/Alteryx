@@ -91,19 +91,26 @@ class ChatBot():
     
     def get_context_from_collection(self, input, access_levels):
         try:
-            if len(access_levels) == 1:
-                documents = self.collection.query(query_texts=[input],
-                                                  n_results=10,
-                                                  where=access_levels[0])
-            else:
-                documents = self.collection.query(query_texts=[input],
-                                                  n_results=10,
-                                                  where={"$or": access_levels})
+            # Check if the context exists regardless of the access level
+            all_documents = self.collection.query(query_texts=[input], n_results=10)
             
-            if not documents["documents"]:
+            if not all_documents["documents"]:
                 return "No relevant documents found"
             
-            context = " ".join(documents["documents"])
+            # Check if the context is accessible with the given access levels
+            if len(access_levels) == 1:
+                accessible_documents = self.collection.query(query_texts=[input],
+                                                             n_results=10,
+                                                             where=access_levels[0])
+            else:
+                accessible_documents = self.collection.query(query_texts=[input],
+                                                             n_results=10,
+                                                             where={"$or": access_levels})
+            
+            if not accessible_documents["documents"]:
+                return "You do not have access"
+            
+            context = " ".join(accessible_documents["documents"])
             return context
         except Exception as e:
             logging.error(f"Error retrieving context: {e}")
@@ -160,3 +167,4 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
+
