@@ -83,7 +83,8 @@ class ChatBot():
         if len(access_levels) == 1:
             documents = self.collection.query(query_texts=[input],
                                           n_results=10,
-                                          where={"access_role": "General Access"}
+                                          #where={"access_role": "General Access"}
+                                          where=access_levels[0]
                                           )
         # if access_role == "General":
        #      documents = self.collection.query(query_texts=[input],
