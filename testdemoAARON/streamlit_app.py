@@ -155,7 +155,7 @@ def run_app(access_levels):
 
             # Retrieve context from the database
             try:
-                context = bot.get_context_from_collection(input, access_levels=access_levels)
+                context = bot.get_context_from_collection(input, st.session_state.access_levels)
                 st.session_state.context_history.append(context)
             except Exception as e:
                 st.error(f"Error retrieving context: {e}")
@@ -170,5 +170,5 @@ def run_app(access_levels):
                 message = {"role": "assistant", "content": response}
                 st.session_state.messages.append(message)
 
-if __name__='__main__':
+if __name__ == '__main__':
     main()
