@@ -85,8 +85,8 @@ def main():
         if st.button("Login"):
             role = get_user_role(username, password)
             if role:
-                access_levels = create_access_levels(role)
-                #access_level = get_access_level(role)
+                access_string = get_access_level(role)
+                access_levels = create_access_levels(access_string)
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.session_state.access_level = access_levels
