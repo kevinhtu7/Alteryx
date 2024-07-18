@@ -94,26 +94,28 @@ class ChatBot():
 
     def get_context_from_collection(self, input, access_levels):
         try:
+            logging.info(f"Querying all documents for input: {input}")
             # Check if context exists without any role restrictions
             all_documents = self.collection.query(query_texts=[input], n_results=10)
             logging.info(f"All documents: {all_documents}")
+
             if not all_documents["documents"]:
+                logging.info("No relevant documents found for the input.")
                 return "No relevant documents found"
-            
+
+            logging.info(f"Querying role-based documents for input: {input} with access levels: {access_levels}")
             # Now check with role-based access levels
             if len(access_levels) == 1:
-                role_documents = self.collection.query(query_texts=[input],
-                                                       n_results=10,
-                                                       where=access_levels[0])
+                role_documents = self.collection.query(query_texts=[input], n_results=10, where=access_levels[0])
             else:
-                role_documents = self.collection.query(query_texts=[input],
-                                                       n_results=10,
-                                                       where={"$or": access_levels})
+                role_documents = self.collection.query(query_texts=[input], n_results=10, where={"$or": access_levels})
+            
             logging.info(f"Role-based documents: {role_documents}")
-            
+
             if not role_documents["documents"]:
+                logging.info("User does not have access to the relevant documents.")
                 return "You do not have access"
-            
+
             context = " ".join([doc["text"] for doc in role_documents["documents"]])
             return context
         except Exception as e:
