@@ -65,7 +65,8 @@ def get_access_level(role):
     params = (role,)
     df = query_database(query, params)
     if not df.empty:
-        return df.iloc[0]['access_levels']
+        access_levels = df.iloc[0]['access_levels']
+        return access_levels
     else:
         return None
 
@@ -75,7 +76,7 @@ def main():
     if "logged_in" not in st.session_state:
         st.session_state.logged_in = False
         st.session_state.username = ""
-        st.session_state.access_level = ""
+        st.session_state.access_levels = []
 
     if not st.session_state.logged_in:
         # Login Page
@@ -90,7 +91,7 @@ def main():
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.session_state.access_levels = access_levels
-                st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
+                st.success(f"Welcome {username}! Your role is {role} with access levels: {access_levels}.")
                 run_app(access_levels)
             else:
                 st.error("Invalid username or password")
@@ -157,8 +158,10 @@ def run_app(access_levels):
             # Retrieve context from the database
             try:
                 context = bot.get_context_from_collection(input, access_levels=access_levels)
-                #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
-                st.session_state.context_history.append(context)  # Store the context for potential future references
+                if "No documents found" in context or "You do not have access" in context:
+                    st.error(context)
+                else:
+                    st.session_state.context_history.append(context)  # Store the context for potential future references
             except Exception as e:
                 st.error(f"Error retrieving context: {e}")
                 context = "An error occurred while retrieving context."
@@ -174,4 +177,5 @@ def run_app(access_levels):
 
 if __name__ == '__main__':
     main()
+
 
