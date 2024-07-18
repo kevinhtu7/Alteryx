@@ -87,7 +87,7 @@ class ChatBot():
                                           where={"access_role": access_role}
                                           )
         elif access_role == "Executive":
-            access_text = [{"access_role": "General"}, {"access_role": access_role}]
+            access_text = [{"access_role": "General"}, {"access_role": "Executive"}]
             documents = self.collection.query(query_texts=[input],
                                           n_results=10,
                                           where={"$or": access_text}
