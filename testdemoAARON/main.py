@@ -28,7 +28,12 @@ class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
         if "you do not have access" in response.lower():
             return "You do not have access"
-        return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
+        elif "no relevant documents found" in response.lower():
+            return "No relevant documents found"
+        elif "Answer:" in response:
+            return response.split("Answer:")[1].strip()
+        else:
+            return response.strip()
 
 class ChatBot():
     def __init__(self, llm_type="Local (PHI3)", api_key=""):
@@ -85,32 +90,24 @@ class ChatBot():
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
     
     def get_context_from_collection(self, input, access_levels):
-        # Extract context from the collection
-        if len(access_levels) == 1:
-            documents = self.collection.query(query_texts=[input],
-                                          n_results=10,
-                                          #where={"access_role": "General Access"}
-                                          where=access_levels[0]
-                                          )
-        # if access_role == "General":
-       #      documents = self.collection.query(query_texts=[input],
-       #                                   n_results=5,
-       #                                   where={"access_role": access_role+" Access"}
-       #                                   )
-       # elif access_role == "Executive":
-       #     access_text = [{"access_role": "General Access"}, {"access_role": "Executive Access"}]
-       #     documents = self.collection.query(query_texts=[input],
-       #                                   n_results=10,
-       #                                   where={"$or": access_text}
-       #                                   )
-        else:
-            documents = self.collection.query(query_texts=[input],
-                                              n_results=10,
-                                              where={"$or": access_levels}
-                                              )
-        for document in documents["documents"]:
-            context = document
-        return context 
+        try:
+            if len(access_levels) == 1:
+                documents = self.collection.query(query_texts=[input],
+                                                  n_results=10,
+                                                  where=access_levels[0])
+            else:
+                documents = self.collection.query(query_texts=[input],
+                                                  n_results=10,
+                                                  where={"$or": access_levels})
+            
+            if not documents["documents"]:
+                return "No relevant documents found"
+            
+            context = " ".join(documents["documents"])
+            return context
+        except Exception as e:
+            logging.error(f"Error retrieving context: {e}")
+            return "An error occurred while retrieving context."
 
     # def get_context_from_collection(self, input, access_role):
     #     # Extract context from the collection
@@ -127,12 +124,6 @@ class ChatBot():
     #     for document in documents["documents"]:
     #         context = document
     #     return context
-
-
-
-    
-
-    
 
     # Uncomment this method if it's necessary
     # def initialize_tools(self):
@@ -169,4 +160,3 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
-
