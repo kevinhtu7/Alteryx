@@ -30,11 +30,6 @@ class AnswerOnlyOutputParser(StrOutputParser):
 class ChatBot():
     def __init__(self, llm_type="Local (PHI3)", api_key=""):
         load_dotenv()
-        #self.chroma_db_path = os.getenv("CHROMA_DB_PATH")
-        #if not self.chroma_db_path:
-        #    raise ValueError("CHROMA_DB_PATH environment variable not set or empty.")
-        #os.environ["CHROMA_DB_PATH"] = self.chroma_db_path
-        
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.llm_type = llm_type
         self.api_key = api_key
@@ -47,14 +42,6 @@ class ChatBot():
         db_path = "testdemoAARON/chroma.db"
         client = db.PersistentClient(path=db_path)
         collection = client.get_collection(name="Company_Documents")
-        # Verify or create the collection
-        #try:
-        #    collection = client.get_collection(name="Company_Documents")
-        #except Exception as e:
-        #    print(f"Error fetching collection: {e}. Creating a new collection.")
-        #    client.create_collection(name="Company_Documents", metadata={"description": "Company related documents"})
-        #    collection = client.get_collection(name="Company_Documents")
-
         return client, collection
 
     def setup_language_model(self):
@@ -96,33 +83,16 @@ class ChatBot():
         if len(access_levels) == 1:
             documents = self.collection.query(query_texts=[input],
                                               n_results=10,
-                                              #where={"access_role": "General Access"}
                                               where=access_levels[0])
         else:
             documents = self.collection.query(query_texts=[input],
                                               n_results=10,
                                               where={"$or": access_levels})
         
-        # Access the 'text' key in the documents correctly
+        # Access the 'content' key in the documents correctly
         document_texts = [doc['content'] for doc in documents['documents']]
         reranked_documents = self.rerank_documents(input, document_texts)
         return reranked_documents[0]  # Assuming the top-ranked document is used for context
-
-    # def get_context_from_collection(self, input, access_role):
-    #     # Extract context from the collection
-    #     if access_role == "General Access":
-    #         documents = self.collection.query(
-    #             query_texts=[input],
-    #             n_results=5
-    #         )
-    #     else:
-    #         documents = self.collection.query(
-    #             query_texts=[input],
-    #             n_results=10
-    #         )
-    #     for document in documents["documents"]:
-    #         context = document
-    #     return context
 
     # Uncomment this method if it's necessary
     # def initialize_tools(self):
