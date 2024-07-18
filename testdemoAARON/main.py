@@ -24,7 +24,7 @@ from textblob import TextBlob
         # Extract the answer from the response
  #       return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
-class AnswerOutputParser(StrOutputParser):
+class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
         if "you do not have access" in response.lower():
             return "You do not have access"
