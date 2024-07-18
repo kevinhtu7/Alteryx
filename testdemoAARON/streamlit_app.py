@@ -95,9 +95,9 @@ def main():
             else:
                 st.error("Invalid username or password")
     else:
-        run_app(st.session_state.access_level)
+        run_app(st.session_state.access_levels)
 
-def run_app(access_level):
+def run_app(access_levels):
     # Sidebar elements
     with st.sidebar:
         st.title('Meeting Information Bot')
