@@ -109,7 +109,7 @@ class ChatBot():
             if not role_documents["documents"]:
                 return "You do not have access"
             
-            context = " ".join(role_documents["documents"])
+            context = " ".join(documents["documents"] for documents in role_documents["documents"])
             return context
         except Exception as e:
             logging.error(f"Error retrieving context: {e}")
