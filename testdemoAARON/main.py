@@ -116,7 +116,8 @@ class ChatBot():
         # for document in documents["documents"]:
         #    context = document
         reranked_documents = self.rerank_documents(input, documents["documents"])
-        context = " ".join([doc["text"] for doc in reranked_documents[:5]])  # Use top 5 reranked documents
+        #context = " ".join([doc["text"] for doc in reranked_documents[:5]])  # Use top 5 reranked documents
+        context = reranked_documents  # Use top 5 reranked documents
         return context 
 
 
