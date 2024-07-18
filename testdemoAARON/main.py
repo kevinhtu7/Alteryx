@@ -19,10 +19,10 @@ from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
 from textblob import TextBlob
 
-#class AnswerOnlyOutputParser(StrOutputParser):
-#    def parse(self, response):
-        # Extract the answer from the response
- #       return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
+# class AnswerOnlyOutputParser(StrOutputParser):
+#     def parse(self, response):
+#         # Extract the answer from the response
+#         return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -38,10 +38,10 @@ class AnswerOnlyOutputParser(StrOutputParser):
 class ChatBot():
     def __init__(self, llm_type="Local (PHI3)", api_key=""):
         load_dotenv()
-        #self.chroma_db_path = os.getenv("CHROMA_DB_PATH")
-        #if not self.chroma_db_path:
-        #    raise ValueError("CHROMA_DB_PATH environment variable not set or empty.")
-        #os.environ["CHROMA_DB_PATH"] = self.chroma_db_path
+        # self.chroma_db_path = os.getenv("CHROMA_DB_PATH")
+        # if not self.chroma_db_path:
+        #     raise ValueError("CHROMA_DB_PATH environment variable not set or empty.")
+        # os.environ["CHROMA_DB_PATH"] = self.chroma_db_path
         
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.llm_type = llm_type
@@ -57,12 +57,12 @@ class ChatBot():
         client = db.PersistentClient(path=db_path)
         collection = client.get_collection(name="Company_Documents")
         # Verify or create the collection
-        #try:
-        #    collection = client.get_collection(name="Company_Documents")
-        #except Exception as e:
-        #    print(f"Error fetching collection: {e}. Creating a new collection.")
-        #    client.create_collection(name="Company_Documents", metadata={"description": "Company related documents"})
-        #    collection = client.get_collection(name="Company_Documents")
+        # try:
+        #     collection = client.get_collection(name="Company_Documents")
+        # except Exception as e:
+        #     print(f"Error fetching collection: {e}. Creating a new collection.")
+        #     client.create_collection(name="Company_Documents", metadata={"description": "Company related documents"})
+        #     collection = client.get_collection(name="Company_Documents")
 
         return client, collection
 
@@ -88,29 +88,28 @@ class ChatBot():
                 )
             except Exception as e:
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
-    
+
     def get_context_from_collection(self, input, access_levels):
         try:
-            # Check if the context exists regardless of the access level
+            # Check if context exists without any role restrictions
             all_documents = self.collection.query(query_texts=[input], n_results=10)
-            
             if not all_documents["documents"]:
                 return "No relevant documents found"
             
-            # Check if the context is accessible with the given access levels
+            # Now check with role-based access levels
             if len(access_levels) == 1:
-                accessible_documents = self.collection.query(query_texts=[input],
-                                                             n_results=10,
-                                                             where=access_levels[0])
+                role_documents = self.collection.query(query_texts=[input],
+                                                       n_results=10,
+                                                       where=access_levels[0])
             else:
-                accessible_documents = self.collection.query(query_texts=[input],
-                                                             n_results=10,
-                                                             where={"$or": access_levels})
+                role_documents = self.collection.query(query_texts=[input],
+                                                       n_results=10,
+                                                       where={"$or": access_levels})
             
-            if not accessible_documents["documents"]:
+            if not role_documents["documents"]:
                 return "You do not have access"
             
-            context = " ".join(accessible_documents["documents"])
+            context = " ".join(role_documents["documents"])
             return context
         except Exception as e:
             logging.error(f"Error retrieving context: {e}")
@@ -167,4 +166,3 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
-
