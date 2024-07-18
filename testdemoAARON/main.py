@@ -10,6 +10,8 @@ from langchain_community.llms import HuggingFaceHub
 from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
+from transformers import T5ForConditionalGeneration, T5Tokenizer
+import torch
 import logging
 import sqlite3
 
@@ -18,11 +20,6 @@ from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
 from textblob import TextBlob
-
-#class AnswerOnlyOutputParser(StrOutputParser):
-#    def parse(self, response):
-        # Extract the answer from the response
- #       return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -43,8 +40,7 @@ class ChatBot():
         self.api_key = api_key
         self.setup_language_model()
         self.setup_langchain()
-        # Uncomment this line if `initialize_tools` is necessary
-        # self.initialize_tools()
+        self.initialize_t5_model()
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
@@ -84,33 +80,33 @@ class ChatBot():
             except Exception as e:
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
     
+    def initialize_t5_model(self):
+        self.t5_model = T5ForConditionalGeneration.from_pretrained("t5-base")
+        self.t5_tokenizer = T5Tokenizer.from_pretrained("t5-base")
+
+    def rerank_documents(self, query, documents):
+        t5_input = "query: " + query + " documents: " + " ||| ".join(documents)
+        inputs = self.t5_tokenizer.encode(t5_input, return_tensors="pt", max_length=512, truncation=True)
+        outputs = self.t5_model.generate(inputs, max_length=512)
+        reranked_output = self.t5_tokenizer.decode(outputs[0], skip_special_tokens=True)
+        return reranked_output.split(" ||| ")
+
     def get_context_from_collection(self, input, access_levels):
         # Extract context from the collection
         if len(access_levels) == 1:
             documents = self.collection.query(query_texts=[input],
-                                          n_results=10,
-                                          #where={"access_role": "General Access"}
-                                          where=access_levels[0]
-                                          )
-        # if access_role == "General":
-       #      documents = self.collection.query(query_texts=[input],
-       #                                   n_results=5,
-       #                                   where={"access_role": access_role+" Access"}
-       #                                   )
-       # elif access_role == "Executive":
-       #     access_text = [{"access_role": "General Access"}, {"access_role": "Executive Access"}]
-       #     documents = self.collection.query(query_texts=[input],
-       #                                   n_results=10,
-       #                                   where={"$or": access_text}
-       #                                   )
+                                              n_results=10,
+                                              #where={"access_role": "General Access"}
+                                              where=access_levels[0])
         else:
             documents = self.collection.query(query_texts=[input],
                                               n_results=10,
-                                              where={"$or": access_levels}
-                                              )
-        for document in documents["documents"]:
-            context = document
-        return context 
+                                              where={"$or": access_levels})
+        
+        # Access the 'text' key in the documents correctly
+        document_texts = [doc['text'] for doc in documents['documents']]
+        reranked_documents = self.rerank_documents(input, document_texts)
+        return reranked_documents[0]  # Assuming the top-ranked document is used for context
 
     # def get_context_from_collection(self, input, access_role):
     #     # Extract context from the collection
@@ -127,12 +123,6 @@ class ChatBot():
     #     for document in documents["documents"]:
     #         context = document
     #     return context
-
-
-
-    
-
-    
 
     # Uncomment this method if it's necessary
     # def initialize_tools(self):
@@ -161,7 +151,6 @@ class ChatBot():
         Question: {question}
         Answer:
         """
-
         self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
         self.rag_chain = (
             {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context and question
@@ -169,4 +158,3 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
-
