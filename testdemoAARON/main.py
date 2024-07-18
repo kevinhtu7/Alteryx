@@ -48,7 +48,8 @@ class ChatBot():
         self.reranker_tokenizer = T5Tokenizer.from_pretrained("t5-base")
 
     def rerank_documents(self, query, documents):
-        input_texts = [f"query: {query} document: {doc['text']}" for doc in documents]
+        #input_texts = [f"query: {query} document: {doc['text']}" for doc in documents]
+        input_texts = [f"query: {query} document: {doc}" for doc in documents]
         inputs = self.reranker_tokenizer(input_texts, return_tensors="pt", padding=True, truncation=True)
         outputs = self.reranker_model.generate(input_ids=inputs.input_ids, attention_mask=inputs.attention_mask, max_length=64)
         scores = self.reranker_tokenizer.batch_decode(outputs, skip_special_tokens=True)
