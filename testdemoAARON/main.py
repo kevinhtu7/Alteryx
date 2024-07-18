@@ -77,15 +77,6 @@ class ChatBot():
                 )
             except Exception as e:
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
-
-    def create_access_levels(access_role):
-        access_levels = []   
-        entries = access_role.split(', ')
-        for entry in entries:
-            access_dict = {'access_role': entry}
-            access_levels.append(access_dict)
-            
-        return access_levels
     
     def get_context_from_collection(self, input, access_levels):
         # Extract context from the collection
