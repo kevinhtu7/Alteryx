@@ -89,9 +89,9 @@ def main():
                 #access_level = get_access_level(role)
                 st.session_state.logged_in = True
                 st.session_state.username = username
-                st.session_state.access_level = access_level
-                st.success(f"Welcome {username}! Your role is {role} with {access_level} access.")
-                run_app(access_level)
+                st.session_state.access_level = access_levels
+                st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
+                run_app(access_levels)
             else:
                 st.error("Invalid username or password")
     else:
