@@ -104,7 +104,7 @@ class ChatBot():
                                               where={"$or": access_levels})
         
         # Access the 'text' key in the documents correctly
-        document_texts = [doc['text'] for doc in documents['documents']]
+        document_texts = [doc['content'] for doc in documents['documents']]
         reranked_documents = self.rerank_documents(input, document_texts)
         return reranked_documents[0]  # Assuming the top-ranked document is used for context
 
