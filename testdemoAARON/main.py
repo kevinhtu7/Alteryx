@@ -12,6 +12,7 @@ from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
 import sqlite3
+from transformers import T5ForConditionalGeneration, T5Tokenizer
 
 # Import necessary libraries for anonymization, spellchecking, and niceness
 from presidio_analyzer import AnalyzerEngine
@@ -38,8 +39,23 @@ class ChatBot():
         self.api_key = api_key
         self.setup_language_model()
         self.setup_langchain()
+        self.setup_reranker()
         # Uncomment this line if `initialize_tools` is necessary
         # self.initialize_tools()
+
+    def setup_reranker(self):
+        self.reranker_model = T5ForConditionalGeneration.from_pretrained("t5-base")
+        self.reranker_tokenizer = T5Tokenizer.from_pretrained("t5-base")
+
+    def rerank_documents(self, query, documents):
+        input_texts = [f"query: {query} document: {doc['text']}" for doc in documents]
+        inputs = self.reranker_tokenizer(input_texts, return_tensors="pt", padding=True, truncation=True)
+        outputs = self.reranker_model.generate(input_ids=inputs.input_ids, attention_mask=inputs.attention_mask, max_length=64)
+        scores = self.reranker_tokenizer.batch_decode(outputs, skip_special_tokens=True)
+        # Assign scores to documents and sort
+        for i, doc in enumerate(documents):
+            doc['score'] = float(scores[i])
+        return sorted(documents, key=lambda x: x['score'], reverse=True)
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
@@ -95,8 +111,10 @@ class ChatBot():
                                               n_results=10,
                                               where={"$or": access_levels}
                                               )
-        for document in documents["documents"]:
-            context = document
+        # for document in documents["documents"]:
+        #    context = document
+        reranked_documents = self.rerank_documents(input, documents["documents"])
+        context = " ".join([doc["text"] for doc in reranked_documents[:5]])  # Use top 5 reranked documents
         return context 
 
 
