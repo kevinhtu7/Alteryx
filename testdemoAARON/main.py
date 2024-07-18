@@ -95,16 +95,16 @@ class ChatBot():
         # Extract context from the collection
         if len(access_levels) == 1:
             documents = self.collection.query(query_texts=[input],
-                                          n_results=10,
-                                          #where={"access_role": "General Access"}
-                                          where=access_levels[0]
-                                          )
+                                              n_results=10,
+                                              #where={"access_role": "General Access"}
+                                              where=access_levels[0])
         else:
             documents = self.collection.query(query_texts=[input],
                                               n_results=10,
-                                              where={"$or": access_levels}
-                                              )
-        document_texts = [doc["content"] for doc in documents["documents"]]
+                                              where={"$or": access_levels})
+        
+        # Access the 'documents' key in the query result correctly
+        document_texts = [doc['text'] for doc in documents['documents']]
         reranked_documents = self.rerank_documents(input, document_texts)
         return reranked_documents[0]  # Assuming the top-ranked document is used for context
 
@@ -159,4 +159,3 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
-
