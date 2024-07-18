@@ -52,13 +52,12 @@ def get_user_role(username, password):
         return None
 
 def create_access_levels(access_role):
-        access_levels = []   
-        entries = access_role.split(', ')
-        for entry in entries:
-            access_dict = {'access_role': entry}
-            access_levels.append(access_dict)
-            
-        return access_levels
+    access_levels = []   
+    entries = access_role.split(', ')
+    for entry in entries:
+        access_dict = {'access_role': entry}
+        access_levels.append(access_dict)
+    return access_levels
 
 def get_access_level(role):
     query = "SELECT access_levels FROM Roles WHERE role = %s"
@@ -157,8 +156,7 @@ def run_app(access_levels):
             # Retrieve context from the database
             try:
                 context = bot.get_context_from_collection(input, access_levels=access_levels)
-                #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
-                st.session_state.context_history.append(context)  # Store the context for potential future references
+                st.session_state.context_history.append(context)
             except Exception as e:
                 st.error(f"Error retrieving context: {e}")
                 context = "An error occurred while retrieving context."
@@ -166,7 +164,7 @@ def run_app(access_levels):
             # Generate a new response
             input_dict = {"context": context, "question": input}
             with st.chat_message("assistant"):
-                with st.spinner("Grabbing your answer from database..."):
+                with st.spinner("Grabbing your answer from the database..."):
                     response = generate_response(input_dict)
                     st.write(response)
                 message = {"role": "assistant", "content": response}
