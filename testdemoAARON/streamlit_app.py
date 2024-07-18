@@ -76,7 +76,8 @@ def main():
         if st.button("Login"):
             role = get_user_role(username, password)
             if role:
-                access_level = get_access_level(role)
+                access_levels = create_access_levels(role)
+                #access_level = get_access_level(role)
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.session_state.access_level = access_level
@@ -146,6 +147,7 @@ def run_app(access_level):
 
             # Retrieve context from the database
             try:
+                
                 context = bot.get_context_from_collection(input, access_role=access_level)
                 #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
                 st.session_state.context_history.append(context)  # Store the context for potential future references
