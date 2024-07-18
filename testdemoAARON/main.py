@@ -19,9 +19,15 @@ from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
 from textblob import TextBlob
 
-class AnswerOnlyOutputParser(StrOutputParser):
-    def parse(self, response):
+#class AnswerOnlyOutputParser(StrOutputParser):
+#    def parse(self, response):
         # Extract the answer from the response
+ #       return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
+
+class AnswerOutputParser(StrOutputParser):
+    def parse(self, response):
+        if "you do not have access" in response.lower():
+            return "You do not have access"
         return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class ChatBot():
