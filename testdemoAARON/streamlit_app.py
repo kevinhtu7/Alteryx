@@ -51,6 +51,15 @@ def get_user_role(username, password):
     else:
         return None
 
+def create_access_levels(access_role):
+        access_levels = []   
+        entries = access_role.split(', ')
+        for entry in entries:
+            access_dict = {'access_role': entry}
+            access_levels.append(access_dict)
+            
+        return access_levels
+
 def get_access_level(role):
     query = "SELECT access_levels FROM Roles WHERE role = %s"
     params = (role,)
