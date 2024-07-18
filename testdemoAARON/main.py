@@ -19,32 +19,24 @@ from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
 from textblob import TextBlob
 
-# Setup logging
-logging.basicConfig(level=logging.INFO)
-
-# class AnswerOnlyOutputParser(StrOutputParser):
-#     def parse(self, response):
-#         # Extract the answer from the response
-#         return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
+#class AnswerOnlyOutputParser(StrOutputParser):
+#    def parse(self, response):
+        # Extract the answer from the response
+ #       return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
         if "you do not have access" in response.lower():
             return "You do not have access"
-        elif "no relevant documents found" in response.lower():
-            return "No relevant documents found"
-        elif "Answer:" in response:
-            return response.split("Answer:")[1].strip()
-        else:
-            return response.strip()
+        return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class ChatBot():
     def __init__(self, llm_type="Local (PHI3)", api_key=""):
         load_dotenv()
-        # self.chroma_db_path = os.getenv("CHROMA_DB_PATH")
-        # if not self.chroma_db_path:
-        #     raise ValueError("CHROMA_DB_PATH environment variable not set or empty.")
-        # os.environ["CHROMA_DB_PATH"] = self.chroma_db_path
+        #self.chroma_db_path = os.getenv("CHROMA_DB_PATH")
+        #if not self.chroma_db_path:
+        #    raise ValueError("CHROMA_DB_PATH environment variable not set or empty.")
+        #os.environ["CHROMA_DB_PATH"] = self.chroma_db_path
         
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.llm_type = llm_type
@@ -60,12 +52,12 @@ class ChatBot():
         client = db.PersistentClient(path=db_path)
         collection = client.get_collection(name="Company_Documents")
         # Verify or create the collection
-        # try:
-        #     collection = client.get_collection(name="Company_Documents")
-        # except Exception as e:
-        #     print(f"Error fetching collection: {e}. Creating a new collection.")
-        #     client.create_collection(name="Company_Documents", metadata={"description": "Company related documents"})
-        #     collection = client.get_collection(name="Company_Documents")
+        #try:
+        #    collection = client.get_collection(name="Company_Documents")
+        #except Exception as e:
+        #    print(f"Error fetching collection: {e}. Creating a new collection.")
+        #    client.create_collection(name="Company_Documents", metadata={"description": "Company related documents"})
+        #    collection = client.get_collection(name="Company_Documents")
 
         return client, collection
 
@@ -91,37 +83,34 @@ class ChatBot():
                 )
             except Exception as e:
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
-
+    
     def get_context_from_collection(self, input, access_levels):
-        try:
-            logging.info(f"Querying all documents for input: {input}")
-            # Check if context exists without any role restrictions
-            all_documents = self.collection.query(query_texts=[input], n_results=10)
-            logging.info(f"All documents: {all_documents}")
-
-            if not all_documents["documents"]:
-                logging.info("No relevant documents found for the input.")
-                return "No relevant documents found"
-
-            logging.info(f"Querying role-based documents for input: {input} with access levels: {access_levels}")
-            # Now check with role-based access levels
-            role_documents = []
-            if len(access_levels) == 1:
-                role_documents = self.collection.query(query_texts=[input], n_results=10, where={"access_role": {"$eq": access_levels[0]["access_role"]}})
-            else:
-                role_documents = self.collection.query(query_texts=[input], n_results=10, where={"$or": [{"access_role": {"$eq": level["access_role"]}} for level in access_levels]})
-            
-            logging.info(f"Role-based documents: {role_documents}")
-
-            if not role_documents["documents"]:
-                logging.info("User does not have access to the relevant documents.")
-                return "You do not have access"
-
-            context = " ".join([doc["text"] for doc in role_documents["documents"]])
-            return context
-        except Exception as e:
-            logging.error(f"Error retrieving context: {e}")
-            return "An error occurred while retrieving context."
+        # Extract context from the collection
+        if len(access_levels) == 1:
+            documents = self.collection.query(query_texts=[input],
+                                          n_results=10,
+                                          #where={"access_role": "General Access"}
+                                          where=access_levels[0]
+                                          )
+        # if access_role == "General":
+       #      documents = self.collection.query(query_texts=[input],
+       #                                   n_results=5,
+       #                                   where={"access_role": access_role+" Access"}
+       #                                   )
+       # elif access_role == "Executive":
+       #     access_text = [{"access_role": "General Access"}, {"access_role": "Executive Access"}]
+       #     documents = self.collection.query(query_texts=[input],
+       #                                   n_results=10,
+       #                                   where={"$or": access_text}
+       #                                   )
+        else:
+            documents = self.collection.query(query_texts=[input],
+                                              n_results=10,
+                                              where={"$or": access_levels}
+                                              )
+        for document in documents["documents"]:
+            context = document
+        return context 
 
     # def get_context_from_collection(self, input, access_role):
     #     # Extract context from the collection
@@ -138,6 +127,12 @@ class ChatBot():
     #     for document in documents["documents"]:
     #         context = document
     #     return context
+
+
+
+    
+
+    
 
     # Uncomment this method if it's necessary
     # def initialize_tools(self):
@@ -174,4 +169,5 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
+
 
