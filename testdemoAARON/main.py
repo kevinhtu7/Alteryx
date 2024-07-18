@@ -1,3 +1,4 @@
+from dotenv import load_dotenv
 import os
 __import__('pysqlite3')
 import sys
@@ -168,5 +169,6 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
+
 
 
