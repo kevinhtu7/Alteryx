@@ -80,6 +80,11 @@ class ChatBot():
     
     def get_context_from_collection(self, input, access_levels):
         # Extract context from the collection
+        if len(access_levels) == 1:
+            documents = self.collection.query(query_texts=[input],
+                                          n_results=10,
+                                          where={"access_role": "General Access"}
+                                          )
         # if access_role == "General":
        #      documents = self.collection.query(query_texts=[input],
        #                                   n_results=5,
@@ -91,10 +96,11 @@ class ChatBot():
        #                                   n_results=10,
        #                                   where={"$or": access_text}
        #                                   )
-        documents = self.collection.query(query_texts=[input],
-                                          n_results=10,
-                                          where={"$or": access_levels}
-                                          )
+        else:
+            documents = self.collection.query(query_texts=[input],
+                                              n_results=10,
+                                              where={"$or": access_levels}
+                                              )
         for document in documents["documents"]:
             context = document
         return context 
