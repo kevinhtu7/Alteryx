@@ -106,9 +106,9 @@ class ChatBot():
             logging.info(f"Querying role-based documents for input: {input} with access levels: {access_levels}")
             # Now check with role-based access levels
             if len(access_levels) == 1:
-                role_documents = self.collection.query(query_texts=[input], n_results=10, where={"access_role": access_levels[0]})
+                role_documents = self.collection.query(query_texts=[input], n_results=10, where={"access_role": {"$eq": access_levels[0]["access_role"]}})
             else:
-                role_documents = self.collection.query(query_texts=[input], n_results=10, where={"$or": [{"access_role": level} for level in access_levels]})
+                role_documents = self.collection.query(query_texts=[input], n_results=10, where={"$or": [{"access_role": {"$eq": level["access_role"]}} for level in access_levels]})
             
             logging.info(f"Role-based documents: {role_documents}")
 
