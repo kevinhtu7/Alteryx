@@ -85,29 +85,10 @@ class ChatBot():
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
     
     def get_context_from_collection(self, input, access_levels):
-        # Extract context from the collection
-        if len(access_levels) == 1:
-            documents = self.collection.query(query_texts=[input],
-                                          n_results=10,
-                                          #where={"access_role": "General Access"}
-                                          where=access_levels[0]
-                                          )
-        # if access_role == "General":
-       #      documents = self.collection.query(query_texts=[input],
-       #                                   n_results=5,
-       #                                   where={"access_role": access_role+" Access"}
-       #                                   )
-       # elif access_role == "Executive":
-       #     access_text = [{"access_role": "General Access"}, {"access_role": "Executive Access"}]
-       #     documents = self.collection.query(query_texts=[input],
-       #                                   n_results=10,
-       #                                   where={"$or": access_text}
-       #                                   )
-        else:
-            documents = self.collection.query(query_texts=[input],
-                                              n_results=10,
-                                              where={"$or": access_levels}
-                                              )
+        # Extract context from the collection based on access levels
+        documents = self.collection.query(query_texts=[input], n_results=10, where={"$or": access_levels})
+        if not documents["documents"]:
+            return None
         for document in documents["documents"]:
             context = document
         return context 
@@ -127,12 +108,6 @@ class ChatBot():
     #     for document in documents["documents"]:
     #         context = document
     #     return context
-
-
-
-    
-
-    
 
     # Uncomment this method if it's necessary
     # def initialize_tools(self):
@@ -169,5 +144,4 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
-
 
