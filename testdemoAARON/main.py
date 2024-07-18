@@ -94,7 +94,7 @@ class ChatBot():
         # Extract context from the collection
         if len(access_levels) == 1:
             documents = self.collection.query(query_texts=[input],
-                                          n_results=10,
+                                          n_results=3,
                                           #where={"access_role": "General Access"}
                                           where=access_levels[0]
                                           )
@@ -111,7 +111,7 @@ class ChatBot():
        #                                   )
         else:
             documents = self.collection.query(query_texts=[input],
-                                              n_results=10,
+                                              n_results=3,
                                               where={"$or": access_levels}
                                               )
         # for document in documents["documents"]:
