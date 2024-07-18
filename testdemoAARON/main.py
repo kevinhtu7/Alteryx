@@ -1,4 +1,3 @@
-from dotenv import load_dotenv
 import os
 __import__('pysqlite3')
 import sys
@@ -86,27 +85,53 @@ class ChatBot():
     
     def get_context_from_collection(self, input, access_levels):
         # Extract context from the collection
-        documents = []
-        try:
-            if len(access_levels) == 1:
-                documents = self.collection.query(query_texts=[input],
-                                                  n_results=10,
-                                                  where=access_levels[0])
-            else:
-                documents = self.collection.query(query_texts=[input],
-                                                  n_results=10,
-                                                  where={"$or": access_levels})
+        if len(access_levels) == 1:
+            documents = self.collection.query(query_texts=[input],
+                                          n_results=10,
+                                          #where={"access_role": "General Access"}
+                                          where=access_levels[0]
+                                          )
+        # if access_role == "General":
+       #      documents = self.collection.query(query_texts=[input],
+       #                                   n_results=5,
+       #                                   where={"access_role": access_role+" Access"}
+       #                                   )
+       # elif access_role == "Executive":
+       #     access_text = [{"access_role": "General Access"}, {"access_role": "Executive Access"}]
+       #     documents = self.collection.query(query_texts=[input],
+       #                                   n_results=10,
+       #                                   where={"$or": access_text}
+       #                                   )
+        else:
+            documents = self.collection.query(query_texts=[input],
+                                              n_results=10,
+                                              where={"$or": access_levels}
+                                              )
+        for document in documents["documents"]:
+            context = document
+        return context 
 
-            if not documents["documents"]:
-                return "No documents found in the collection."
-            
-            for document in documents["documents"]:
-                context = document
-            return context
-        except Exception as e:
-            if "no documents found" in str(e).lower():
-                return "You do not have access to any relevant documents."
-            return f"An error occurred while retrieving context: {str(e)}"
+    # def get_context_from_collection(self, input, access_role):
+    #     # Extract context from the collection
+    #     if access_role == "General Access":
+    #         documents = self.collection.query(
+    #             query_texts=[input],
+    #             n_results=5
+    #         )
+    #     else:
+    #         documents = self.collection.query(
+    #             query_texts=[input],
+    #             n_results=10
+    #         )
+    #     for document in documents["documents"]:
+    #         context = document
+    #     return context
+
+
+
+    
+
+    
 
     # Uncomment this method if it's necessary
     # def initialize_tools(self):
@@ -143,3 +168,5 @@ class ChatBot():
             | self.llm
             | AnswerOnlyOutputParser()
         )
+
+
