@@ -13,6 +13,7 @@ st.set_page_config(page_title="Meeting Information Bot")
 load_dotenv()
 
 def create_connection():
+    # Create a database connection
     connection = None
     try:
         connection = mysql.connector.connect(
@@ -26,6 +27,7 @@ def create_connection():
     return connection
 
 def query_database(query, params=None):
+    # Query the database and return a DataFrame
     connection = create_connection()
     cursor = connection.cursor(dictionary=True)
     try:
@@ -43,6 +45,7 @@ def query_database(query, params=None):
         connection.close()
 
 def get_user_role(username, password):
+    # Get the role of the user based on their credentials
     query = "SELECT role FROM Users WHERE UserID = %s AND PW = %s"
     params = (username, password)
     df = query_database(query, params)
@@ -51,16 +54,17 @@ def get_user_role(username, password):
     else:
         return None
 
-def create_access_levels(access_role):
-        access_levels = []   
-        entries = access_role.split(', ')
-        for entry in entries:
-            access_dict = {'access_role': entry}
-            access_levels.append(access_dict)
-            
-        return access_levels
+def create_access_levels(access_string):
+    # Create a list of access levels based on the role
+    access_levels = []   
+    entries = access_string.split(', ')
+    for entry in entries:
+        access_dict = {'access_role': entry}
+        access_levels.append(access_dict)
+    return access_levels
 
 def get_access_level(role):
+    # Get the access levels associated with a role
     query = "SELECT access_levels FROM Roles WHERE role = %s"
     params = (role,)
     df = query_database(query, params)
@@ -75,7 +79,7 @@ def main():
     if "logged_in" not in st.session_state:
         st.session_state.logged_in = False
         st.session_state.username = ""
-        st.session_state.access_level = ""
+        st.session_state.access_levels = []
 
     if not st.session_state.logged_in:
         # Login Page
@@ -90,7 +94,7 @@ def main():
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.session_state.access_levels = access_levels
-                st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
+                st.success(f"Welcome {username}! Your role is {role} with {access_string} access.")
                 run_app(access_levels)
             else:
                 st.error("Invalid username or password")
@@ -157,7 +161,8 @@ def run_app(access_levels):
             # Retrieve context from the database
             try:
                 context = bot.get_context_from_collection(input, access_levels=access_levels)
-                #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
+                if not context:
+                    context = "You do not have access to this context."
                 st.session_state.context_history.append(context)  # Store the context for potential future references
             except Exception as e:
                 st.error(f"Error retrieving context: {e}")
@@ -174,4 +179,3 @@ def run_app(access_levels):
 
 if __name__ == '__main__':
     main()
-
