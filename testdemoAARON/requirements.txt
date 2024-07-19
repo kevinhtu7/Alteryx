@@ -18,3 +18,4 @@ transformers
 torch
 sentencepiece
 rerankers
+py2neo
