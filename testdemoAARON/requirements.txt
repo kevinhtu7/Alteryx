@@ -17,5 +17,4 @@ https://github.com/explosion/spacy-models/releases/download/en_core_web_lg-3.7.1
 transformers
 torch
 sentencepiece
-flashrank
-llama-cpp-python
+rerankers
