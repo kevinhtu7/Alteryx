@@ -67,7 +67,7 @@ class ChatBot():
     def setup_language_model(self):
         if self.llm_type == "External (OpenAI)" and self.api_key:
             try:
-                self.repo_id = "openai/gpt-3.5-turbo"  # Update this to the actual repo ID for the external model
+                self.repo_id = "openai/gpt-4-turbo"  # Update this to the actual repo ID for the external model
                 self.llm = HuggingFaceHub(
                     repo_id=self.repo_id,
                     model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
