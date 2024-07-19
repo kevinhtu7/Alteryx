@@ -109,7 +109,7 @@ class ChatBot():
                                               n_results=10,
                                               where={"$or": access_levels}
                                               )
-        reranked_documents = rerank_documents(input, documents)
+        reranked_documents = self.rerank_documents(input, documents)
         # Use top 3 reranked documents
         context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
         # context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
