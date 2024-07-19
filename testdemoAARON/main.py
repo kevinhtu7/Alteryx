@@ -129,9 +129,9 @@ class ChatBot():
     def get_context_from_knowledge_graph(self, input):
         # query for everything
         #query = "MATCH (n)-[r]->(m) RETURN n, r, m"
-        query = f"MATCH (n) WHERE n.name CONTAINS '{input}' RETURN n"
-        results = self.query_knowledge_graph(query)
-        #results = ["", ""]
+        #query = f"MATCH (n) WHERE n.name CONTAINS '{input}' RETURN n"
+        #results = self.query_knowledge_graph(query)
+        results = ["", ""]
         context = " ".join([str(result) for result in results])
         return context
         #for document in documents["documents"]:
