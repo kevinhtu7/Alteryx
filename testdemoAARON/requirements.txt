@@ -18,3 +18,4 @@ transformers
 torch
 sentencepiece
 flashrank
+llama-cpp-python
