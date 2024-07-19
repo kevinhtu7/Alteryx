@@ -137,8 +137,8 @@ def run_app(access_levels):
         def generate_response(input_dict):
             try:
                 nice_input = bot.preprocess_input(input_dict)
-                #result = bot.rag_chain.invoke(input_dict)
-                result = bot.answer_question(input_dict, access_levels)
+                result = bot.rag_chain.invoke(input_dict)
+                #result = bot.answer_question(input_dict, access_levels)
                 return result
             except Exception as e:
                 st.error(f"Error generating response: {e}")
