@@ -175,3 +175,8 @@ class ChatBot():
             | AnswerOnlyOutputParser()
         )
 
+    def get_combined_context(self, input, access_levels):
+        collection_context = self.get_context_from_collection(input, access_levels)
+        graph_context = self.get_context_from_knowledge_graph(input)
+        combined_context = f"{collection_context} {graph_context}"
+        return combined_context
