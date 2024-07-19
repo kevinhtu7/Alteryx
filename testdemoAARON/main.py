@@ -111,8 +111,8 @@ class ChatBot():
                                               )
         reranked_documents = self.rerank_documents(input, documents)
         # Use top 3 reranked documents
-        context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
-        # context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
+        # context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
+        context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
         return context
         #for document in documents["documents"]:
            #context = document
