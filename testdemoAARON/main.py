@@ -14,6 +14,7 @@ import logging
 import sqlite3
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 from rerankers import Reranker
+from py2neo import Graph
 
 # Import necessary libraries for anonymization, spellchecking, and niceness
 from presidio_analyzer import AnalyzerEngine
