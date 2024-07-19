@@ -47,7 +47,7 @@ class ChatBot():
     def setup_reranker(self):
         self.reranker = Reranker("t5")
 
-    def rerank_documents(question, documents):
+    def rerank_documents(self, question, documents):
         # Get the context from the collection
         for document in documents["documents"]:
             context = document
