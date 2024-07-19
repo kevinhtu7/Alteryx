@@ -42,7 +42,7 @@ class ChatBot():
         self.setup_language_model()
         self.setup_langchain()
         self.setup_reranker()
-        self.initialize_knowledge_graph()
+        #self.initialize_knowledge_graph()
         # Uncomment this line if `initialize_tools` is necessary
         # self.initialize_tools()
 
