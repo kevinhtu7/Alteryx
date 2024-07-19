@@ -12,9 +12,9 @@ from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
 import sqlite3
-from transformers import T5ForConditionalGeneration, T5Tokenizer
+#from transformers import T5ForConditionalGeneration, T5Tokenizer
 from rerankers import Reranker
-from py2neo import Graph
+#from py2neo import Graph
 
 # Import necessary libraries for anonymization, spellchecking, and niceness
 from presidio_analyzer import AnalyzerEngine
@@ -87,14 +87,14 @@ class ChatBot():
             except Exception as e:
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
-    def initialize_knowledge_graph(self):
-        neo4j_url = os.getenv('NEO4J_URL')
-        neo4j_user = os.getenv('NEO4J_USER')
-        neo4j_password = os.getenv('NEO4J_PASSWORD')
-        self.graph = Graph(neo4j_url, auth=(neo4j_user, neo4j_password))
+    #def initialize_knowledge_graph(self):
+        #neo4j_url = os.getenv('NEO4J_URL')
+        #neo4j_user = os.getenv('NEO4J_USER')
+        #neo4j_password = os.getenv('NEO4J_PASSWORD')
+        #self.graph = Graph(neo4j_url, auth=(neo4j_user, neo4j_password))
 
-    def query_knowledge_graph(self, query):
-        return self.graph.run(query).data()
+    #def query_knowledge_graph(self, query):
+        #return self.graph.run(query).data()
     
     def get_context_from_collection(self, input, access_levels):
         # Extract context from the collection
@@ -126,14 +126,14 @@ class ChatBot():
         context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
         return context
 
-    def get_context_from_knowledge_graph(self, input):
+    #def get_context_from_knowledge_graph(self, input):
         # query for everything
         #query = "MATCH (n)-[r]->(m) RETURN n, r, m"
         #query = f"MATCH (n) WHERE n.name CONTAINS '{input}' RETURN n"
         #results = self.query_knowledge_graph(query)
-        results = ["", ""]
-        context = " ".join([str(result) for result in results])
-        return context
+        #results = ["", ""]
+        #context = " ".join([str(result) for result in results])
+        #return context
         #for document in documents["documents"]:
            #context = document
         #reranked_documents = self.rerank_documents(input, documents["documents"])
@@ -178,11 +178,11 @@ class ChatBot():
             | AnswerOnlyOutputParser()
         )
 
-    def get_combined_context(self, input, access_levels):
-        collection_context = self.get_context_from_collection(input, access_levels)
-        graph_context = self.get_context_from_knowledge_graph(input)
-        combined_context = f"{collection_context} {graph_context}"
-        return combined_context
+    #def get_combined_context(self, input, access_levels):
+        #collection_context = self.get_context_from_collection(input, access_levels)
+        #graph_context = self.get_context_from_knowledge_graph(input)
+        #combined_context = f"{collection_context} {graph_context}"
+        #return combined_context
 
     #def answer_question(self, input_dict, access_levels):
         ## input_text = self.preprocess_input(input_dict)
