@@ -182,7 +182,7 @@ class ChatBot():
         return combined_context
 
     def answer_question(self, input_dict, access_levels):
-        input_text = self.preprocess_input(input_dict)
-        combined_context = self.get_combined_context(input_text, access_levels)
+        # input_text = self.preprocess_input(input_dict)
+        combined_context = self.get_combined_context(input_Dict, access_levels)
         response = self.rag_chain.run({"context": combined_context, "question": input_dict.get("question", "")})
         return response
