@@ -13,7 +13,7 @@ from langchain.schema.output_parser import StrOutputParser
 import logging
 import sqlite3
 from transformers import T5ForConditionalGeneration, T5Tokenizer
-from flashrank.Ranker import Ranker, RerankRequest
+from rerankers import Reranker
 
 # Import necessary libraries for anonymization, spellchecking, and niceness
 from presidio_analyzer import AnalyzerEngine
