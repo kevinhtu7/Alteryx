@@ -41,6 +41,7 @@ class ChatBot():
         self.setup_language_model()
         self.setup_langchain()
         self.setup_reranker()
+        self.initialize_knowledge_graph()
         # Uncomment this line if `initialize_tools` is necessary
         # self.initialize_tools()
 
@@ -84,6 +85,15 @@ class ChatBot():
                 )
             except Exception as e:
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
+
+    def initialize_knowledge_graph(self):
+        neo4j_url = os.getenv('NEO4J_URL')
+        neo4j_user = os.getenv('NEO4J_USER')
+        neo4j_password = os.getenv('NEO4J_PASSWORD')
+        self.graph = Graph(neo4j_url, auth=(neo4j_user, neo4j_password))
+
+    def query_knowledge_graph(self, query):
+        return self.graph.run(query).data()
     
     def get_context_from_collection(self, input, access_levels):
         # Extract context from the collection
@@ -113,6 +123,12 @@ class ChatBot():
         # Use top 3 reranked documents
         # context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
         context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
+        return context
+
+    def get_context_from_knowledge_graph(self, input):
+        query = f"MATCH (n) WHERE n.name CONTAINS '{input}' RETURN n"
+        results = self.query_knowledge_graph(query)
+        context = " ".join([str(result) for result in results])
         return context
         #for document in documents["documents"]:
            #context = document
