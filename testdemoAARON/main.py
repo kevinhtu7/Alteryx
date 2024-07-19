@@ -129,9 +129,9 @@ class ChatBot():
     def get_context_from_knowledge_graph(self, input):
         # query for everything
         #query = "MATCH (n)-[r]->(m) RETURN n, r, m"
-        #query = f"MATCH (n) WHERE n.name CONTAINS '{input}' RETURN n"
-        #results = self.query_knowledge_graph(query)
-        results = ["", ""]
+        query = f"MATCH (n) WHERE n.name CONTAINS '{input}' RETURN n"
+        results = self.query_knowledge_graph(query)
+        #results = ["", ""]
         context = " ".join([str(result) for result in results])
         return context
         #for document in documents["documents"]:
@@ -186,6 +186,6 @@ class ChatBot():
 
     def answer_question(self, input_dict, access_levels):
         # input_text = self.preprocess_input(input_dict)
-        combined_context = self.get_combined_context(input_Dict, access_levels)
+        combined_context = self.get_combined_context(input_dict, access_levels)
         response = self.rag_chain.run({"context": combined_context, "question": input_dict.get("question", "")})
         return response
