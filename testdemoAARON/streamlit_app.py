@@ -137,7 +137,8 @@ def run_app(access_levels):
         def generate_response(input_dict):
             try:
                 nice_input = bot.preprocess_input(input_dict)
-                result = bot.rag_chain.invoke(input_dict)
+                #result = bot.rag_chain.invoke(input_dict)
+                result = bot.answer_question(input_dict, access_levels)
                 return result
             except Exception as e:
                 st.error(f"Error generating response: {e}")
@@ -156,7 +157,8 @@ def run_app(access_levels):
 
             # Retrieve context from the database
             try:
-                context = bot.get_context_from_collection(input, access_levels=access_levels)
+                context = bot.get_combined_context(input, access_levels=access_levels)
+                #context = bot.get_context_from_collection(input, access_levels=access_levels)
                 #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
                 st.session_state.context_history.append(context)  # Store the context for potential future references
             except Exception as e:
