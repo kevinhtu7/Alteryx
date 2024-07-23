@@ -12,7 +12,7 @@ st.set_page_config(page_title="Meeting Information Bot")
 # Load environment variables
 load_dotenv()
 
-bot = 'RandomStringToTestAThing'
+bot = None
 
 def create_connection():
     connection = None
@@ -72,8 +72,9 @@ def get_access_level(role):
         return None
 
 def main():
+    global bot
     st.title("Meeting Information Bot")
-    if bot == 'RandomStringToTestAThing':
+    if bot == None:
         # Bootstrap the ChatBot\
         print('bootstrapping chatbot')
         bot = ChatBot(llm_type='Local (PHI3)', api_key='')
@@ -104,6 +105,7 @@ def main():
         run_app(st.session_state.access_levels)
 
 def run_app(access_levels):
+    global bot
     # Sidebar elements
     with st.sidebar:
         st.title('Meeting Information Bot')
