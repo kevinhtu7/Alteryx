@@ -51,11 +51,11 @@ class ChatBot():
 
     def rerank_documents(self, question, documents):
         # Get the context from the collection
-        context = [] 
-        for document in documents["documents"]:
-            context.append(document) 
+        #context = [] 
+        #for document in documents["documents"]:
+            #context.append(document) 
         # Rerank the documents
-        reranked_documents = self.reranker.rank(question, context)
+        reranked_documents = self.reranker.rank(question, documents)
         return reranked_documents    
         
     def initialize_chromadb(self):
