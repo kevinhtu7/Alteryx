@@ -36,6 +36,7 @@ class AnswerOnlyOutputParser(StrOutputParser):
 class ChatBot():
     def __init__(self, llm_type="Local (PHI3)", api_key=""):
         load_dotenv()
+        self.list_files_in_current_directory()
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.llm_type = llm_type
         self.api_key = api_key
@@ -46,6 +47,22 @@ class ChatBot():
         # Uncomment this line if `initialize_tools` is necessary
         # self.initialize_tools()
         print('This is the correct main.py file')
+
+
+    def list_files_in_current_directory():
+        """
+        List all files in the current working directory.
+        """
+        current_dir = os.getcwd()  # Get the current working directory
+        print(f'Current Directory: {current_dir}')
+        
+        # List all files in the current directory
+        with os.scandir(current_dir) as entries:
+            for entry in entries:
+                if entry.is_file():
+                    print(f'File: {entry.name}')
+                elif entry.is_dir():
+                    print(f'Directory: {entry.name}')
 
     def setup_reranker(self):
         self.reranker = Reranker("t5")
@@ -62,9 +79,9 @@ class ChatBot():
         
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
-        db_path = "./chroma.sqlite3"
+        db_path = "testdemoAARON/chroma.db"
         client = db.PersistentClient(path=db_path)
-        print(f'CollectionsL {client.list_collections()}')
+        print(f'Collections: {client.list_collections()}')
         collection = client.get_collection(name="Company_Documents")
         return client, collection
 
