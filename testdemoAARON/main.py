@@ -51,11 +51,10 @@ class ChatBot():
 
     def rerank_documents(self, question, documents):
         # Get the context from the collection
-        #context = [] 
-        #for document in documents["documents"]:
-            #context.append(document) 
+        for document in documents["documents"]:
+            context = document
         # Rerank the documents
-        reranked_documents = self.reranker.rank(question, documents)
+        reranked_documents = self.reranker.rank(question, context)
         return reranked_documents    
         
     def initialize_chromadb(self):
@@ -123,8 +122,8 @@ class ChatBot():
                                               )
         reranked_documents = self.rerank_documents(input, documents)
         # Use top 3 reranked documents
-        context = " ".append([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
-        # context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
+        # context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
+        context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
         return context
 
     #def get_context_from_knowledge_graph(self, input):
