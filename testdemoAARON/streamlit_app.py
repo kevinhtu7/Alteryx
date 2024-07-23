@@ -4,7 +4,7 @@ import mysql.connector
 from mysql.connector import Error
 import os
 from dotenv import load_dotenv
-from testdemoAARON.main import ChatBot
+from main import ChatBot
 
 # Set page configuration at the top of the script
 st.set_page_config(page_title="Meeting Information Bot")
@@ -124,6 +124,7 @@ def run_app(access_levels):
         # Initialize ChatBot with the selected LLM
         try:
             bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
+            print(f'Bot info:{bot.__dir__()}')
         except Exception as e:
             st.error(f"Failed to initialize the chatbot: {e}")
             st.stop()

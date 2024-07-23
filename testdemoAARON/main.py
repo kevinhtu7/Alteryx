@@ -45,6 +45,7 @@ class ChatBot():
         #self.initialize_knowledge_graph()
         # Uncomment this line if `initialize_tools` is necessary
         # self.initialize_tools()
+        print('This is the correct main.py file')
 
     def setup_reranker(self):
         self.reranker = Reranker("t5")

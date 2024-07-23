@@ -71,6 +71,7 @@ class ChatBot():
         | self.llm
         | StrOutputParser() 
     )
+    print('This is the wrong main.py file')
 
 def load_documents(self):
        # Load documents from streamlit file uploader (docx, pdf, txt, xlsx, csv, images for OCR) 
