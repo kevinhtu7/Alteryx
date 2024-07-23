@@ -12,8 +12,6 @@ st.set_page_config(page_title="Meeting Information Bot")
 # Load environment variables
 load_dotenv()
 
-bot = None
-
 def create_connection():
     connection = None
     try:
@@ -72,12 +70,7 @@ def get_access_level(role):
         return None
 
 def main():
-    global bot
     st.title("Meeting Information Bot")
-    if bot == None:
-        # Bootstrap the ChatBot\
-        print('bootstrapping chatbot')
-        bot = ChatBot(llm_type='Local (PHI3)', api_key='')
 
     if "logged_in" not in st.session_state:
         st.session_state.logged_in = False
@@ -105,7 +98,6 @@ def main():
         run_app(st.session_state.access_levels)
 
 def run_app(access_levels):
-    global bot
     # Sidebar elements
     with st.sidebar:
         st.title('Meeting Information Bot')
@@ -131,8 +123,7 @@ def run_app(access_levels):
     else:
         # Initialize ChatBot with the selected LLM
         try:
-            #bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
-            print(f'Bot info:{bot.__dir__()}')
+            bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
         except Exception as e:
             st.error(f"Failed to initialize the chatbot: {e}")
             st.stop()
@@ -145,7 +136,7 @@ def run_app(access_levels):
         # Function for generating LLM response
         def generate_response(input_dict):
             try:
-                #nice_input = bot.preprocess_input(input_dict)
+                nice_input = bot.preprocess_input(input_dict)
                 result = bot.rag_chain.invoke(input_dict)
                 #result = bot.answer_question(input_dict, access_levels)
                 return result
@@ -185,4 +176,3 @@ def run_app(access_levels):
 
 if __name__ == '__main__':
     main()
-
