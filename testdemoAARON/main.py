@@ -36,7 +36,6 @@ class AnswerOnlyOutputParser(StrOutputParser):
 class ChatBot():
     def __init__(self, llm_type="Local (PHI3)", api_key=""):
         load_dotenv()
-        self.list_files_in_current_directory()
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.llm_type = llm_type
         self.api_key = api_key
@@ -46,27 +45,9 @@ class ChatBot():
         #self.initialize_knowledge_graph()
         # Uncomment this line if `initialize_tools` is necessary
         # self.initialize_tools()
-        print('This is the correct main.py file')
-
-
-    def list_files_in_current_directory(self):
-        """
-        List all files in the current working directory.
-        """
-        current_dir = os.getcwd()  # Get the current working directory
-        print(f'Current Directory: {current_dir}')
-        
-        # List all files in the current directory
-        with os.scandir(current_dir) as entries:
-            for entry in entries:
-                if entry.is_file():
-                    print(f'File: {entry.name}')
-                elif entry.is_dir():
-                    print(f'Directory: {entry.name}')
 
     def setup_reranker(self):
         self.reranker = Reranker("t5")
-        print('Reranker setup complete')
 
     def rerank_documents(self, question, documents):
         # Get the context from the collection
@@ -81,7 +62,6 @@ class ChatBot():
         # Initialize ChromaDB client using environment variable for path
         db_path = "testdemoAARON/chroma.db"
         client = db.PersistentClient(path=db_path)
-        print(f'Collections: {client.list_collections()}')
         collection = client.get_collection(name="Company_Documents")
         return client, collection
 
@@ -141,7 +121,6 @@ class ChatBot():
                                               n_results=10,
                                               where={"$or": access_levels}
                                               )
-        
         reranked_documents = self.rerank_documents(input, documents)
         # Use top 3 reranked documents
         context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
