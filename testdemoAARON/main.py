@@ -49,7 +49,7 @@ class ChatBot():
         print('This is the correct main.py file')
 
 
-    def list_files_in_current_directory():
+    def list_files_in_current_directory(self):
         """
         List all files in the current working directory.
         """
