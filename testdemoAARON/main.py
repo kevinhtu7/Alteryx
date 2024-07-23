@@ -79,7 +79,7 @@ class ChatBot():
         
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
-        db_path = "testdemoAARON"
+        db_path = "testdemoAARON/chroma.db"
         client = db.PersistentClient(path=db_path)
         print(f'Collections: {client.list_collections()}')
         collection = client.get_collection(name="Company_Documents")
