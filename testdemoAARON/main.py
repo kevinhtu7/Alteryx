@@ -51,10 +51,11 @@ class ChatBot():
 
     def rerank_documents(self, question, documents):
         # Get the context from the collection
-        for document in documents["documents"]:
-            context = document
+        #context = [] 
+        #for document in documents["documents"]:
+            #context.append(document) 
         # Rerank the documents
-        reranked_documents = self.reranker.rank(question, context)
+        reranked_documents = self.reranker.rank(question, documents)
         return reranked_documents    
         
     def initialize_chromadb(self):
@@ -67,7 +68,7 @@ class ChatBot():
     def setup_language_model(self):
         if self.llm_type == "External (OpenAI)" and self.api_key:
             try:
-                self.repo_id = "openai/gpt-3.5-turbo"  # Update this to the actual repo ID for the external model
+                self.repo_id = "openai/gpt-4o-mini"  # Update this to the actual repo ID for the external model
                 self.llm = HuggingFaceHub(
                     repo_id=self.repo_id,
                     model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
@@ -122,8 +123,8 @@ class ChatBot():
                                               )
         reranked_documents = self.rerank_documents(input, documents)
         # Use top 3 reranked documents
-        # context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
-        context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
+        context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
+        # context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
         return context
 
     #def get_context_from_knowledge_graph(self, input):
