@@ -49,6 +49,7 @@ class ChatBot():
 
     def setup_reranker(self):
         self.reranker = Reranker("t5")
+        print('Reranker setup complete')
 
     def rerank_documents(self, question, documents):
         # Get the context from the collection
@@ -122,6 +123,7 @@ class ChatBot():
                                               n_results=10,
                                               where={"$or": access_levels}
                                               )
+        
         reranked_documents = self.rerank_documents(input, documents)
         # Use top 3 reranked documents
         context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together

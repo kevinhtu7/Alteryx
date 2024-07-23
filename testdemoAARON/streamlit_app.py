@@ -12,6 +12,9 @@ st.set_page_config(page_title="Meeting Information Bot")
 # Load environment variables
 load_dotenv()
 
+# Bootstrap the ChatBot
+bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
+
 def create_connection():
     connection = None
     try:
@@ -123,7 +126,7 @@ def run_app(access_levels):
     else:
         # Initialize ChatBot with the selected LLM
         try:
-            bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
+            #bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
             print(f'Bot info:{bot.__dir__()}')
         except Exception as e:
             st.error(f"Failed to initialize the chatbot: {e}")
