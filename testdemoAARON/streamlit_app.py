@@ -4,7 +4,7 @@ import mysql.connector
 from mysql.connector import Error
 import os
 from dotenv import load_dotenv
-from main import ChatBot
+from testdemoAARON.main import ChatBot
 
 # Set page configuration at the top of the script
 st.set_page_config(page_title="Meeting Information Bot")
