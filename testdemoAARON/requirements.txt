@@ -6,7 +6,7 @@ langchain-community
 sentence-transformers
 chromadb
 openai
-pysqlite3-binary
+#pysqlite3-binary
 presidio-analyzer
 presidio-anonymizer
 pyspellchecker
