@@ -12,8 +12,7 @@ st.set_page_config(page_title="Meeting Information Bot")
 # Load environment variables
 load_dotenv()
 
-# Bootstrap the ChatBot
-bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
+bot = None
 
 def create_connection():
     connection = None
@@ -74,6 +73,9 @@ def get_access_level(role):
 
 def main():
     st.title("Meeting Information Bot")
+    if bot is None:
+        # Bootstrap the ChatBot
+        bot = ChatBot(llm_type='Local (PHI3)', api_key='')
 
     if "logged_in" not in st.session_state:
         st.session_state.logged_in = False
