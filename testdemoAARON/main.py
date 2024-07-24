@@ -162,7 +162,7 @@ class ChatBot():
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        If you don't know the answer, just say the user doesn't have the required level of access. Please provide the file used for context.
+        If you don't know the answer, just say that the user doesn't have the required level of access and address the user in second person. Please provide the file used for context.
         # You answer with short and concise answers, no longer than 2 sentences.
 
         Context: {context}
