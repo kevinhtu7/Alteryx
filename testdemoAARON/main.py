@@ -103,6 +103,8 @@ class ChatBot():
         if not all_documents:
             return "No context found for the given input."
 
+        all_documents = all_documents['documents']
+
         # Filter documents based on access levels
         filtered_documents = []
         for doc in all_documents:
@@ -119,8 +121,8 @@ class ChatBot():
         reranked_documents = self.rerank_documents(input, filtered_documents)
 
         # Use top 3 reranked documents
-        context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # Append the top 3 docs together
-        # context = reranked_documents.top_k(3)[0].text  # Pick the best document from the top 3
+        context = " ".join([doc["text"] for doc in reranked_documents[:3]])  # Append the top 3 docs together
+        # context = reranked_documents[0]["text"]  # Pick the best document from the top 3
 
         return context
             
@@ -191,8 +193,8 @@ class ChatBot():
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        If there is no context or the user has no access respond based on the returned context.
-        Provide the context file name in a formatted manner. Respond politely and keep your answers as simple as possible
+        If you don't know the answer, simply state "You do not have the required level of access".
+        # You answer with short and concise answers, no longer than 2 sentences.
 
         Context: {context}
         Question: {question}
@@ -218,4 +220,5 @@ class ChatBot():
         #combined_context = self.get_combined_context(input_dict, access_levels)
         #response = self.rag_chain.run({"context": combined_context, "question": input_dict.get("question", "")})
         #return response
+
 
