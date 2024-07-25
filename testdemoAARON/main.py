@@ -103,14 +103,14 @@ class ChatBot():
         if not all_documents:
             return "No context found for the given input."
 
-        all_documents = all_documents["documents"]
-        
+        all_documents = all_documents['documents']
+
         # Filter documents based on access levels
         filtered_documents = []
         for doc in all_documents:
             if 'metadata' in doc and isinstance(doc['metadata'], dict):
                 for level in access_levels:
-                    if doc.metadata.get("access_role") == level:
+                    if doc['metadata'].get('access_role') == level:
                         filtered_documents.append(doc)
                         break
 
@@ -220,5 +220,4 @@ class ChatBot():
         #combined_context = self.get_combined_context(input_dict, access_levels)
         #response = self.rag_chain.run({"context": combined_context, "question": input_dict.get("question", "")})
         #return response
-
 
