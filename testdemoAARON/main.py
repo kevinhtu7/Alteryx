@@ -100,20 +100,24 @@ class ChatBot():
         # Query all context first
         all_documents = self.collection.query(query_texts=[input], n_results=100)
 
-        if not all_documents or 'documents' not in all_documents:
+        if not all_documents or 'documents' or not all_documents.get('documents'):
             return "No context found for the given input."
 
         all_documents = all_documents['documents']
 
         # access_level check 
         if len(access_levels) == 1:
-            where_clause = {"access_role": access_levels[0]['access_role']}
+            where_clause = {"access_role": access_levels[0]}
         else:
-            where_clause = {"$or": [{"access_role": level['access_role']} for level in access_levels]}
+            where_clause = {"$or": [{"access_role": level} for level in access_levels]}
 
-        documents = self.collection.query(query_texts=[input], n_results=100, where=where_clause)   
+        documents = self.collection.query(
+            query_texts=[input], 
+            n_results=100, 
+            where=where_clause
+        )   
 
-        if not documents or 'documents' not in documents:
+        if not documents or 'documents' or not documents.get('documents'):
             return "No context available for your access level."
         
         documents = documents['documents']
@@ -221,4 +225,3 @@ class ChatBot():
         #combined_context = self.get_combined_context(input_dict, access_levels)
         #response = self.rag_chain.run({"context": combined_context, "question": input_dict.get("question", "")})
         #return response
-
