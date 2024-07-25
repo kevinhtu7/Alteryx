@@ -105,11 +105,15 @@ class ChatBot():
 
         all_documents = all_documents['documents']
 
+        print(f'All documents: {all_documents}')
+
         # access_level check 
         if len(access_levels) == 1:
             where_clause = {"access_role": access_levels[0]}
         else:
             where_clause = {"$or": [{"access_role": level} for level in access_levels]}
+
+        print(f'Where clause: {where_clause}')
 
         documents = self.collection.query(
             query_texts=[input], 
@@ -121,6 +125,8 @@ class ChatBot():
             return "No context available for your access level."
         
         documents = documents['documents']
+
+        print(f"Filtered documents: {documents}")
 
         # Rerank the filtered documents
         reranked_documents = self.rerank_documents(input, documents)
