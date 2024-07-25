@@ -99,60 +99,61 @@ class ChatBot():
     def get_context_from_collection(self, input, access_levels):
         # Query all context first
         all_documents = self.collection.query(query_texts=[input], n_results=10)
-    
+
         if not all_documents:
             return "No context found for the given input."
-    
+
         # Filter documents based on access levels
         filtered_documents = []
         for doc in all_documents:
-            for level in access_levels:
-                if doc.metadata.get("access_role") == level:
-                    filtered_documents.append(doc)
-                    break
-    
+            if 'metadata' in doc and isinstance(doc['metadata'], dict):
+                for level in access_levels:
+                    if doc.metadata.get("access_role") == level:
+                        filtered_documents.append(doc)
+                        break
+
         if not filtered_documents:
             return "No context available for your access level."
-    
+
         # Rerank the filtered documents
         reranked_documents = self.rerank_documents(input, filtered_documents)
-    
+
         # Use top 3 reranked documents
         context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # Append the top 3 docs together
         # context = reranked_documents.top_k(3)[0].text  # Pick the best document from the top 3
-    
+
         return context
             
 
-    #def get_context_from_collection(self, input, access_levels):
-    #    # Extract context from the collection
-    #    if len(access_levels) == 1:
-    #        documents = self.collection.query(query_texts=[input],
-    #                                      n_results=10,
-    #                                      #where={"access_role": "General Access"}
-    #                                      where=access_levels[0]
-    #                                      )
-    #    # if access_role == "General":
-    #   #      documents = self.collection.query(query_texts=[input],
-    #   #                                   n_results=5,
-    #   #                                   where={"access_role": access_role+" Access"}
-    #   #                                   )
-    #   # elif access_role == "Executive":
-    #   #     access_text = [{"access_role": "General Access"}, {"access_role": "Executive Access"}]
-    #   #     documents = self.collection.query(query_texts=[input],
-    #   #                                   n_results=10,
-    #   #                                   where={"$or": access_text}
-    #   #                                   )
-    #    else:
-    #        documents = self.collection.query(query_texts=[input],
-    #                                          n_results=10,
-    #                                          where={"$or": access_levels}
-    #                                          )
-    #    reranked_documents = self.rerank_documents(input, documents)
-    #    # Use top 3 reranked documents
-    #    context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
-    #    # context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
-    #    return context
+    # def get_context_from_collection(self, input, access_levels):
+    #     # Extract context from the collection
+    #     if len(access_levels) == 1:
+    #         documents = self.collection.query(query_texts=[input],
+    #                                       n_results=10,
+    #                                       #where={"access_role": "General Access"}
+    #                                       where=access_levels[0]
+    #                                       )
+    #     # if access_role == "General":
+    #    #      documents = self.collection.query(query_texts=[input],
+    #    #                                   n_results=5,
+    #    #                                   where={"access_role": access_role+" Access"}
+    #    #                                   )
+    #    # elif access_role == "Executive":
+    #    #     access_text = [{"access_role": "General Access"}, {"access_role": "Executive Access"}]
+    #    #     documents = self.collection.query(query_texts=[input],
+    #    #                                   n_results=10,
+    #    #                                   where={"$or": access_text}
+    #    #                                   )
+    #     else:
+    #         documents = self.collection.query(query_texts=[input],
+    #                                           n_results=10,
+    #                                           where={"$or": access_levels}
+    #                                           )
+    #     reranked_documents = self.rerank_documents(input, documents)
+    #     # Use top 3 reranked documents
+    #     context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
+    #     # context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
+    #     return context
 
     #def get_context_from_knowledge_graph(self, input):
         # query for everything
@@ -217,3 +218,4 @@ class ChatBot():
         #combined_context = self.get_combined_context(input_dict, access_levels)
         #response = self.rag_chain.run({"context": combined_context, "question": input_dict.get("question", "")})
         #return response
+
