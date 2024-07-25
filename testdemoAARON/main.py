@@ -159,6 +159,7 @@ class ChatBot():
         combined_text = f"{context} {question}"
         return combined_text
 
+
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
@@ -166,17 +167,27 @@ class ChatBot():
         # You answer with short and concise answers, no longer than 2 sentences.
 
         Context: {context}
+        Access Level: {access_level}
         Question: {question}
         Answer:
         """
 
-        self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
+        self.prompt = PromptTemplate(template=template, input_variables=["context", "access_level", "question"])
         self.rag_chain = (
-            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context and question
-            | self.prompt
-            | self.llm
-            | AnswerOnlyOutputParser()
-        )
+        {"context": RunnablePassthrough(), "access_level": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context, access_level, and question
+        | self.prompt
+        | self.llm
+        | AnswerOnlyOutputParser()
+    )
+
+
+    def handle_user_request(self, user_access_level, context, question):
+        if "executive" in context.lower() and user_access_level.lower() != "executive":
+            return "You do not have the required level of access"
+
+        combined_context = self.get_context_from_collection(context, [{"access_role": user_access_level}])
+        response = self.rag_chain.run({"context": combined_context, "question": question})
+        return response
 
     #def get_combined_context(self, input, access_levels):
         #collection_context = self.get_context_from_collection(input, access_levels)
