@@ -163,7 +163,7 @@ class ChatBot():
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        Please check user access level and if a general access level user is trying to access executive level documents, say "YOU SHALL NOT PASS!!!" otherwise if you do not know say "I do not know." Please provide the file used for context.
+        Please check user access level and if a general access level user is trying to access executive level documents, say "YOU SHALL NOT PASS!!!". Please provide the file used for context.
         # You answer with short and concise answers, no longer than 2 sentences.
 
         Context: {context}
