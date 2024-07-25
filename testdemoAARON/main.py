@@ -97,24 +97,32 @@ class ChatBot():
         #return self.graph.run(query).data()
     
     # def get_context_from_collection(self, input, access_levels):
-    #     # Query the collection for the input
-    #     documents = self.collection.query(query_texts=[input], n_results = 10) 
-
-    #     #Filter the documents based on access levels
+    #     # Query all context first
+    #     all_documents = self.collection.query(query_texts=[input], n_results=100)
+    
+    #     if not all_documents:
+    #         return "No context found for the given input."
+    
+    #     # Filter documents based on access levels
     #     filtered_documents = []
-    #     for doc in documents: 
-    #         for level in access_levels: 
+    #     for doc in all_documents:
+    #         for level in access_levels:
     #             if doc.metadata.get("access_role") == level:
     #                 filtered_documents.append(doc)
     #                 break
-
-    #     # Rerank the documents
+    
+    #     if not filtered_documents:
+    #         return "No context available for your access level."
+    
+    #     # Rerank the filtered documents
     #     reranked_documents = self.rerank_documents(input, filtered_documents)
-
+    
     #     # Use top 3 reranked documents
-    #     context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
-
-    #     return context            
+    #     context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # Append the top 3 docs together
+    #     # context = reranked_documents.top_k(3)[0].text  # Pick the best document from the top 3
+    
+    #     return context
+            
 
     def get_context_from_collection(self, input, access_levels):
         # Extract context from the collection
@@ -182,7 +190,7 @@ class ChatBot():
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        If you don't know the answer, simply state "You do not have the required level of access". Please provide the file used for context.
+        If you don't know the answer, simply state "You do not have the required level of access".
         # You answer with short and concise answers, no longer than 2 sentences.
 
         Context: {context}
@@ -209,4 +217,3 @@ class ChatBot():
         #combined_context = self.get_combined_context(input_dict, access_levels)
         #response = self.rag_chain.run({"context": combined_context, "question": input_dict.get("question", "")})
         #return response
-
