@@ -119,7 +119,7 @@ class ChatBot():
         documents = documents['documents']
 
         # Rerank the filtered documents
-        reranked_documents = self.rerank_documents(input, filtered_documents)
+        reranked_documents = self.rerank_documents(input, documents)
 
         # Use top 3 reranked documents
         context = " ".join([doc["text"] for doc in reranked_documents[:3]])  # Append the top 3 docs together
