@@ -98,7 +98,7 @@ class ChatBot():
     
     def get_context_from_collection(self, input, access_levels):
         # Query all context first
-        all_documents = self.collection.query(query_texts=[input], n_results=100)
+        all_documents = self.collection.query(query_texts=[input], n_results=10)
     
         if not all_documents:
             return "No context found for the given input."
