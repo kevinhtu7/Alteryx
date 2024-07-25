@@ -122,7 +122,8 @@ class ChatBot():
             documents = self.collection.query(query_texts=[input],
                                           n_results=10,
                                           #where={"access_role": "General Access"}
-                                          where=access_levels[0]
+                                          where=access_levels[0],
+                                          min_similarity_score= 0.7
                                           )
         # if access_role == "General":
        #      documents = self.collection.query(query_texts=[input],
@@ -138,7 +139,8 @@ class ChatBot():
         else:
             documents = self.collection.query(query_texts=[input],
                                               n_results=10,
-                                              where={"$or": access_levels}
+                                              where={"$or": access_levels},
+                                              min_similarity_score= 0.7
                                               )
         reranked_documents = self.rerank_documents(input, documents)
         # Use top 3 reranked documents
@@ -182,7 +184,7 @@ class ChatBot():
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        If you don't know the answer, simply state "You do not have the required level of access".
+        If there is no context provided, simply state "There is no provided context". If you don't know the answer, simply state "You do not have the required level of access".
         # You answer with short and concise answers, no longer than 2 sentences.
 
         Context: {context}
