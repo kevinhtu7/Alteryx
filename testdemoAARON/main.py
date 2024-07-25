@@ -103,8 +103,6 @@ class ChatBot():
         if not all_documents:
             return "No context found for the given input."
 
-        all_documents = all_documents['documents']
-
         # Filter documents based on access levels
         filtered_documents = []
         for doc in all_documents:
