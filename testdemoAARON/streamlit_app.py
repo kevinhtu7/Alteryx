@@ -98,7 +98,6 @@ def main():
         run_app(st.session_state.access_levels)
 
 def run_app(access_levels):
-    st.experimental_rerun()
     # Sidebar elements
     with st.sidebar:
         st.title('Meeting Information Bot')
