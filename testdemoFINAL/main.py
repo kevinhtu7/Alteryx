@@ -22,15 +22,10 @@ from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
 from textblob import TextBlob
 
-#class AnswerOnlyOutputParser(StrOutputParser):
-#    def parse(self, response):
-        # Extract the answer from the response
- #       return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
-
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
         if "you do not have access" in response.lower():
-            return "You do not have access"
+            return "YOU SHALL NOT PASS!"
         return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class ChatBot():
@@ -42,26 +37,21 @@ class ChatBot():
         self.setup_language_model()
         self.setup_langchain()
         self.setup_reranker()
-        #self.initialize_knowledge_graph()
-        # Uncomment this line if `initialize_tools` is necessary
-        # self.initialize_tools()
 
     def setup_reranker(self):
         self.reranker = Reranker("t5")
 
     def rerank_documents(self, question, documents):
-        # Get the context from the collection
-        for document in documents["documents"]:
-            context = document
-        # Rerank the documents
+        context = " ".join([doc["text"] for doc in documents])
         reranked_documents = self.reranker.rank(question, context)
-        return reranked_documents    
-        
+        return reranked_documents
+
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
         db_path = "testdemoAARON/chroma.db"
         client = db.PersistentClient(path=db_path)
         collection = client.get_collection(name="Company_Documents")
+        self.db_path = db_path  # Save the path to be used in other methods
         return client, collection
 
     def setup_language_model(self):
@@ -87,125 +77,46 @@ class ChatBot():
             except Exception as e:
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
-    #def initialize_knowledge_graph(self):
-        #neo4j_url = os.getenv('NEO4J_URL')
-        #neo4j_user = os.getenv('NEO4J_USER')
-        #neo4j_password = os.getenv('NEO4J_PASSWORD')
-        #self.graph = Graph(neo4j_url, auth=(neo4j_user, neo4j_password))
-
-    #def query_knowledge_graph(self, query):
-        #return self.graph.run(query).data()
-    
-    # def get_context_from_collection(self, input, access_levels):
-    #     # Query all context first
-    #     all_documents = self.collection.query(query_texts=[input], n_results=100)
-
-    #     if not all_documents or 'documents' or not all_documents.get('documents'):
-    #         return "No context found for the given input."
-
-    #     all_documents = all_documents['documents']
-
-    #     print(f'All documents: {all_documents}')
-
-    #     # access_level check 
-    #     if len(access_levels) == 1:
-    #         where_clause = {"access_role": access_levels[0]}
-    #     else:
-    #         where_clause = {"$or": [{"access_role": level} for level in access_levels]}
-
-    #     print(f'Where clause: {where_clause}')
-
-    #     documents = self.collection.query(
-    #         query_texts=[input], 
-    #         n_results=100, 
-    #         where=where_clause
-    #     )   
-
-    #     if not documents or 'documents' or not documents.get('documents'):
-    #         return "No context available for your access level."
-        
-    #     documents = documents['documents']
-
-    #     print(f"Filtered documents: {documents}")
-
-    #     # Rerank the filtered documents
-    #     reranked_documents = self.rerank_documents(input, documents)
-
-    #     # Use top 3 reranked documents
-    #     context = " ".join([doc["text"] for doc in reranked_documents[:3]])  # Append the top 3 docs together
-    #     # context = reranked_documents[0]["text"]  # Pick the best document from the top 3
-
-    #     return context
-            
-
     def get_context_from_collection(self, input, access_levels):
-        # Extract context from the collection
-        if len(access_levels) == 1:
-            documents = self.collection.query(query_texts=[input],
-                                          n_results=10,
-                                          #where={"access_role": "General Access"}
-                                          where=access_levels[0]
-                                          )
-        # if access_role == "General":
-       #      documents = self.collection.query(query_texts=[input],
-       #                                   n_results=5,
-       #                                   where={"access_role": access_role+" Access"}
-       #                                   )
-       # elif access_role == "Executive":
-       #     access_text = [{"access_role": "General Access"}, {"access_role": "Executive Access"}]
-       #     documents = self.collection.query(query_texts=[input],
-       #                                   n_results=10,
-       #                                   where={"$or": access_text}
-       #                                   )
-        else:
-            documents = self.collection.query(query_texts=[input],
-                                              n_results=10,
-                                              where={"$or": access_levels}
-                                              )
-        reranked_documents = self.rerank_documents(input, documents)
-        # Use top 3 reranked documents
-        context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
-        # context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
+        all_documents = self.collection.query(query_texts=[input], n_results=100)
+        if not all_documents or 'documents' not in all_documents or not all_documents['documents']:
+            return "I do not know..."
+
+        filtered_documents = []
+
+        # Create a SQLite connection to query the metadata
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        # Iterate over each document to check its access level in the metadata
+        for doc in all_documents['documents']:
+            doc_id = doc['id']
+            cursor.execute("SELECT string_value FROM embedding_metadata WHERE key='access_role' AND id=?", (doc_id,))
+            access_role = cursor.fetchone()
+            if access_role and access_role[0] in access_levels:
+                filtered_documents.append(doc)
+
+        cursor.close()
+        conn.close()
+
+        if not filtered_documents:
+            return "YOU SHALL NOT PASS!"
+
+        reranked_documents = self.rerank_documents(input, filtered_documents)
+        context = " ".join([doc["text"] for doc in reranked_documents[:3]])
         return context
 
-    #def get_context_from_knowledge_graph(self, input):
-        # query for everything
-        #query = "MATCH (n)-[r]->(m) RETURN n, r, m"
-        #query = f"MATCH (n) WHERE n.name CONTAINS '{input}' RETURN n"
-        #results = self.query_knowledge_graph(query)
-        #results = ["", ""]
-        #context = " ".join([str(result) for result in results])
-        #return context
-        #for document in documents["documents"]:
-           #context = document
-        #reranked_documents = self.rerank_documents(input, documents["documents"])
-        #context = " ".join([doc["text"] for doc in reranked_documents[:5]])  # Use top 5 reranked documents
-        #context = reranked_documents  # Use top 5 reranked documents
-        #return context 
-
-
-    # Uncomment this method if it's necessary
-    # def initialize_tools(self):
-    #     # Initialize tools for anonymization, spellchecking, and ensuring niceness
-    #     self.analyzer = AnalyzerEngine()
-    #     self.anonymizer = AnonymizerEngine()
-    #     self.spellchecker = SpellChecker()
-
     def preprocess_input(self, input_dict):
-        # Anonymize, spellcheck, and ensure niceness
-        # Extract context and question from input_dict
         context = input_dict.get("context", "")
         question = input_dict.get("question", "")
-
-        # Concatenate context and question
         combined_text = f"{context} {question}"
         return combined_text
 
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        If you don't know the answer, simply state "You do not have the required level of access".
-        # You answer with short and concise answers, no longer than 2 sentences.
+        If you don't know the answer, simply state "I do not know...".
+        If the user does not have access to the required information, state "YOU SHALL NOT PASS!".
 
         Context: {context}
         Question: {question}
@@ -214,20 +125,20 @@ class ChatBot():
 
         self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
         self.rag_chain = (
-            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context and question
+            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}
             | self.prompt
             | self.llm
             | AnswerOnlyOutputParser()
         )
 
-    #def get_combined_context(self, input, access_levels):
-        #collection_context = self.get_context_from_collection(input, access_levels)
-        #graph_context = self.get_context_from_knowledge_graph(input)
-        #combined_context = f"{collection_context} {graph_context}"
-        #return combined_context
+    def generate_response(self, input_dict, access_levels):
+        context = self.get_context_from_collection(input_dict['question'], access_levels)
+        if context in ["YOU SHALL NOT PASS!", "I do not know..."]:
+            return context
 
-    #def answer_question(self, input_dict, access_levels):
-        ## input_text = self.preprocess_input(input_dict)
-        #combined_context = self.get_combined_context(input_dict, access_levels)
-        #response = self.rag_chain.run({"context": combined_context, "question": input_dict.get("question", "")})
-        #return response
+        try:
+            nice_input = self.preprocess_input(input_dict)
+            result = self.rag_chain.invoke(input_dict)
+            return result
+        except Exception as e:
+            return "An error occurred while generating the response."
