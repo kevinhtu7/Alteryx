@@ -34,16 +34,8 @@ class ChatBot():
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client
-        client = PersistentClient()
-        self.db_path = os.path.abspath("testdemoFINAL/chroma.db")  # Save the path to be used in other methods
-
-        # Check if the collection exists, if not create it
-        try:
-            collection = client.get_collection(name="Company_Documents")
-        except Exception as e:
-            collection = client.create_collection(name="Company_Documents")
-
-        return client, collection
+        client = db.PersistentClient(path='testdemoFINAL/chroma.db')
+        collection = client.get_collection(name="Company_Documents")
 
     def setup_language_model(self):
         if self.llm_type == "External (OpenAI)" and self.api_key:
