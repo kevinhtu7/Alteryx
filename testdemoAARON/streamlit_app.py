@@ -77,7 +77,6 @@ def main():
         st.session_state.username = ""
         st.session_state.password = ""
         st.session_state.access_level = ""
-        st.session_state.run_id = 0  # Initialize a run_id to force a rerun
 
     if not st.session_state.logged_in:
         # Login Page
@@ -95,15 +94,11 @@ def main():
                 st.session_state.disable_inputs = True
                 st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
                 run_app(access_levels)
-                #st.experimental_rerun()  # Rerun the app to update the UI
-                st.experimental_set_query_params(rerun="true")  # Rerun the app to update the UI
-                st.session_state.run_id += 1  # Increment run_id to trigger a rerun
             else:
                 st.error("Invalid username or password")
             #st.session_state.username = ""
             #st.session_state.password = ""
     else:
-        st.session_state.disable_inputs = True
         run_app(st.session_state.access_levels)
 
 def run_app(access_levels):
@@ -124,11 +119,10 @@ def run_app(access_levels):
             
     if st.button("Logout"):
         st.session_state.logged_in = False
-        st.session_state.disable_inputs = False
-        #st.experimental_rerun()
-        st.experimental_set_query_params(rerun="true")  # Rerun the app to update the UI
-        st.session_state.run_id += 1  # Increment run_id to trigger a rerun
-    
+        st.session_state.username = ""
+        st.session_state.password = ""
+        st.session_state.access_levels = ""
+        st.experimental_rerun()
 
     # Prevent the user from asking questions if OpenAI is selected and no API key is entered
     if st.session_state.llm_selection == "External (OpenAI)" and not st.session_state.api_key:
@@ -143,8 +137,6 @@ def run_app(access_levels):
 
         # Initialize or maintain the list of past interactions and contexts
         if "messages" not in st.session_state:
-            st.experimental_set_query_params(rerun="true")
-            st.session_state.disable_inputs = True
             st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
             st.session_state.context_history = []
 
