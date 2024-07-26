@@ -94,6 +94,7 @@ def main():
                 st.session_state.disable_inputs = True
                 st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
                 run_app(access_levels)
+                st.experimental_rerun()  # Rerun the app to update the UI
             else:
                 st.error("Invalid username or password")
             #st.session_state.username = ""
