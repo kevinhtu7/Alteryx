@@ -169,13 +169,13 @@ class ChatBot():
         | AnswerOnlyOutputParser()
     )
 
-    def handle_user_request(self, user_access_level, context, question):
-        if "executive" in context.lower() and user_access_level.lower() != "executive":
-            return "You SHALL NOT PASS."
+    # def handle_user_request(self, user_access_level, context, question):
+    #     if "executive" in context.lower() and user_access_level.lower() != "executive":
+    #         return "You SHALL NOT PASS."
 
-        combined_context = self.get_context_from_collection(context, [{"access_role": user_access_level}])
-        response = self.rag_chain.run({"context": combined_context, "question": question})
-        return response
+    #     combined_context = self.get_context_from_collection(context, [{"access_role": user_access_level}])
+    #     response = self.rag_chain.run({"context": combined_context, "question": question})
+    #     return response
 
     #def get_combined_context(self, input, access_levels):
         #collection_context = self.get_context_from_collection(input, access_levels)
