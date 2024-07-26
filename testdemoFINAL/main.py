@@ -68,7 +68,7 @@ class ChatBot():
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
     def get_context_from_collection(self, input, access_levels):
-        all_documents = self.collection.query(query_texts=[input], n_results=100)
+        all_documents = self.collection.query(query_texts=[input], n_results=10)
         if not all_documents or 'documents' not in all_documents or not all_documents['documents']:
             return "I do not know..."
 
