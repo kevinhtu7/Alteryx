@@ -75,6 +75,7 @@ def main():
     if "logged_in" not in st.session_state:
         st.session_state.logged_in = False
         st.session_state.username = ""
+        st.session_state.password = ""
         st.session_state.access_level = ""
 
     if not st.session_state.logged_in:
