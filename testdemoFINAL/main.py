@@ -48,7 +48,10 @@ class ChatBot():
         print(f"Database path: {db_path}")  # Log the path to ensure it's correct
         if not os.path.exists(db_path):
             raise FileNotFoundError(f"Database file not found at {db_path}")
-        client = db.PersistentClient(path=db_path)
+        try:
+            client = db.PersistentClient(path=db_path)
+        except Exception as e:
+            raise ConnectionError(f"Failed to connect to the database at {db_path}: {e}")
         collection = client.get_collection(name="Company_Documents")
         self.db_path = db_path  # Save the path to be used in other methods
         return client, collection
@@ -94,7 +97,7 @@ class ChatBot():
         # Iterate over each document to check its access level in the metadata
         for doc in all_documents['documents']:
             doc_id = doc['id']
-            cursor.execute("SELECT string_value FROM embedding_metadata WHERE key='access_role' AND id=?", (doc_id,))
+            cursor.execute("SELECT string_value FROM embedding_metadata WHERE key='access_role' AND string_value=?", (doc_id,))
             access_role = cursor.fetchone()
             if access_role and access_role[0] in access_levels:
                 filtered_documents.append(doc)
