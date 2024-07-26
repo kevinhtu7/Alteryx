@@ -77,6 +77,7 @@ def main():
         st.session_state.username = ""
         st.session_state.password = ""
         st.session_state.access_level = ""
+        st.session_state.run_id = 0  # Initialize a run_id to force a rerun
 
     if not st.session_state.logged_in:
         # Login Page
