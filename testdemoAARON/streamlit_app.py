@@ -77,13 +77,11 @@ def main():
         st.session_state.username = ""
         st.session_state.password = ""
         st.session_state.access_level = ""
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
 
     if not st.session_state.logged_in:
         # Login Page
-        #username = st.text_input("Username")
-        #password = st.text_input("Password", type="password")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
 
         if st.button("Login"):
         #if st.button("Login") and not st.session_state.logged_in:
