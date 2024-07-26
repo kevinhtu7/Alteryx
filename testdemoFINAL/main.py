@@ -93,12 +93,15 @@ class ChatBot():
                 doc_id = doc.get('id', None)
                 metadata = doc.get('metadata', {})
                 print(f"Document ID: {doc_id}, Metadata: {metadata}")
-                if metadata.get('access_role') in access_levels:
+                access_role = metadata.get('access_role')
+                print(f"Access Role: {access_role}, Required Levels: {access_levels}")
+                if access_role in access_levels:
                     filtered_documents.append(doc)
             else:
                 print(f"Document is not a dictionary: {doc}")
 
         if not filtered_documents:
+            print("No documents match the required access levels.")
             return "YOU SHALL NOT PASS!"
 
         reranked_documents = self.rerank_documents(input, filtered_documents)
