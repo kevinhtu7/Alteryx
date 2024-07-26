@@ -92,7 +92,7 @@ def main():
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.session_state.access_levels = access_levels
-                #st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
+                st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
                 run_app(st.session_state.access_levels)
                 st.rerun()
                 #run_app(access_levels)
@@ -101,7 +101,6 @@ def main():
             #st.session_state.username = ""
             #st.session_state.password = ""
     else:
-        st.success(f"Welcome {st.session_state.username}! Your role is {role} with access to {st.session_state.access_levels} documents.")
         run_app(st.session_state.access_levels)
 
 def run_app(access_levels):
