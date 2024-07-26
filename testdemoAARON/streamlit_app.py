@@ -95,8 +95,6 @@ def main():
                 run_app(access_levels)
             else:
                 st.error("Invalid username or password")
-            st.session_state.username = ""
-            st.session_state.password = ""
     else:
         run_app(st.session_state.access_levels)
 
