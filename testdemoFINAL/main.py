@@ -12,7 +12,11 @@ from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
 import sqlite3
+#from transformers import T5ForConditionalGeneration, T5Tokenizer
 from rerankers import Reranker
+#from py2neo import Graph
+
+# Import necessary libraries for anonymization, spellchecking, and niceness
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
 from spellchecker import SpellChecker
@@ -43,7 +47,9 @@ class ChatBot():
         return reranked_documents
 
     def initialize_chromadb(self):
-        db_path = "testdemoFINAL/chroma.db"
+        # Initialize ChromaDB client using environment variable for path
+        db_path = os.path.abspath("testdemoFINAL/chroma.db")
+        print(f"Database path: {db_path}")  # Log the path to ensure it's correct
         client = db.PersistentClient(path=db_path)
         collection = client.get_collection(name="Company_Documents")
         self.db_path = db_path  # Save the path to be used in other methods
@@ -79,6 +85,7 @@ class ChatBot():
         filtered_documents = []
 
         # Create a SQLite connection to query the metadata
+        print(f"Connecting to database at {self.db_path}")
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
