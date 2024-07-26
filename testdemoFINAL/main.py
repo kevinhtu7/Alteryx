@@ -45,7 +45,7 @@ class ChatBot():
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
         db_path = os.path.abspath("testdemoFINAL/chroma.db")
-        st.write(f"Database path: {db_path}")  # Log the path to ensure it's correct
+       
         if not os.path.exists(db_path):
             raise FileNotFoundError(f"Database file not found at {db_path}")
         try:
