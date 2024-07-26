@@ -119,8 +119,7 @@ class ChatBot():
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        If you don't know the answer, simply state "I do not know...".
-        If the user does not have access to the required information, state "YOU SHALL NOT PASS!".
+        
 
         Context: {context}
         Question: {question}
