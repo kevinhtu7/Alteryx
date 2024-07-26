@@ -11,7 +11,6 @@ from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
-import sqlite3
 from rerankers import Reranker
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
@@ -44,16 +43,8 @@ class ChatBot():
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
-        db_path = os.path.abspath("testdemoFINAL/chroma.db")
-        print(f"Database path: {db_path}")  # Log the path to ensure it's correct
-        if not os.path.exists(db_path):
-            raise FileNotFoundError(f"Database file not found at {db_path}")
-        try:
-            client = db.PersistentClient(path=db_path)
-        except Exception as e:
-            raise ConnectionError(f"Failed to connect to the database at {db_path}: {e}")
+        client = db.PersistentClient(path="testdemoFINAL/chroma.db")
         collection = client.get_collection(name="Company_Documents")
-        self.db_path = db_path  # Save the path to be used in other methods
         return client, collection
 
     def setup_language_model(self):
@@ -79,36 +70,15 @@ class ChatBot():
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
     def get_context_from_collection(self, input, access_levels):
-        all_documents = self.collection.query(query_texts=[input], n_results=100)
+        # Create the where clause based on access levels
+        where_clause = {"access_role": {"$in": access_levels}}
+
+        # Query documents from the collection using the where clause
+        all_documents = self.collection.query(query_texts=[input], n_results=10, where=where_clause)
         if not all_documents or 'documents' not in all_documents or not all_documents['documents']:
             return "I do not know..."
 
-        filtered_documents = []
-
-        # Create a SQLite connection to query the metadata
-        print(f"Connecting to database at {self.db_path}")
-        try:
-            conn = sqlite3.connect(self.db_path)
-        except sqlite3.Error as e:
-            print(f"Error connecting to database: {e}")
-            return "Database connection error"
-        cursor = conn.cursor()
-
-        # Iterate over each document to check its access level in the metadata
-        for doc in all_documents['documents']:
-            doc_id = doc['id']
-            cursor.execute("SELECT string_value FROM embedding_metadata WHERE key='access_role' AND string_value=?", (doc_id,))
-            access_role = cursor.fetchone()
-            if access_role and access_role[0] in access_levels:
-                filtered_documents.append(doc)
-
-        cursor.close()
-        conn.close()
-
-        if not filtered_documents:
-            return "YOU SHALL NOT PASS!"
-
-        reranked_documents = self.rerank_documents(input, filtered_documents)
+        reranked_documents = self.rerank_documents(input, all_documents['documents'])
         context = " ".join([doc["text"] for doc in reranked_documents[:3]])
         return context
 
