@@ -119,7 +119,8 @@ class ChatBot():
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        
+        If you don't know the answer, simply state "You do not have the required level of access".
+        # You answer with short and concise answers, no longer than 2 sentences.
 
         Context: {context}
         Question: {question}
@@ -128,20 +129,8 @@ class ChatBot():
 
         self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
         self.rag_chain = (
-            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}
+            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context and question
             | self.prompt
             | self.llm
             | AnswerOnlyOutputParser()
         )
-
-    def generate_response(self, input_dict, access_levels):
-        context = self.get_context_from_collection(input_dict['question'], access_levels)
-        if context in ["YOU SHALL NOT PASS!", "I do not know..."]:
-            return context
-
-        try:
-            nice_input = self.preprocess_input(input_dict)
-            result = self.rag_chain.invoke(input_dict)
-            return result
-        except Exception as e:
-            return "An error occurred while generating the response."
