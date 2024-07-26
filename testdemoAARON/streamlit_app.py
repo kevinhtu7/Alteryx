@@ -96,6 +96,7 @@ def main():
                 run_app(access_levels)
                 #st.experimental_rerun()  # Rerun the app to update the UI
                 st.experimental_set_query_params(rerun="true")  # Rerun the app to update the UI
+                st.session_state.run_id += 1  # Increment run_id to trigger a rerun
             else:
                 st.error("Invalid username or password")
             #st.session_state.username = ""
@@ -125,6 +126,7 @@ def run_app(access_levels):
         st.session_state.disable_inputs = False
         #st.experimental_rerun()
         st.experimental_set_query_params(rerun="true")  # Rerun the app to update the UI
+        st.session_state.run_id += 1  # Increment run_id to trigger a rerun
     
 
     # Prevent the user from asking questions if OpenAI is selected and no API key is entered
