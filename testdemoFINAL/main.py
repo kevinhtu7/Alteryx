@@ -5,7 +5,7 @@ from langchain_community.llms import HuggingFaceHub
 from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
-from chromadb import Client, PersistentClient
+from chromadb import PersistentClient
 from rerankers import Reranker
 
 class AnswerOnlyOutputParser(StrOutputParser):
@@ -35,8 +35,14 @@ class ChatBot():
     def initialize_chromadb(self):
         # Initialize ChromaDB client
         client = PersistentClient()
-        collection = client.get_collection(name="Company_Documents")
         self.db_path = os.path.abspath("testdemoFINAL/chroma.db")  # Save the path to be used in other methods
+
+        # Check if the collection exists, if not create it
+        try:
+            collection = client.get_collection(name="Company_Documents")
+        except Exception as e:
+            collection = client.create_collection(name="Company_Documents")
+
         return client, collection
 
     def setup_language_model(self):
