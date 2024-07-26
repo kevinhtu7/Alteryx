@@ -79,8 +79,8 @@ def main():
 
     if not st.session_state.logged_in:
         # Login Page
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
+        username = st.text_input("Username", value=st.session_state.username)
+        password = st.text_input("Password", type="password", value=st.session_state.password)
 
         if st.button("Login"):
             role = get_user_role(username, password)
