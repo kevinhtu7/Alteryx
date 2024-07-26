@@ -80,8 +80,8 @@ def main():
 
     if not st.session_state.logged_in:
         # Login Page
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
+        username = st.text_input("Username", disabled=st.session_state.get("disable_inputs", False))
+        password = st.text_input("Password", type="password", disabled=st.session_state.get("disable_inputs", False))
 
         if st.button("Login"):
             role = get_user_role(username, password)
@@ -119,6 +119,7 @@ def run_app(access_levels):
             
     if st.button("Logout"):
         st.session_state.logged_in = False
+        st.session_state.disable_inputs = False
         st.experimental_rerun()
 
     # Prevent the user from asking questions if OpenAI is selected and no API key is entered
