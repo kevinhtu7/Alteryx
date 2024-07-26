@@ -95,7 +95,6 @@ def main():
                 #st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
                 run_app(st.session_state.access_levels)
                 st.rerun()
-                st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
                 #run_app(access_levels)
             else:
                 st.error("Invalid username or password")
@@ -141,6 +140,7 @@ def run_app(access_levels):
 
         # Initialize or maintain the list of past interactions and contexts
         if "messages" not in st.session_state:
+            st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
             st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
             st.session_state.context_history = []
 
