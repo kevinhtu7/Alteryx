@@ -138,6 +138,7 @@ def run_app(access_levels):
 
         # Initialize or maintain the list of past interactions and contexts
         if "messages" not in st.session_state:
+            st.experimental_set_query_params(rerun="true")
             st.session_state.disable_inputs = True
             st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
             st.session_state.context_history = []
