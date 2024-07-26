@@ -20,7 +20,7 @@ from textblob import TextBlob
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
         if "you do not have access" in response.lower():
-            return "You do not have access"
+            return "YOU SHALL NOT PASS!"
         return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class ChatBot():
@@ -78,8 +78,7 @@ class ChatBot():
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
     def get_context_from_collection(self, input, access_levels):
-        # Fetch all documents
-        all_documents = self.collection.query(query_texts=[input], n_results=10)
+        all_documents = self.collection.query(query_texts=[input], n_results=100)
         if not all_documents or 'documents' not in all_documents or not all_documents['documents']:
             return "I do not know..."
 
@@ -90,18 +89,11 @@ class ChatBot():
         # Filter documents based on access levels in metadata
         for doc in all_documents['documents']:
             print(f"Processing document: {doc}")
-            if isinstance(doc, dict):
-                metadata = doc.get('embedding_metadata', [])
-                print(f"Metadata: {metadata}")
-                if isinstance(metadata, list):
-                    access_roles = [item['string_value'] for item in metadata if item.get('key') == 'access_role']
-                    print(f"Access roles for document: {access_roles}")
-                    if any(role in access_levels for role in access_roles):
-                        filtered_documents.append(doc)
-                else:
-                    print(f"Metadata is not a list: {metadata}")
-            else:
-                print(f"Document is not a dictionary: {doc}")
+            metadata = doc.get('metadata', [])
+            access_roles = [item['string_value'] for item in metadata if item['key'] == 'access_role']
+            print(f"Access roles for document: {access_roles}")
+            if any(role in access_levels for role in access_roles):
+                filtered_documents.append(doc)
 
         if not filtered_documents:
             return "YOU SHALL NOT PASS!"
@@ -119,7 +111,8 @@ class ChatBot():
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        # You answer with short and concise answers, no longer than 2 sentences.
+        If you don't know the answer, simply state "I do not know...".
+        If the user does not have access to the required information, state "YOU SHALL NOT PASS!".
 
         Context: {context}
         Question: {question}
@@ -128,8 +121,20 @@ class ChatBot():
 
         self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
         self.rag_chain = (
-            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context and question
+            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}
             | self.prompt
             | self.llm
             | AnswerOnlyOutputParser()
         )
+
+    def generate_response(self, input_dict, access_levels):
+        context = self.get_context_from_collection(input_dict['question'], access_levels)
+        if context in ["YOU SHALL NOT PASS!", "I do not know..."]:
+            return context
+
+        try:
+            nice_input = self.preprocess_input(input_dict)
+            result = self.rag_chain.invoke(input_dict)
+            return result
+        except Exception as e:
+            return "An error occurred while generating the response."
