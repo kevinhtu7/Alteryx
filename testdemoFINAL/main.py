@@ -71,14 +71,27 @@ class ChatBot():
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
     def get_context_from_collection(self, input, user_access_levels):
+        # Query documents from the collection
         all_documents = self.collection.query(query_texts=[input], n_results=100)
         if not all_documents or 'documents' not in all_documents or not all_documents['documents']:
             return "I do not know..."
 
         filtered_documents = []
+
+        # Create a SQLite connection to query the metadata
+        conn = sqlite3.connect("testdemoAARON/chroma.db")
+        cursor = conn.cursor()
+
+        # Iterate over each document to check its access level in the metadata
         for doc in all_documents['documents']:
-            if doc['metadata']['access_role'] in user_access_levels:
+            doc_id = doc['id']
+            cursor.execute("SELECT string_value FROM embedding_metadata WHERE key='access_role' AND id=?", (doc_id,))
+            access_role = cursor.fetchone()
+            if access_role and access_role[0] in user_access_levels:
                 filtered_documents.append(doc)
+
+        cursor.close()
+        conn.close()
 
         if not filtered_documents:
             return "YOU SHALL NOT PASS!"
