@@ -83,8 +83,8 @@ def main():
         username = st.text_input("Username")
         password = st.text_input("Password", type="password")
 
-        #if st.button("Login"):
-        if st.button("Login") and not st.session_state.logged_in:
+        if st.button("Login"):
+        #if st.button("Login") and not st.session_state.logged_in:
             role = get_user_role(username, password)
             if role:
                 access_string = get_access_level(role)
