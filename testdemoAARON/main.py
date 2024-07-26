@@ -100,8 +100,8 @@ class ChatBot():
     # Extract context from the collection based on access role
         try:
             if access_role == "General Access":
-            documents = self.collection.query(query_texts=[input], n_results=3, where={"access_role": access_role})
-            if not documents["documents"]:
+                documents = self.collection.query(query_texts=[input], n_results=3, where={"access_role": access_role})
+                if not documents["documents"]:
                         return "I do not know..."
             elif access_role == "Executive Access":
                     documents = self.collection.query(query_texts=[input], n_results=3, where={"$or": [{"access_role": "General Access"}, {"access_role": "Executive Access"}]})
