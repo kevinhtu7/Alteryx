@@ -93,6 +93,7 @@ def main():
                 st.session_state.username = username
                 st.session_state.access_levels = access_levels
                 st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
+                st.experimental_rerun()
                 #run_app(access_levels)
             else:
                 st.error("Invalid username or password")
