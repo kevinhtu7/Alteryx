@@ -87,6 +87,55 @@ class ChatBot():
             except Exception as e:
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
+    #def initialize_knowledge_graph(self):
+        #neo4j_url = os.getenv('NEO4J_URL')
+        #neo4j_user = os.getenv('NEO4J_USER')
+        #neo4j_password = os.getenv('NEO4J_PASSWORD')
+        #self.graph = Graph(neo4j_url, auth=(neo4j_user, neo4j_password))
+
+    #def query_knowledge_graph(self, query):
+        #return self.graph.run(query).data()
+    
+    # def get_context_from_collection(self, input, access_levels):
+    #     # Query all context first
+    #     all_documents = self.collection.query(query_texts=[input], n_results=100)
+
+    #     if not all_documents or 'documents' or not all_documents.get('documents'):
+    #         return "No context found for the given input."
+
+    #     all_documents = all_documents['documents']
+
+    #     print(f'All documents: {all_documents}')
+
+    #     # access_level check 
+    #     if len(access_levels) == 1:
+    #         where_clause = {"access_role": access_levels[0]}
+    #     else:
+    #         where_clause = {"$or": [{"access_role": level} for level in access_levels]}
+
+    #     print(f'Where clause: {where_clause}')
+
+    #     documents = self.collection.query(
+    #         query_texts=[input], 
+    #         n_results=100, 
+    #         where=where_clause
+    #     )   
+
+    #     if not documents or 'documents' or not documents.get('documents'):
+    #         return "No context available for your access level."
+        
+    #     documents = documents['documents']
+
+    #     print(f"Filtered documents: {documents}")
+
+    #     # Rerank the filtered documents
+    #     reranked_documents = self.rerank_documents(input, documents)
+
+    #     # Use top 3 reranked documents
+    #     context = " ".join([doc["text"] for doc in reranked_documents[:3]])  # Append the top 3 docs together
+    #     # context = reranked_documents[0]["text"]  # Pick the best document from the top 3
+
+    #     return context
             
 
     def get_context_from_collection(self, input, access_levels):
@@ -97,7 +146,17 @@ class ChatBot():
                                           #where={"access_role": "General Access"}
                                           where=access_levels[0]
                                           )
-
+        # if access_role == "General":
+       #      documents = self.collection.query(query_texts=[input],
+       #                                   n_results=5,
+       #                                   where={"access_role": access_role+" Access"}
+       #                                   )
+       # elif access_role == "Executive":
+       #     access_text = [{"access_role": "General Access"}, {"access_role": "Executive Access"}]
+       #     documents = self.collection.query(query_texts=[input],
+       #                                   n_results=10,
+       #                                   where={"$or": access_text}
+       #                                   )
         else:
             documents = self.collection.query(query_texts=[input],
                                               n_results=10,
@@ -106,10 +165,31 @@ class ChatBot():
         reranked_documents = self.rerank_documents(input, documents)
         # Use top 3 reranked documents
         context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
-
+        # context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
         return context
 
+    #def get_context_from_knowledge_graph(self, input):
+        # query for everything
+        #query = "MATCH (n)-[r]->(m) RETURN n, r, m"
+        #query = f"MATCH (n) WHERE n.name CONTAINS '{input}' RETURN n"
+        #results = self.query_knowledge_graph(query)
+        #results = ["", ""]
+        #context = " ".join([str(result) for result in results])
+        #return context
+        #for document in documents["documents"]:
+           #context = document
+        #reranked_documents = self.rerank_documents(input, documents["documents"])
+        #context = " ".join([doc["text"] for doc in reranked_documents[:5]])  # Use top 5 reranked documents
+        #context = reranked_documents  # Use top 5 reranked documents
+        #return context 
 
+
+    # Uncomment this method if it's necessary
+    # def initialize_tools(self):
+    #     # Initialize tools for anonymization, spellchecking, and ensuring niceness
+    #     self.analyzer = AnalyzerEngine()
+    #     self.anonymizer = AnonymizerEngine()
+    #     self.spellchecker = SpellChecker()
 
     def preprocess_input(self, input_dict):
         # Anonymize, spellcheck, and ensure niceness
@@ -124,7 +204,7 @@ class ChatBot():
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        If you don't know the answer, simply state "I do not know.".
+        If you don't know the answer, simply state "You do not have the required level of access".
         # You answer with short and concise answers, no longer than 2 sentences.
 
         Context: {context}
@@ -140,3 +220,14 @@ class ChatBot():
             | AnswerOnlyOutputParser()
         )
 
+    #def get_combined_context(self, input, access_levels):
+        #collection_context = self.get_context_from_collection(input, access_levels)
+        #graph_context = self.get_context_from_knowledge_graph(input)
+        #combined_context = f"{collection_context} {graph_context}"
+        #return combined_context
+
+    #def answer_question(self, input_dict, access_levels):
+        ## input_text = self.preprocess_input(input_dict)
+        #combined_context = self.get_combined_context(input_dict, access_levels)
+        #response = self.rag_chain.run({"context": combined_context, "question": input_dict.get("question", "")})
+        #return response
