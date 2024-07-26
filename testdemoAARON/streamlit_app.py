@@ -109,7 +109,7 @@ def main():
 def run_app(access_levels):
     # Sidebar elements
     with st.sidebar:
-        st.title('Meeting Information Bot')
+        st.title('Internal Knowledge Base Bot')
 
         llm_selection = st.selectbox(
             "Select LLM",
