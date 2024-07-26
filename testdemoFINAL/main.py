@@ -11,6 +11,7 @@ from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
+import streamlit as st
 from rerankers import Reranker
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
@@ -44,7 +45,7 @@ class ChatBot():
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
         db_path = os.path.abspath("testdemoFINAL/chroma.db")
-        print(f"Database path: {db_path}")  # Log the path to ensure it's correct
+        st.write(f"Database path: {db_path}")  # Log the path to ensure it's correct
         if not os.path.exists(db_path):
             raise FileNotFoundError(f"Database file not found at {db_path}")
         try:
@@ -82,26 +83,26 @@ class ChatBot():
         if not all_documents or 'documents' not in all_documents or not all_documents['documents']:
             return "I do not know..."
 
-        print(f"All documents retrieved: {all_documents}")
+        st.write(f"All documents retrieved: {all_documents}")
 
         filtered_documents = []
 
         # Filter documents based on access levels in metadata
         for doc in all_documents['documents']:
-            print(f"Processing document: {doc}")
+            st.write(f"Processing document: {doc}")
             if isinstance(doc, dict):
                 doc_id = doc.get('id', None)
                 metadata = doc.get('metadata', {})
-                print(f"Document ID: {doc_id}, Metadata: {metadata}")
+                st.write(f"Document ID: {doc_id}, Metadata: {metadata}")
                 access_role = metadata.get('access_role')
-                print(f"Access Role: {access_role}, Required Levels: {access_levels}")
+                st.write(f"Access Role: {access_role}, Required Levels: {access_levels}")
                 if access_role in access_levels:
                     filtered_documents.append(doc)
             else:
-                print(f"Document is not a dictionary: {doc}")
+                st.write(f"Document is not a dictionary: {doc}")
 
         if not filtered_documents:
-            print("No documents match the required access levels.")
+            st.write("No documents match the required access levels.")
             return "YOU SHALL NOT PASS!"
 
         reranked_documents = self.rerank_documents(input, filtered_documents)
