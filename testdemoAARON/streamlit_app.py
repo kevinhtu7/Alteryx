@@ -119,13 +119,12 @@ def run_app(access_levels):
         else:
             st.session_state.api_key = ""
 
-    for i in range(0, 2):
-        if st.button("Logout"):
-            st.session_state.logged_in = False
-            st.session_state.username = ""
-            st.session_state.password = ""
-            st.session_state.access_levels = ""
-            st.experimental_rerun()
+    if st.button("Logout"):
+        st.session_state.logged_in = False
+        st.session_state.username = ""
+        st.session_state.password = ""
+        st.session_state.access_levels = ""
+        st.experimental_rerun()
 
     # Prevent the user from asking questions if OpenAI is selected and no API key is entered
     if st.session_state.llm_selection == "External (OpenAI)" and not st.session_state.api_key:
