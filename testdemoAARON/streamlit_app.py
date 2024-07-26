@@ -92,6 +92,9 @@ def main():
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.session_state.access_levels = access_levels
+                # Extracting the access roles from the list of dictionaries
+                access_roles = [access['access_role'] for access in access_levels]
+                access_roles_str = ', '.join(access_roles)
                 st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
                 run_app(st.session_state.access_levels)
                 st.rerun()
