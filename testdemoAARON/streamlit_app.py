@@ -77,11 +77,13 @@ def main():
         st.session_state.username = ""
         st.session_state.password = ""
         st.session_state.access_level = ""
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
 
     if not st.session_state.logged_in:
         # Login Page
-        username = st.text_input("Username")
-        password = st.text_input("Password", type="password")
+        #username = st.text_input("Username")
+        #password = st.text_input("Password", type="password")
 
         if st.button("Login"):
         #if st.button("Login") and not st.session_state.logged_in:
@@ -93,7 +95,7 @@ def main():
                 st.session_state.username = username
                 st.session_state.access_levels = access_levels
                 st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
-                st.experimental_rerun()
+                #st.experimental_rerun()
                 #run_app(access_levels)
             else:
                 st.error("Invalid username or password")
