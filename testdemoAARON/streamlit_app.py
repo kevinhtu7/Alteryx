@@ -92,9 +92,8 @@ def main():
                 st.session_state.logged_in = True
                 st.session_state.username = username
                 st.session_state.access_levels = access_levels
-                st.session_state.disable_inputs = True
                 st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
-                run_app(access_levels)
+                #run_app(access_levels)
             else:
                 st.error("Invalid username or password")
             #st.session_state.username = ""
