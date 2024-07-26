@@ -96,35 +96,23 @@ class ChatBot():
     #def query_knowledge_graph(self, query):
         #return self.graph.run(query).data()
     
-    def get_context_from_collection(self, input, access_levels):
-        # Extract context from the collection
-        if len(access_levels) == 1:
-            documents = self.collection.query(query_texts=[input],
-                                          n_results=10,
-                                          #where={"access_role": "General Access"}
-                                          where=access_levels[0]
-                                          )
-        # if access_role == "General":
-       #      documents = self.collection.query(query_texts=[input],
-       #                                   n_results=5,
-       #                                   where={"access_role": access_role+" Access"}
-       #                                   )
-       # elif access_role == "Executive":
-       #     access_text = [{"access_role": "General Access"}, {"access_role": "Executive Access"}]
-       #     documents = self.collection.query(query_texts=[input],
-       #                                   n_results=10,
-       #                                   where={"$or": access_text}
-       #                                   )
-        else:
-            documents = self.collection.query(query_texts=[input],
-                                              n_results=10,
-                                              where={"$or": access_levels}
-                                              )
-        reranked_documents = self.rerank_documents(input, documents)
-        # Use top 3 reranked documents
-        context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
-        # context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
-        return context
+    def get_context_from_collection(self, input, access_role):
+    # Extract context from the collection based on access role
+        try:
+            if access_role == "General Access":
+            documents = self.collection.query(query_texts=[input], n_results=3, where={"access_role": access_role})
+            if not documents["documents"]:
+                        return "I do not know..."
+            elif access_role == "Executive Access":
+                    documents = self.collection.query(query_texts=[input], n_results=3, where={"$or": [{"access_role": "General Access"}, {"access_role": "Executive Access"}]})
+        
+            for document in documents["documents"]:
+                if document["access_role"] == "Executive" and access_role == "General Access":
+                        return "YOU SHALL NOT PASS!"
+                return document
+        except Exception as e:
+                return "I do not know..."
+
 
     #def get_context_from_knowledge_graph(self, input):
         # query for everything
