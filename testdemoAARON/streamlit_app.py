@@ -95,7 +95,7 @@ def main():
                 # Extracting the access roles from the list of dictionaries
                 access_roles = [access['access_role'] for access in access_levels]
                 access_roles_str = ', '.join(access_roles)
-                st.success(f"Welcome {username}! Your role is {role} with {access_roles_str} access.")
+                st.success(f"Welcome {username}! Your role is {role} with {access_roles_str}.")
                 run_app(st.session_state.access_levels)
                 st.rerun()
                 #run_app(access_levels)
