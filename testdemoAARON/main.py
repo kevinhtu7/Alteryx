@@ -97,21 +97,31 @@ class ChatBot():
         #return self.graph.run(query).data()
     
     def get_context_from_collection(self, input, access_role):
-    # Extract context from the collection based on access role
-        try:
-            if access_role == "General Access":
-                documents = self.collection.query(query_texts=[input], n_results=3, where={"access_role": access_role})
-                if not documents["documents"]:
-                        return "I do not know..."
-            elif access_role == "Executive Access":
-                    documents = self.collection.query(query_texts=[input], n_results=3, where={"$or": [{"access_role": "General Access"}, {"access_role": "Executive Access"}]})
+        if access_role == "General Access":
+                documents = self.collection.query(query_texts=[input],
+                                            n_results=3,
+                                            where={"access_role": access_role}
+                                            )
+        elif access_role == "Executive Access":
+                access_text = [{"access_role": "General Access"}, {"access_role": access_role}]
+                documents = self.collection.query(query_texts=[input],
+                                            n_results=3,
+                                            where={"$or": access_text}
+                                            )
+        if not documents["documents"]:
+                return "I do not know...."
         
-            for document in documents["documents"]:
-                if document["access_role"] == "Executive" and access_role == "General Access":
-                        return "YOU SHALL NOT PASS!"
-                return document
-        except Exception as e:
-                return "I do not know..."
+        for document in documents["documents"]:
+                context = document
+        return context
+
+    def get_combined_context(self, input, access_levels):
+        for level in access_levels:
+                if level['access_role'] == "Executive Access":
+                    return self.get_context_from_collection(input, "Executive Access")
+                elif level['access_role'] == "General Access":
+                    return self.get_context_from_collection(input, "General Access")
+        return "YOU SHALL NOT PASS!"
 
 
     #def get_context_from_knowledge_graph(self, input):
