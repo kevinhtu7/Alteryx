@@ -89,11 +89,17 @@ class ChatBot():
         # Filter documents based on access levels in metadata
         for doc in all_documents['documents']:
             print(f"Processing document: {doc}")
-            metadata = doc.get('metadata', [])
-            access_roles = [item['string_value'] for item in metadata if item['key'] == 'access_role']
-            print(f"Access roles for document: {access_roles}")
-            if any(role in access_levels for role in access_roles):
-                filtered_documents.append(doc)
+            if isinstance(doc, dict):
+                metadata = doc.get('metadata', {})
+                if isinstance(metadata, list):
+                    access_roles = [item['string_value'] for item in metadata if item['key'] == 'access_role']
+                    print(f"Access roles for document: {access_roles}")
+                    if any(role in access_levels for role in access_roles):
+                        filtered_documents.append(doc)
+                else:
+                    print(f"Metadata is not a list: {metadata}")
+            else:
+                print(f"Document is not a dictionary: {doc}")
 
         if not filtered_documents:
             return "YOU SHALL NOT PASS!"
