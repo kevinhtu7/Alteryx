@@ -20,7 +20,7 @@ from textblob import TextBlob
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
         if "you do not have access" in response.lower():
-            return "YOU SHALL NOT PASS!"
+            return "You do not have access"
         return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class ChatBot():
