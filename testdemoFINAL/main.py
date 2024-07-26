@@ -58,7 +58,7 @@ class ChatBot():
                 self.repo_id = "openai/gpt-4o-mini"
                 self.llm = HuggingFaceHub(
                     repo_id=self.repo_id,
-                    model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
+                    model_kwargs={"temperature": .8, "top_p": .8, "top_k": 50},
                     huggingfacehub_api_token=self.api_key
                 )
             except Exception as e:
@@ -68,7 +68,7 @@ class ChatBot():
                 self.repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
                 self.llm = HuggingFaceHub(
                     repo_id=self.repo_id,
-                    model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
+                    model_kwargs={"temperature": .8, "top_p": .8, "top_k": 50},
                     huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
                 )
             except Exception as e:
@@ -81,25 +81,11 @@ class ChatBot():
 
         filtered_documents = []
 
-        # Create a SQLite connection to query the metadata
-        print(f"Connecting to database at {self.db_path}")
-        try:
-            conn = sqlite3.connect(self.db_path)
-        except sqlite3.Error as e:
-            print(f"Error connecting to database: {e}")
-            return "Database connection error"
-        cursor = conn.cursor()
-
-        # Iterate over each document to check its access level in the metadata
         for doc in all_documents['documents']:
             doc_id = doc['id']
-            cursor.execute("SELECT string_value FROM embedding_metadata WHERE key='access_role' AND id=?", (doc_id,))
-            access_role = cursor.fetchone()
-            if access_role and access_role[0] in access_levels:
+            metadata = self.collection.get_metadata(doc_id)
+            if 'access_role' in metadata and metadata['access_role'] in access_levels:
                 filtered_documents.append(doc)
-
-        cursor.close()
-        conn.close()
 
         if not filtered_documents:
             return "YOU SHALL NOT PASS!"
@@ -135,12 +121,4 @@ class ChatBot():
 
     def generate_response(self, input_dict, access_levels):
         context = self.get_context_from_collection(input_dict['question'], access_levels)
-        if context in ["YOU SHALL NOT PASS!", "I do not know..."]:
-            return context
-
-        try:
-            nice_input = self.preprocess_input(input_dict)
-            result = self.rag_chain.invoke(input_dict)
-            return result
-        except Exception as e:
-            return "An error occurred while generating the response."
+        if context in ["YOU SHALL NOT PASS!", "I 
