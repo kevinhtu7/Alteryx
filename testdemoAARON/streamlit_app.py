@@ -157,14 +157,14 @@ def run_app(access_levels):
 
             # Retrieve context from the database
       
-                #context = bot.get_combined_context(input, access_levels=access_levels)
-            context = bot.get_context_from_collection(input, access_role=st.session_state.access_levels)
+            try:    #context = bot.get_combined_context(input, access_levels=access_levels)
+                context = bot.get_combined_context(input, access_levels=access_levels)
+                st.session_state.context+history.append(context)
 
-            if context in ["YOU SHALL NOT PASS!", "I do not know..."]:
-                response = context
-            else:
-                input_dict = {"context": context, "question": input}
-                response = generate_response(input_dict)
+            except Exception as e:
+                st.error(f"error retreiveiwn context: {e}")
+                context = "An error occurred while retrieving context."
+
 
             # Generate a new response
             input_dict = {"context": context, "question": input}
