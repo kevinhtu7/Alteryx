@@ -96,33 +96,77 @@ class ChatBot():
     #def query_knowledge_graph(self, query):
         #return self.graph.run(query).data()
     
-    def get_context_from_collection(self, input, access_role):
-        if access_role == "General Access":
-                documents = self.collection.query(query_texts=[input],
-                                            n_results=3,
-                                            where={"access_role": access_role}
-                                            )
-        elif access_role == "Executive Access":
-                access_text = [{"access_role": "General Access"}, {"access_role": access_role}]
-                documents = self.collection.query(query_texts=[input],
-                                            n_results=3,
-                                            where={"$or": access_text}
-                                            )
-        if not documents["documents"]:
-                return "I do not know...."
+    # def get_context_from_collection(self, input, access_levels):
+    #     # Query all context first
+    #     all_documents = self.collection.query(query_texts=[input], n_results=100)
+
+    #     if not all_documents or 'documents' or not all_documents.get('documents'):
+    #         return "No context found for the given input."
+
+    #     all_documents = all_documents['documents']
+
+    #     print(f'All documents: {all_documents}')
+
+    #     # access_level check 
+    #     if len(access_levels) == 1:
+    #         where_clause = {"access_role": access_levels[0]}
+    #     else:
+    #         where_clause = {"$or": [{"access_role": level} for level in access_levels]}
+
+    #     print(f'Where clause: {where_clause}')
+
+    #     documents = self.collection.query(
+    #         query_texts=[input], 
+    #         n_results=100, 
+    #         where=where_clause
+    #     )   
+
+    #     if not documents or 'documents' or not documents.get('documents'):
+    #         return "No context available for your access level."
         
-        for document in documents["documents"]:
-                context = document
+    #     documents = documents['documents']
+
+    #     print(f"Filtered documents: {documents}")
+
+    #     # Rerank the filtered documents
+    #     reranked_documents = self.rerank_documents(input, documents)
+
+    #     # Use top 3 reranked documents
+    #     context = " ".join([doc["text"] for doc in reranked_documents[:3]])  # Append the top 3 docs together
+    #     # context = reranked_documents[0]["text"]  # Pick the best document from the top 3
+
+    #     return context
+            
+
+    def get_context_from_collection(self, input, access_levels):
+        # Extract context from the collection
+        if len(access_levels) == 1:
+            documents = self.collection.query(query_texts=[input],
+                                          n_results=10,
+                                          #where={"access_role": "General Access"}
+                                          where=access_levels[0]
+                                          )
+        # if access_role == "General":
+       #      documents = self.collection.query(query_texts=[input],
+       #                                   n_results=5,
+       #                                   where={"access_role": access_role+" Access"}
+       #                                   )
+       # elif access_role == "Executive":
+       #     access_text = [{"access_role": "General Access"}, {"access_role": "Executive Access"}]
+       #     documents = self.collection.query(query_texts=[input],
+       #                                   n_results=10,
+       #                                   where={"$or": access_text}
+       #                                   )
+        else:
+            documents = self.collection.query(query_texts=[input],
+                                              n_results=10,
+                                              where={"$or": access_levels}
+                                              )
+        reranked_documents = self.rerank_documents(input, documents)
+        # Use top 3 reranked documents
+        context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
+        # context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
         return context
-
-    def get_combined_context(self, input, access_levels):
-        for level in access_levels:
-                if level['access_role'] == "Executive Access":
-                    return self.get_context_from_collection(input, "Executive Access")
-                elif level['access_role'] == "General Access":
-                    return self.get_context_from_collection(input, "General Access")
-        return "YOU SHALL NOT PASS!"
-
 
     #def get_context_from_knowledge_graph(self, input):
         # query for everything
@@ -157,35 +201,24 @@ class ChatBot():
         combined_text = f"{context} {question}"
         return combined_text
 
-
     def setup_langchain(self):
         template = """
         You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        Please check user access level and if a general access level user is trying to access executive level documents, say "YOU SHALL NOT PASS!!!" otherwise say "I am not sure....."
-        Please provide the file used for context.
+        If you don't know the answer, simply state "You do not have the required level of access".
         # You answer with short and concise answers, no longer than 2 sentences.
 
         Context: {context}
-        Access Level: {access_level}
         Question: {question}
         Answer:
         """
 
-        self.prompt = PromptTemplate(template=template, input_variables=["context", "access_level", "question"])
+        self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
         self.rag_chain = (
-        {"context": RunnablePassthrough(), "access_level": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context, access_level, and question
-        | self.prompt
-        | self.llm
-        | AnswerOnlyOutputParser()
-    )
-
-    # def handle_user_request(self, user_access_level, context, question):
-    #     if "executive" in context.lower() and user_access_level.lower() != "executive":
-    #         return "You SHALL NOT PASS."
-
-    #     combined_context = self.get_context_from_collection(context, [{"access_role": user_access_level}])
-    #     response = self.rag_chain.run({"context": combined_context, "question": question})
-    #     return response
+            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}  # Using passthroughs for context and question
+            | self.prompt
+            | self.llm
+            | AnswerOnlyOutputParser()
+        )
 
     #def get_combined_context(self, input, access_levels):
         #collection_context = self.get_context_from_collection(input, access_levels)
