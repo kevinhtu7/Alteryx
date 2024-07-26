@@ -43,8 +43,16 @@ class ChatBot():
 
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
-        client = db.PersistentClient(path="testdemoFINAL/chroma.db")
+        db_path = os.path.abspath("testdemoFINAL/chroma.db")
+        print(f"Database path: {db_path}")  # Log the path to ensure it's correct
+        if not os.path.exists(db_path):
+            raise FileNotFoundError(f"Database file not found at {db_path}")
+        try:
+            client = db.PersistentClient(path=db_path)
+        except Exception as e:
+            raise ConnectionError(f"Failed to connect to the database at {db_path}: {e}")
         collection = client.get_collection(name="Company_Documents")
+        self.db_path = db_path  # Save the path to be used in other methods
         return client, collection
 
     def setup_language_model(self):
@@ -70,15 +78,23 @@ class ChatBot():
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
     def get_context_from_collection(self, input, access_levels):
-        # Create the where clause based on access levels
-        where_clause = {"access_role": {"$in": access_levels}}
-
-        # Query documents from the collection using the where clause
-        all_documents = self.collection.query(query_texts=[input], n_results=10, where=where_clause)
+        all_documents = self.collection.query(query_texts=[input], n_results=100)
         if not all_documents or 'documents' not in all_documents or not all_documents['documents']:
             return "I do not know..."
 
-        reranked_documents = self.rerank_documents(input, all_documents['documents'])
+        filtered_documents = []
+
+        # Filter documents based on access levels in metadata
+        for doc in all_documents['documents']:
+            doc_id = doc['id']
+            metadata = self.collection.get_metadata(doc_id)
+            if metadata and metadata.get('access_role') in access_levels:
+                filtered_documents.append(doc)
+
+        if not filtered_documents:
+            return "YOU SHALL NOT PASS!"
+
+        reranked_documents = self.rerank_documents(input, filtered_documents)
         context = " ".join([doc["text"] for doc in reranked_documents[:3]])
         return context
 
