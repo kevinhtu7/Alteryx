@@ -52,7 +52,6 @@ class ChatBot():
         print(f"Database path: {db_path}")  # Log the path to ensure it's correct
         client = db.PersistentClient(path=db_path)
         collection = client.get_collection(name="Company_Documents")
-        self.db_path = db_path  # Save the path to be used in other methods
         return client, collection
 
     def setup_language_model(self):
@@ -78,32 +77,18 @@ class ChatBot():
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
     def get_context_from_collection(self, input, access_levels):
-        all_documents = self.collection.query(query_texts=[input], n_results=100)
+        # Create the where clause based on access levels
+        if len(access_levels) == 1:
+            where_clause = {"access_role": access_levels[0]}
+        else:
+            where_clause = {"$or": [{"access_role": level} for level in access_levels]}
+
+        # Query documents from the collection using the where clause
+        all_documents = self.collection.query(query_texts=[input], n_results=100, where=where_clause)
         if not all_documents or 'documents' not in all_documents or not all_documents['documents']:
             return "I do not know..."
 
-        filtered_documents = []
-
-        # Create a SQLite connection to query the metadata
-        print(f"Connecting to database at {self.db_path}")
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-
-        # Iterate over each document to check its access level in the metadata
-        for doc in all_documents['documents']:
-            doc_id = doc['id']
-            cursor.execute("SELECT string_value FROM embedding_metadata WHERE key='access_role' AND id=?", (doc_id,))
-            access_role = cursor.fetchone()
-            if access_role and access_role[0] in access_levels:
-                filtered_documents.append(doc)
-
-        cursor.close()
-        conn.close()
-
-        if not filtered_documents:
-            return "YOU SHALL NOT PASS!"
-
-        reranked_documents = self.rerank_documents(input, filtered_documents)
+        reranked_documents = self.rerank_documents(input, all_documents['documents'])
         context = " ".join([doc["text"] for doc in reranked_documents[:3]])
         return context
 
