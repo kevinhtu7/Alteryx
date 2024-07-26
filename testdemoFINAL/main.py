@@ -43,7 +43,7 @@ class ChatBot():
         return reranked_documents
 
     def initialize_chromadb(self):
-        db_path = "testdemoAARON/chroma.db"
+        db_path = os.path.abspath("chroma.sqlite3")
         client = db.PersistentClient(path=db_path)
         collection = client.get_collection(name="Company_Documents")
         return client, collection
@@ -79,7 +79,8 @@ class ChatBot():
         filtered_documents = []
 
         # Create a SQLite connection to query the metadata
-        conn = sqlite3.connect("testdemoAARON/chroma.db")
+        db_path = os.path.abspath("chroma.sqlite3")
+        conn = sqlite3.connect(db_path)
         cursor = conn.cursor()
 
         # Iterate over each document to check its access level in the metadata
