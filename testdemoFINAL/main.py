@@ -1,22 +1,12 @@
-from dotenv import load_dotenv
 import os
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-import chromadb as db
-from chromadb import Client
-from chromadb.config import Settings
+import sqlite3
+from dotenv import load_dotenv
 from langchain_community.llms import HuggingFaceHub
 from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
-import logging
-import sqlite3
+from chromadb import Client
 from rerankers import Reranker
-from presidio_analyzer import AnalyzerEngine
-from presidio_anonymizer import AnonymizerEngine
-from spellchecker import SpellChecker
-from textblob import TextBlob
 
 class AnswerOnlyOutputParser(StrOutputParser):
     def parse(self, response):
@@ -43,10 +33,10 @@ class ChatBot():
         return reranked_documents
 
     def initialize_chromadb(self):
-        db_path = "testdemoFINAL/chroma.db"
-        client = db.PersistentClient(path=db_path)
+        db_path = os.path.abspath("testdemoFINAL/chroma.db")
+        client = Client(path=db_path)
         collection = client.get_collection(name="Company_Documents")
-        self.db_path = db_path  # Save the path to be used in other methods
+        self.db_path = db_path
         return client, collection
 
     def setup_language_model(self):
@@ -78,11 +68,9 @@ class ChatBot():
 
         filtered_documents = []
 
-        # Create a SQLite connection to query the metadata
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
 
-        # Iterate over each document to check its access level in the metadata
         for doc in all_documents['documents']:
             doc_id = doc['id']
             cursor.execute("SELECT string_value FROM embedding_metadata WHERE key='access_role' AND id=?", (doc_id,))
