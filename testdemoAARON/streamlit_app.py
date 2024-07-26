@@ -88,14 +88,14 @@ def main():
                 access_string = get_access_level(role)
                 access_levels = create_access_levels(access_string)
                 st.session_state.logged_in = True
-                #st.session_state.username = username
-                #st.session_state.access_levels = access_levels
+                st.session_state.username = username
+                st.session_state.access_levels = access_levels
                 st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
                 run_app(access_levels)
             else:
                 st.error("Invalid username or password")
     else:
-        run_app(access_levels)
+        run_app(st.session_state.access_levels)
 
 def run_app(access_levels):
     # Sidebar elements
