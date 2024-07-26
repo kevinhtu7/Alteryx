@@ -1,125 +1,178 @@
-from dotenv import load_dotenv
+import streamlit as st
+import pandas as pd
+import mysql.connector
+from mysql.connector import Error
 import os
-__import__('pysqlite3')
-import sys
-sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
-import chromadb as db
-from chromadb import Client
-from chromadb.config import Settings
-from langchain_community.llms import HuggingFaceHub
-from langchain_core.prompts import PromptTemplate
-from langchain.schema.runnable import RunnablePassthrough
-from langchain.schema.output_parser import StrOutputParser
-import logging
-import sqlite3
-from rerankers import Reranker
-from presidio_analyzer import AnalyzerEngine
-from presidio_anonymizer import AnonymizerEngine
-from spellchecker import SpellChecker
-from textblob import TextBlob
+from dotenv import load_dotenv
+from main import ChatBot
 
-class AnswerOnlyOutputParser(StrOutputParser):
-    def parse(self, response):
-        if "you do not have access" in response.lower():
-            return "YOU SHALL NOT PASS!"
-        return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
+# Set page configuration at the top of the script
+st.set_page_config(page_title="Meeting Information Bot")
 
-class ChatBot():
-    def __init__(self, llm_type="Local (PHI3)", api_key=""):
-        load_dotenv()
-        self.chroma_client, self.collection = self.initialize_chromadb()
-        self.llm_type = llm_type
-        self.api_key = api_key
-        self.setup_language_model()
-        self.setup_langchain()
-        self.setup_reranker()
+# Load environment variables
+load_dotenv()
 
-    def setup_reranker(self):
-        self.reranker = Reranker("t5")
+def create_connection():
+    connection = None
+    try:
+        connection = mysql.connector.connect(
+            host=os.getenv("DB_HOST"),
+            user=os.getenv("DB_USER"),
+            passwd=os.getenv("DB_PASSWORD"),
+            database=os.getenv("DB_NAME")
+        )
+    except Error as e:
+        st.error(f"Error: '{e}'")
+    return connection
 
-    def rerank_documents(self, question, documents):
-        context = " ".join([doc["text"] for doc in documents])
-        reranked_documents = self.reranker.rank(question, context)
-        return reranked_documents
-
-    def initialize_chromadb(self):
-        db_path = "testdemoAARON/chroma.db"
-        client = db.PersistentClient(path=db_path)
-        collection = client.get_collection(name="Company_Documents")
-        return client, collection
-
-    def setup_language_model(self):
-        if self.llm_type == "External (OpenAI)" and self.api_key:
-            try:
-                self.repo_id = "openai/gpt-4o-mini"
-                self.llm = HuggingFaceHub(
-                    repo_id=self.repo_id,
-                    model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
-                    huggingfacehub_api_token=self.api_key
-                )
-            except Exception as e:
-                raise ValueError(f"Failed to initialize the external LLM: {e}")
+def query_database(query, params=None):
+    connection = create_connection()
+    cursor = connection.cursor(dictionary=True)
+    try:
+        if params:
+            cursor.execute(query, params)
         else:
-            try:
-                self.repo_id = "mistralai/Mixtral-8x7B-Instruct-v0.1"
-                self.llm = HuggingFaceHub(
-                    repo_id=self.repo_id,
-                    model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
-                    huggingfacehub_api_token=os.getenv('HUGGINGFACE_API_KEY')
-                )
-            except Exception as e:
-                raise ValueError(f"Failed to initialize the local LLM: {e}")
+            cursor.execute(query)
+        result = cursor.fetchall()
+        return pd.DataFrame(result)
+    except Error as e:
+        st.error(f"Error: '{e}'")
+        return None
+    finally:
+        cursor.close()
+        connection.close()
 
-    def get_context_from_collection(self, input, user_access_levels):
-        all_documents = self.collection.query(query_texts=[input], n_results=100)
-        if not all_documents or 'documents' not in all_documents or not all_documents['documents']:
-            return "I do not know..."
+def get_user_role(username, password):
+    query = "SELECT role FROM Users WHERE UserID = %s AND PW = %s"
+    params = (username, password)
+    df = query_database(query, params)
+    if not df.empty:
+        return df.iloc[0]['role']
+    else:
+        return None
 
-        filtered_documents = []
-        for doc in all_documents['documents']:
-            if doc['metadata']['access_role'] in user_access_levels:
-                filtered_documents.append(doc)
+def create_access_levels(access_role):
+        access_levels = []   
+        entries = access_role.split(', ')
+        for entry in entries:
+            access_dict = {'access_role': entry}
+            access_levels.append(access_dict)
+            
+        return access_levels
 
-        if not filtered_documents:
-            return "YOU SHALL NOT PASS!"
+def get_access_level(role):
+    query = "SELECT access_levels FROM Roles WHERE role = %s"
+    params = (role,)
+    df = query_database(query, params)
+    if not df.empty:
+        return df.iloc[0]['access_levels']
+    else:
+        return None
 
-        reranked_documents = self.rerank_documents(input, filtered_documents)
-        context = " ".join([doc["text"] for doc in reranked_documents[:3]])
-        return context
+def main():
+    st.title("Meeting Information Bot")
 
-    def preprocess_input(self, input_dict):
-        context = input_dict.get("context", "")
-        question = input_dict.get("question", "")
-        combined_text = f"{context} {question}"
-        return combined_text
+    if "logged_in" not in st.session_state:
+        st.session_state.logged_in = False
+        st.session_state.username = ""
+        st.session_state.access_level = ""
 
-    def setup_langchain(self):
-        template = """
-        You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
-        If you don't know the answer, simply state "I do not know...".
-        If the user does not have access to the required information, state "YOU SHALL NOT PASS!".
+    if not st.session_state.logged_in:
+        # Login Page
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
 
-        Context: {context}
-        Question: {question}
-        Answer:
-        """
+        if st.button("Login"):
+            role = get_user_role(username, password)
+            if role:
+                access_string = get_access_level(role)
+                access_levels = create_access_levels(access_string)
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.session_state.access_levels = access_levels
+                st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
+                run_app(access_levels)
+            else:
+                st.error("Invalid username or password")
+    else:
+        run_app(st.session_state.access_levels)
 
-        self.prompt = PromptTemplate(template=template, input_variables=["context", "question"])
-        self.rag_chain = (
-            {"context": RunnablePassthrough(), "question": RunnablePassthrough()}
-            | self.prompt
-            | self.llm
-            | AnswerOnlyOutputParser()
+def run_app(access_levels):
+    # Sidebar elements
+    with st.sidebar:
+        st.title('Meeting Information Bot')
+
+        llm_selection = st.selectbox(
+            "Select LLM",
+            ["Local (PHI3)", "External (OpenAI)"],
+            key="llm_selection"
         )
 
-    def generate_response(self, input_dict, access_levels):
-        context = self.get_context_from_collection(input_dict['question'], access_levels)
-        if context in ["YOU SHALL NOT PASS!", "I do not know..."]:
-            return context
+        if llm_selection == "External (OpenAI)":
+            st.session_state.api_key = st.text_input("Enter OpenAI API Key", type="password")
+        else:
+            st.session_state.api_key = ""
+            
+    if st.button("Logout"):
+        st.session_state.logged_in = False
+        st.experimental_rerun()
 
+    # Prevent the user from asking questions if OpenAI is selected and no API key is entered
+    if st.session_state.llm_selection == "External (OpenAI)" and not st.session_state.api_key:
+        st.warning("Please enter your OpenAI API key to proceed.")
+    else:
+        # Initialize ChatBot with the selected LLM
         try:
-            nice_input = self.preprocess_input(input_dict)
-            result = self.rag_chain.invoke(input_dict)
-            return result
+            bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
         except Exception as e:
-            return "An error occurred while generating the response."
+            st.error(f"Failed to initialize the chatbot: {e}")
+            st.stop()
+
+        # Initialize or maintain the list of past interactions and contexts
+        if "messages" not in st.session_state:
+            st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
+            st.session_state.context_history = []
+
+        # Function for generating LLM response
+        def generate_response(input_dict):
+            try:
+                nice_input = bot.preprocess_input(input_dict)
+                result = bot.rag_chain.invoke(input_dict)
+                #result = bot.answer_question(input_dict, access_levels)
+                return result
+            except Exception as e:
+                st.error(f"Error generating response: {e}")
+                return "An error occurred while generating the response."
+
+        # Display chat messages
+        for message in st.session_state.messages:
+            with st.chat_message(message["role"]):
+                st.write(message["content"])
+
+        # User-provided prompt
+        if input := st.chat_input():
+            st.session_state.messages.append({"role": "user", "content": input})
+            with st.chat_message("user"):
+                st.write(input)
+
+            # Retrieve context from the database
+            try:
+                #context = bot.get_combined_context(input, access_levels=access_levels)
+                context = bot.get_context_from_collection(input, access_levels=access_levels)
+                #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
+                st.session_state.context_history.append(context)  # Store the context for potential future references
+            except Exception as e:
+                st.error(f"Error retrieving context: {e}")
+                context = "An error occurred while retrieving context."
+
+            # Generate a new response
+            input_dict = {"context": context, "question": input}
+            with st.chat_message("assistant"):
+                with st.spinner("Grabbing your answer from database..."):
+                    response = generate_response(input_dict)
+                    st.write(response)
+                message = {"role": "assistant", "content": response}
+                st.session_state.messages.append(message)
+
+if __name__ == '__main__':
+    main()
