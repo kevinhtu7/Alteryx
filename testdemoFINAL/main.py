@@ -11,7 +11,6 @@ from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
-import streamlit as st
 from rerankers import Reranker
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
@@ -45,7 +44,7 @@ class ChatBot():
     def initialize_chromadb(self):
         # Initialize ChromaDB client using environment variable for path
         db_path = os.path.abspath("testdemoFINAL/chroma.db")
-       
+        print(f"Database path: {db_path}")  # Log the path to ensure it's correct
         if not os.path.exists(db_path):
             raise FileNotFoundError(f"Database file not found at {db_path}")
         try:
@@ -83,26 +82,20 @@ class ChatBot():
         if not all_documents or 'documents' not in all_documents or not all_documents['documents']:
             return "I do not know..."
 
-        st.write(f"All documents retrieved: {all_documents}")
+        print(f"All documents retrieved: {all_documents}")
 
         filtered_documents = []
 
         # Filter documents based on access levels in metadata
         for doc in all_documents['documents']:
-            st.write(f"Processing document: {doc}")
-            if isinstance(doc, dict):
-                doc_id = doc.get('id', None)
-                metadata = doc.get('metadata', {})
-                st.write(f"Document ID: {doc_id}, Metadata: {metadata}")
-                access_role = metadata.get('access_role')
-                st.write(f"Access Role: {access_role}, Required Levels: {access_levels}")
-                if access_role in access_levels:
-                    filtered_documents.append(doc)
-            else:
-                st.write(f"Document is not a dictionary: {doc}")
+            print(f"Processing document: {doc}")
+            metadata = doc.get('metadata', [])
+            access_roles = [item['string_value'] for item in metadata if item['key'] == 'access_role']
+            print(f"Access roles for document: {access_roles}")
+            if any(role in access_levels for role in access_roles):
+                filtered_documents.append(doc)
 
         if not filtered_documents:
-            st.write("No documents match the required access levels.")
             return "YOU SHALL NOT PASS!"
 
         reranked_documents = self.rerank_documents(input, filtered_documents)
