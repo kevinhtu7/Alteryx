@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 from main import ChatBot
 
 # Set page configuration at the top of the script
-st.set_page_config(page_title="Meeting Information Bot")
+st.set_page_config(page_title="Internal Knowledge Base Bot")
 
 # Load environment variables
 load_dotenv()
@@ -70,7 +70,7 @@ def get_access_level(role):
         return None
 
 def main():
-    st.title("Meeting Information Bot")
+    st.title("Internal Knowledge Base Bot")
 
     if "logged_in" not in st.session_state:
         st.session_state.logged_in = False
