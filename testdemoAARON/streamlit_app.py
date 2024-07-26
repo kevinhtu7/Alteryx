@@ -101,6 +101,7 @@ def main():
             #st.session_state.username = ""
             #st.session_state.password = ""
     else:
+        st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
         run_app(st.session_state.access_levels)
 
 def run_app(access_levels):
