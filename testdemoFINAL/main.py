@@ -11,7 +11,6 @@ from langchain_core.prompts import PromptTemplate
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.schema.output_parser import StrOutputParser
 import logging
-import sqlite3
 from rerankers import Reranker
 from presidio_analyzer import AnalyzerEngine
 from presidio_anonymizer import AnonymizerEngine
@@ -88,20 +87,14 @@ class ChatBot():
 
         filtered_documents = []
 
-        # Connect to the SQLite database to fetch metadata
-        conn = sqlite3.connect(self.db_path)
-        cursor = conn.cursor()
-
-        # Iterate over each document to check its access level in the metadata
+        # Filter documents based on access levels in metadata
         for doc in all_documents['documents']:
-            doc_id = doc['id']
-            cursor.execute("SELECT string_value FROM embedding_metadata WHERE key='access_role' AND id=?", (doc_id,))
-            access_role = cursor.fetchone()
-            if access_role and access_role[0] in access_levels:
+            print(f"Processing document: {doc}")
+            metadata = doc.get('metadata', [])
+            access_roles = [item['string_value'] for item in metadata if item['key'] == 'access_role']
+            print(f"Access roles for document: {access_roles}")
+            if any(role in access_levels for role in access_roles):
                 filtered_documents.append(doc)
-
-        cursor.close()
-        conn.close()
 
         if not filtered_documents:
             return "YOU SHALL NOT PASS!"
