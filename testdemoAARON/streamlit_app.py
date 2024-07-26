@@ -99,6 +99,7 @@ def main():
             #st.session_state.username = ""
             #st.session_state.password = ""
     else:
+        st.session_state.disable_inputs = True
         run_app(st.session_state.access_levels)
 
 def run_app(access_levels):
