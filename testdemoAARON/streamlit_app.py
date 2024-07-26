@@ -123,7 +123,9 @@ def run_app(access_levels):
     if st.button("Logout"):
         st.session_state.logged_in = False
         st.session_state.disable_inputs = False
-        st.experimental_rerun()
+        #st.experimental_rerun()
+        st.experimental_set_query_params(rerun="true")  # Rerun the app to update the UI
+    
 
     # Prevent the user from asking questions if OpenAI is selected and no API key is entered
     if st.session_state.llm_selection == "External (OpenAI)" and not st.session_state.api_key:
