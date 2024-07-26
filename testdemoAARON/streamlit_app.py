@@ -119,8 +119,8 @@ def run_app(access_levels):
         else:
             st.session_state.api_key = ""
 
-    if st.button("Logout"):
-        for i in range(0, 2):
+    for i in range(0, 2):
+        if st.button("Logout"):
             st.session_state.logged_in = False
             st.session_state.username = ""
             st.session_state.password = ""
