@@ -82,12 +82,16 @@ class ChatBot():
         if not all_documents or 'documents' not in all_documents or not all_documents['documents']:
             return "I do not know..."
 
+        print(f"All documents retrieved: {all_documents}")
+
         filtered_documents = []
 
         # Filter documents based on access levels in metadata
         for doc in all_documents['documents']:
-            doc_id = doc['id']
+            print(f"Processing document: {doc}")
+            doc_id = doc.get('id', None)
             metadata = doc.get('metadata', {})
+            print(f"Document ID: {doc_id}, Metadata: {metadata}")
             if metadata.get('access_role') in access_levels:
                 filtered_documents.append(doc)
 
