@@ -67,12 +67,8 @@ class ChatBot():
     def setup_language_model(self):
         if self.llm_type == "External (OpenAI)" and self.api_key:
             try:
-                self.repo_id = "openai/gpt-4o-mini"  # Update this to the actual repo ID for the external model
-                self.llm = HuggingFaceHub(
-                    repo_id=self.repo_id,
-                    model_kwargs={"temperature": 0.8, "top_p": 0.8, "top_k": 50},
-                    huggingfacehub_api_token=self.api_key
-                )
+                openai.api_key = self.api_key
+                self.llm = self.create_openai_chat_model()
             except Exception as e:
                 raise ValueError(f"Failed to initialize the external LLM: {e}")
         else:
@@ -87,6 +83,16 @@ class ChatBot():
             except Exception as e:
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
+    def create_openai_chat_model(self):
+        return lambda prompt: openai.ChatCompletion.create(
+            model="gpt-4.0-mini",  #model may need updating
+            messages=[{"role": "system", "content": "You are an informational chatbot. These employees will ask you questions about company data and meeting information. Use the following piece of context to answer the question.
+                If you don't know the answer, simply state "You do not have the required level of access."}, {"role": "user", "content": prompt}],
+            temperature=0.8,
+            top_p=0.8,
+            top_k=50
+        )
+            
     #def initialize_knowledge_graph(self):
         #neo4j_url = os.getenv('NEO4J_URL')
         #neo4j_user = os.getenv('NEO4J_USER')
