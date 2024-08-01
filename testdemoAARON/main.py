@@ -85,7 +85,7 @@ class ChatBot():
                 raise ValueError(f"Failed to initialize the local LLM: {e}")
 
     def create_openai_chat_model(self):
-        return lambda prompt: openai.ChatCompletion.create(
+        return lambda prompt: openai.chat.completions.create(
             model="gpt-4-turbo",  #model may need updating
             messages=[{"role": "system", "content": "You are an informational chatbot. Use the following piece of context to answer the question. If you don't know the answer, simply state 'You do not have the required level of access.'"}, {"role": "user", "content": prompt}],
             temperature=0.8
