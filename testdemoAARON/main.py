@@ -243,7 +243,7 @@ class ChatBot():
         #processed_input = self.preprocess_input(input_dict)
 
         # Run the RAG chain
-        response = self.rag_chain.invoke(processed_input)
+        response = self.rag_chain.invoke(input_dict)
         
         # Save the conversation to memory
         self.memory.save_context({"input": input_dict["question"]}, {"output": response})
