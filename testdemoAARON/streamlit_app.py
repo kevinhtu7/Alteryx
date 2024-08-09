@@ -5,6 +5,7 @@ from mysql.connector import Error
 import os
 from dotenv import load_dotenv
 from main import ChatBot
+from langchain.memory import ConversationBufferMemory
 
 # Set page configuration at the top of the script
 st.set_page_config(page_title="Internal Knowledge Base Bot")
