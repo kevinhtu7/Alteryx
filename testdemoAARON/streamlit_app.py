@@ -151,20 +151,20 @@ def run_app(access_levels):
 
         # Function for generating LLM response
         #def generate_response(input_dict):
-        def generate_response(question, access_levels):
-            try:
-                input_dict = {"question": question, "access_levels": access_levels}
-                if st.session_state.context_history:
-                    input_dict["context"] = " ".join(st.session_state.context_history)
-                else:
-                    input_dict["context"] = ""
+        #def generate_response(question, access_levels):
+            #try:
+                #input_dict = {"question": question, "access_levels": access_levels}
+                #if st.session_state.context_history:
+                    #input_dict["context"] = " ".join(st.session_state.context_history)
+                #else:
+                    #input_dict["context"] = ""
                 # Generate the response
-                result = bot.ask(input_dict)
+                #result = bot.ask(input_dict)
         
                 # Save the context to memory
-                st.session_state.context_history.append(result)
+                #st.session_state.context_history.append(result)
 
-                return result
+                #return result
             #try:
                 #nice_input = bot.preprocess_input(input_dict)
                 #result = bot.rag_chain.invoke(input_dict)
@@ -173,9 +173,9 @@ def run_app(access_levels):
                 #input_dict = {"question": question, "access_levels": access_levels}
                 #result = bot.ask(input_dict)
                 #return result
-            except Exception as e:
-                st.error(f"Error generating response: {e}")
-                return "An error occurred while generating the response."
+            #except Exception as e:
+                #st.error(f"Error generating response: {e}")
+                #return "An error occurred while generating the response."
 
         # Display chat messages
         for message in st.session_state.messages:
