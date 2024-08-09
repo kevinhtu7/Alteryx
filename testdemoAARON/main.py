@@ -16,6 +16,9 @@ import sqlite3
 #from transformers import T5ForConditionalGeneration, T5Tokenizer
 from rerankers import Reranker
 #from py2neo import Graph
+from langchain.chains.base import Chain
+from langchain.chains import LLMChain
+from langchain.memory import ConversationBufferMemory
 
 # Import necessary libraries for anonymization, spellchecking, and niceness
 from presidio_analyzer import AnalyzerEngine
@@ -41,6 +44,7 @@ class ChatBot():
         self.llm_type = llm_type
         self.api_key = api_key
         self.setup_language_model()
+        self.memory = ConversationBufferMemory(memory_key="chat_history")  # Initialize buffer memory
         self.setup_langchain()
         self.setup_reranker()
         #self.initialize_knowledge_graph()
@@ -169,6 +173,8 @@ class ChatBot():
         reranked_documents = self.rerank_documents(input, documents)
         # Use top 3 reranked documents
         context = " ".join([doc.text for doc in reranked_documents.top_k(3)])  # This code is append the top 3 docs together
+        # Store the conversation in memory
+        self.memory.save_context({"input": input}, {"output": context})
         # context = reranked_documents.top_k(3)[0].text # This code is to pick the best document from the top 3
         return context
 
@@ -224,6 +230,25 @@ class ChatBot():
             | AnswerOnlyOutputParser()
         )
 
+    def ask(self, input_dict):
+        context = self.get_context_from_collection(input_dict["question"], input_dict.get("access_levels", []))
+        input_dict["context"] = context
+
+        # Load the previous chat history from memory
+        chat_history = self.memory.chat_memory
+        if chat_history and chat_history.messages:
+            input_dict["context"] += " " + " ".join([msg.content for msg in chat_history.messages])
+
+        # Preprocess the input
+        processed_input = self.preprocess_input(input_dict)
+
+        # Run the RAG chain
+        response = self.rag_chain.invoke(processed_input)
+        
+        # Save the conversation to memory
+        self.memory.save_context({"input": input_dict["question"]}, {"output": response})
+
+        return response
     #def get_combined_context(self, input, access_levels):
         #collection_context = self.get_context_from_collection(input, access_levels)
         #graph_context = self.get_context_from_knowledge_graph(input)
