@@ -45,10 +45,8 @@ class ChatBot():
         self.api_key = api_key
         self.setup_language_model()
         #self.memory = ConversationBufferMemory(memory_key="chat_history")  # Initialize buffer memory
-        # Use session_state to store memory
-        if 'memory' not in st.session_state:
-            st.session_state.memory = ConversationBufferMemory(memory_key="chat_history")
-        self.memory = st.session_state.memory
+        # Use the passed memory or create a new one
+        self.memory = memory if memory else ConversationBufferMemory(memory_key="chat_history")
         self.setup_langchain()
         self.setup_reranker()
         #self.initialize_knowledge_graph()
