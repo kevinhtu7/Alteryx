@@ -137,9 +137,13 @@ def run_app(access_levels):
     if st.session_state.llm_selection == "External (OpenAI)" and not st.session_state.api_key:
         st.warning("Please enter your OpenAI API key to proceed.")
     else:
+        # Initialize memory if not already present
+        if 'memory' not in st.session_state:
+            st.session_state.memory = ConversationBufferMemory(memory_key="chat_history")
+
         # Initialize ChatBot with the selected LLM
         try:
-            bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key)
+            bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key, memory=st.session_state.memory)
         except Exception as e:
             st.error(f"Failed to initialize the chatbot: {e}")
             st.stop()
