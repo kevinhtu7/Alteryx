@@ -127,6 +127,8 @@ def run_app(access_levels):
         st.session_state.username = ""
         st.session_state.password = ""
         st.session_state.access_levels = ""
+        #st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
+        #st.session_state.context_history = []
         #st.experimental_rerun()
         st.rerun()
 
@@ -152,7 +154,7 @@ def run_app(access_levels):
         def generate_response(question, access_levels):
             try:
                 input_dict = {"question": question, "access_levels": access_levels}
-                f st.session_state.context_history:
+                if st.session_state.context_history:
                     input_dict["context"] = " ".join(st.session_state.context_history)
                 else:
                     input_dict["context"] = ""
@@ -204,7 +206,7 @@ def run_app(access_levels):
                     response = generate_response(input, access_levels)
                     st.write(response)
                 message = {"role": "assistant", "content": response}
-                st.session_state.messages.append(message)
+                #st.session_state.messages.append(message)
 
 if __name__ == '__main__':
     main()
