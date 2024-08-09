@@ -146,8 +146,8 @@ def run_app(access_levels):
         # Initialize or maintain the list of past interactions and contexts
         if "messages" not in st.session_state:
             #st.success(f"Welcome {username}! Your role is {role} with {access_levels} access.")
-            st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
-            st.session_state.context_history = []
+            #st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
+            #st.session_state.context_history = []
 
         # Function for generating LLM response
         #def generate_response(input_dict):
