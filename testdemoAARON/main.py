@@ -235,9 +235,14 @@ class ChatBot():
         input_dict["context"] = context
 
         # Load the previous chat history from memory
+        # Load and append chat history to the context
         chat_history = self.memory.chat_memory
         if chat_history and chat_history.messages:
-            input_dict["context"] += " " + " ".join([msg.content for msg in chat_history.messages])
+            historical_context = " ".join([msg.content for msg in chat_history.messages])
+            context = f"{historical_context} {context}"  # Append historical context to current context
+        #chat_history = self.memory.chat_memory
+        #if chat_history and chat_history.messages:
+            #input_dict["context"] += " " + " ".join([msg.content for msg in chat_history.messages])
 
         # Preprocess the input
         #processed_input = self.preprocess_input(input_dict)
