@@ -159,7 +159,7 @@ def run_app(access_levels):
                 result = bot.rag_chain.invoke(input_dict)
                 ##result = bot.answer_question(input_dict, access_levels)
                 # Prepare the input dictionary
-                input_dict = {"question": question, "access_levels": access_levels}
+                #input_dict = {"question": question, "access_levels": access_levels}
                 #result = bot.ask(input_dict)
                 return result
             #except Exception as e:
@@ -181,6 +181,10 @@ def run_app(access_levels):
             try:
                 #context = bot.get_combined_context(input, access_levels=access_levels)
                 context = bot.get_context_from_collection(input, access_levels=access_levels)
+                input_dict["context"] = context
+                chat_history = self.memory.chat_memory
+                if chat_history and chat_history.messages:
+                    input_dict["context"] += " " + " ".join([msg.content for msg in chat_history.messages])
                 #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
                 st.session_state.context_history.append(context)  # Store the context for potential future references
             #except Exception as e:
@@ -189,12 +193,12 @@ def run_app(access_levels):
 
             # Generate a new response
             #input_dict = {"context": context, "question": input}
-            input_dict = {"question": input, "access_levels": access_levels}
+            #input_dict = {"question": input, "access_levels": access_levels}
             with st.chat_message("assistant"):
                 with st.spinner("Grabbing your answer from database..."):
-                    #response = generate_response(input_dict)
+                    response = generate_response(input_dict)
                     #response = generate_response(input, access_levels)
-                    response = bot.ask(input_dict)
+                    #response = bot.ask(input_dict)
                     st.write(response)
                 message = {"role": "assistant", "content": response}
                 st.session_state.messages.append(message)
