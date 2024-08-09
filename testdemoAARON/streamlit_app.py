@@ -200,10 +200,12 @@ def run_app(access_levels):
 
             # Generate a new response
             #input_dict = {"context": context, "question": input}
+            input_dict = {"question": input, "access_levels": access_levels]
             with st.chat_message("assistant"):
                 with st.spinner("Grabbing your answer from database..."):
                     #response = generate_response(input_dict)
-                    response = generate_response(input, access_levels)
+                    #response = generate_response(input, access_levels)
+                    response = bot.ask(input_dict)
                     st.write(response)
                 message = {"role": "assistant", "content": response}
                 #st.session_state.messages.append(message)
