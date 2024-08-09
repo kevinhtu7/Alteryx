@@ -153,24 +153,10 @@ def run_app(access_levels):
             st.session_state.context_history = []
 
         # Function for generating LLM response
-        #def generate_response(input_dict):
-        #def generate_response(question, access_levels):
-            #try:
-                #input_dict = {"question": question, "access_levels": access_levels}
-                #if st.session_state.context_history:
-                    #input_dict["context"] = " ".join(st.session_state.context_history)
-                #else:
-                    #input_dict["context"] = ""
-                # Generate the response
-                #result = bot.ask(input_dict)
-        
-                # Save the context to memory
-                #st.session_state.context_history.append(result)
-
-                #return result
-            #try:
+        def generate_response(input_dict):
+            try:
                 #nice_input = bot.preprocess_input(input_dict)
-                #result = bot.rag_chain.invoke(input_dict)
+                result = bot.rag_chain.invoke(input_dict)
                 ##result = bot.answer_question(input_dict, access_levels)
                 # Prepare the input dictionary
                 #input_dict = {"question": question, "access_levels": access_levels}
