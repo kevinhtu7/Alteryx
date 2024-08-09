@@ -186,7 +186,7 @@ def run_app(access_levels):
                 #context = bot.get_combined_context(input, access_levels=access_levels)
                 context = bot.get_context_from_collection(input, access_levels=access_levels)
                 input_dict["context"] = context
-                chat_history = self.memory.chat_memory
+                chat_history = st.session_state.memory.chat_memory
                 if chat_history and chat_history.messages:
                     input_dict["context"] += " " + " ".join([msg.content for msg in chat_history.messages])
                 #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
