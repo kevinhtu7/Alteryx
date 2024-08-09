@@ -129,6 +129,7 @@ def run_app(access_levels):
         st.session_state.access_levels = ""
         st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
         st.session_state.context_history = []
+        st.session_state.memory = None  # Reset memory on logout
         #st.experimental_rerun()
         st.rerun()
 
