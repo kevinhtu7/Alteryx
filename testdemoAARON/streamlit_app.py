@@ -159,9 +159,9 @@ def run_app(access_levels):
                 result = bot.rag_chain.invoke(input_dict)
                 ##result = bot.answer_question(input_dict, access_levels)
                 # Prepare the input dictionary
-                #input_dict = {"question": question, "access_levels": access_levels}
+                input_dict = {"question": question, "access_levels": access_levels}
                 #result = bot.ask(input_dict)
-                #return result
+                return result
             #except Exception as e:
                 #st.error(f"Error generating response: {e}")
                 #return "An error occurred while generating the response."
@@ -178,11 +178,11 @@ def run_app(access_levels):
                 st.write(input)
 
             # Retrieve context from the database
-            #try:
+            try:
                 #context = bot.get_combined_context(input, access_levels=access_levels)
-                #context = bot.get_context_from_collection(input, access_levels=access_levels)
+                context = bot.get_context_from_collection(input, access_levels=access_levels)
                 #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
-                #st.session_state.context_history.append(context)  # Store the context for potential future references
+                st.session_state.context_history.append(context)  # Store the context for potential future references
             #except Exception as e:
                 #st.error(f"Error retrieving context: {e}")
                 #context = "An error occurred while retrieving context."
