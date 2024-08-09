@@ -127,8 +127,8 @@ def run_app(access_levels):
         st.session_state.username = ""
         st.session_state.password = ""
         st.session_state.access_levels = ""
-        #st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
-        #st.session_state.context_history = []
+        st.session_state.messages = [{"role": "assistant", "content": "Welcome, what can I help you with?"}]
+        st.session_state.context_history = []
         #st.experimental_rerun()
         st.rerun()
 
