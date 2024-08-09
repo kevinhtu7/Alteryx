@@ -16,9 +16,9 @@ import sqlite3
 #from transformers import T5ForConditionalGeneration, T5Tokenizer
 from rerankers import Reranker
 #from py2neo import Graph
-#from langchain.chains.base import Chain
-#from langchain.chains import LLMChain
-#from langchain.memory import ConversationBufferMemory
+from langchain.chains.base import Chain
+from langchain.chains import LLMChain
+from langchain.memory import ConversationBufferMemory
 
 # Import necessary libraries for anonymization, spellchecking, and niceness
 from presidio_analyzer import AnalyzerEngine
