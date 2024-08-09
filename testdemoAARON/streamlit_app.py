@@ -162,9 +162,9 @@ def run_app(access_levels):
                 #input_dict = {"question": question, "access_levels": access_levels}
                 #result = bot.ask(input_dict)
                 return result
-            #except Exception as e:
-                #st.error(f"Error generating response: {e}")
-                #return "An error occurred while generating the response."
+            except Exception as e:
+                st.error(f"Error generating response: {e}")
+                return "An error occurred while generating the response."
 
         # Display chat messages
         for message in st.session_state.messages:
