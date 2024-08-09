@@ -93,6 +93,7 @@ def main():
                 st.session_state.username = username
                 st.session_state.access_levels = access_levels
                 # Extracting the access roles from the list of dictionaries
+                st.session_state.memory = ConversationBufferMemory(memory_key="chat_history")  # Initialize memory here
                 access_roles = [access['access_role'] for access in access_levels]
                 access_roles_str = ', '.join(access_roles)
                 st.success(f"Welcome {username}! Your role is {role} with {access_roles_str}.")
@@ -137,10 +138,6 @@ def run_app(access_levels):
     if st.session_state.llm_selection == "External (OpenAI)" and not st.session_state.api_key:
         st.warning("Please enter your OpenAI API key to proceed.")
     else:
-        # Initialize memory if not already present
-        if 'memory' not in st.session_state:
-            st.session_state.memory = ConversationBufferMemory(memory_key="chat_history")
-
         # Initialize ChatBot with the selected LLM
         try:
             bot = ChatBot(llm_type=st.session_state.llm_selection, api_key=st.session_state.api_key, memory=st.session_state.memory)
