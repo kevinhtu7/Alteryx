@@ -151,13 +151,26 @@ def run_app(access_levels):
         #def generate_response(input_dict):
         def generate_response(question, access_levels):
             try:
+                input_dict = {"question": question, "access_levels": access_levels}
+                f st.session_state.context_history:
+                    input_dict["context"] = " ".join(st.session_state.context_history)
+                else:
+                    input_dict["context"] = ""
+                # Generate the response
+                result = bot.ask(input_dict)
+        
+                # Save the context to memory
+                st.session_state.context_history.append(result)
+
+                return result
+            #try:
                 #nice_input = bot.preprocess_input(input_dict)
                 #result = bot.rag_chain.invoke(input_dict)
                 ##result = bot.answer_question(input_dict, access_levels)
                 # Prepare the input dictionary
-                input_dict = {"question": question, "access_levels": access_levels}
-                result = bot.ask(input_dict)
-                return result
+                #input_dict = {"question": question, "access_levels": access_levels}
+                #result = bot.ask(input_dict)
+                #return result
             except Exception as e:
                 st.error(f"Error generating response: {e}")
                 return "An error occurred while generating the response."
