@@ -38,7 +38,7 @@ class AnswerOnlyOutputParser(StrOutputParser):
         return response.split("Answer:")[1].strip() if "Answer:" in response else response.strip()
 
 class ChatBot():
-    def __init__(self, llm_type="Local (PHI3)", api_key=""):
+    def __init__(self, llm_type="Local (PHI3)", api_key="", memory=None):
         load_dotenv()
         self.chroma_client, self.collection = self.initialize_chromadb()
         self.llm_type = llm_type
