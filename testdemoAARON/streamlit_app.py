@@ -148,11 +148,15 @@ def run_app(access_levels):
             st.session_state.context_history = []
 
         # Function for generating LLM response
-        def generate_response(input_dict):
+        #def generate_response(input_dict):
+        def generate_response(question, access_levels):
             try:
-                nice_input = bot.preprocess_input(input_dict)
-                result = bot.rag_chain.invoke(input_dict)
-                #result = bot.answer_question(input_dict, access_levels)
+                #nice_input = bot.preprocess_input(input_dict)
+                #result = bot.rag_chain.invoke(input_dict)
+                ##result = bot.answer_question(input_dict, access_levels)
+                # Prepare the input dictionary
+                input_dict = {"question": question, "access_levels": access_levels}
+                result = bot.ask(input_dict)
                 return result
             except Exception as e:
                 st.error(f"Error generating response: {e}")
@@ -170,20 +174,21 @@ def run_app(access_levels):
                 st.write(input)
 
             # Retrieve context from the database
-            try:
+            #try:
                 #context = bot.get_combined_context(input, access_levels=access_levels)
-                context = bot.get_context_from_collection(input, access_levels=access_levels)
+                #context = bot.get_context_from_collection(input, access_levels=access_levels)
                 #context = "Default context for access level: " + access_level  # Placeholder for actual context retrieval
-                st.session_state.context_history.append(context)  # Store the context for potential future references
-            except Exception as e:
-                st.error(f"Error retrieving context: {e}")
-                context = "An error occurred while retrieving context."
+                #st.session_state.context_history.append(context)  # Store the context for potential future references
+            #except Exception as e:
+                #st.error(f"Error retrieving context: {e}")
+                #context = "An error occurred while retrieving context."
 
             # Generate a new response
-            input_dict = {"context": context, "question": input}
+            #input_dict = {"context": context, "question": input}
             with st.chat_message("assistant"):
                 with st.spinner("Grabbing your answer from database..."):
-                    response = generate_response(input_dict)
+                    #response = generate_response(input_dict)
+                    response = generate_response(input, access_levels)
                     st.write(response)
                 message = {"role": "assistant", "content": response}
                 st.session_state.messages.append(message)
