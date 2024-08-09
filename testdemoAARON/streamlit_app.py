@@ -5,6 +5,8 @@ from mysql.connector import Error
 import os
 from dotenv import load_dotenv
 from main import ChatBot
+from langchain.chains.base import Chain
+from langchain.chains import LLMChain
 from langchain.memory import ConversationBufferMemory
 
 # Set page configuration at the top of the script
