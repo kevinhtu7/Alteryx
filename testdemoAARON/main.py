@@ -240,7 +240,7 @@ class ChatBot():
             input_dict["context"] += " " + " ".join([msg.content for msg in chat_history.messages])
 
         # Preprocess the input
-        processed_input = self.preprocess_input(input_dict)
+        #processed_input = self.preprocess_input(input_dict)
 
         # Run the RAG chain
         response = self.rag_chain.invoke(processed_input)
