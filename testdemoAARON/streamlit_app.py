@@ -160,7 +160,7 @@ def run_app(access_levels):
                 #nice_input = bot.preprocess_input(input_dict)
                 result = bot.rag_chain.invoke(input_dict)
                 if "context" in input_dict:
-                    memory.save_context(input_dict["context"])
+                    st.session_state.memory.save_context(input_dict["context"])
                 ##result = bot.answer_question(input_dict, access_levels)
                 # Prepare the input dictionary
                 #input_dict = {"question": question, "access_levels": access_levels}
