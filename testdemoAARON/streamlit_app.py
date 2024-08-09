@@ -208,7 +208,7 @@ def run_app(access_levels):
                     response = bot.ask(input_dict)
                     st.write(response)
                 message = {"role": "assistant", "content": response}
-                #st.session_state.messages.append(message)
+                st.session_state.messages.append(message)
 
 if __name__ == '__main__':
     main()
